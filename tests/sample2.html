@@ -1,0 +1,329 @@
+<!doctype html>
+<html>
+<head>
+    <title>Query Exercise</title>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.16.0/css/ol.css" type="text/css" />
+    <!-- <link rel="stylesheet" href="../assets/css/samples.css" type="text/css" /> -->
+
+    <!-- CSS Source Files -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Javascript Sources -->
+    <script src="http://openlayers.org/en/v3.16.0/build/ol.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <style>
+    #map {
+        height: 600px;
+    }
+    </style>
+
+</head>
+<body onload="query_func()">
+    <div id="map" class="map">
+        <div id="results"> </div>
+    </div>
+    <label id="north_label"><input id="north" type="checkbox" value="isNorthOf" onchange="checkBoxes()"> isNorthOf</label><br>
+    <label id="north_label"><input id="south" type="checkbox" value="isSouthOf" onchange="checkBoxes()"> isSouthOf</label><br>
+    <label id="north_label"><input id="east" type="checkbox" value="isEastOf" onchange="checkBoxes()"> isEastOf</label><br>
+    <label id="north_label"><input id="west" type="checkbox" value="isWestOf" onchange="checkBoxes()"> isWestOf</label>
+</body>
+<script>
+
+    var feature_list = [];
+    var line_list_north = [];
+    var line_list_south = [];
+    var line_list_east = [];
+    var line_list_west = [];
+    var vectorLayer;
+    var lineLayer;
+    var query;
+
+    // Instantiate a Map, set the object target to the map DOM id
+    var map = new ol.Map({
+        target: 'map',
+    });
+
+    var n_box = document.getElementById("north");
+    var s_box = document.getElementById('south');
+    var e_box = document.getElementById('east');
+    var w_box = document.getElementById('west');
+
+    function query_func(query) {
+        var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
+        var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+        + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+        + "SELECT ?f1_name ?f1_lat ?f1_lng ?f2_name ?f2_lat ?f2_lng\n"
+        + "WHERE {"
+        + "  ?t1 higeomes:hasFindspot ?f1 ."
+        + "  ?f1 higeomes:name ?f1_name ."
+        + "  ?t1 higeomes:" + query + " ?t2 ."
+        + "  ?t2 higeomes:hasFindspot ?f2 ."
+        + "  ?f2 higeomes:name ?f2_name ."
+        + "  ?f1 higeomes:lat ?f1_lat ."
+        + "  ?f2 higeomes:lat ?f2_lat ."
+        + "  ?f1 higeomes:lng ?f1_lng ."
+        + "  ?f2 higeomes:lng ?f2_lng ."
+        + "}";
+
+        console.log(query);
+
+        $.ajax({
+            url: repo,
+            dataType: 'jsonp',
+            data: {
+                queryLn: 'SPARQL',
+                query: query,
+                Accept: 'application/json'
+            },
+            success: callback
+        });
+    }
+
+    function callback(data) {
+        // the results of the sparql-query as a set of rows
+        var rows = data.results.bindings;
+        var coords = [];
+        for (var i in rows)
+            coords.push([rows[i].f1_name.value,rows[i].f1_lng.value,rows[i].f1_lat.value,rows[i].f2_name.value, rows[i].f2_lng.value, rows[i].f2_lat.value])
+        drawMap(coords);
+    }
+
+    // ----------------------------- DRAW MAP ---------------------------------------------
+
+    // Declare a Tile layer with an OSM source
+
+    function drawMap(coords)
+    {
+        var rand_color = 'rgb('+Math.floor(Math.random()*255)+', '+Math.floor(Math.random()*255)+', '+Math.floor(Math.random()*255)+')'
+        var baghdad = ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857");
+        var osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        var iconStyle = new ol.style.Style({
+            image: new ol.style.Icon(({
+                anchor: [0.5, 0.5],
+                anchorOrigin: 'bottom-right',
+                opacity: 0.75,
+                src: '../Downloads/map-marker-2-xxl.png',
+                scale: .1
+            }))
+        });
+
+        for(var obj in coords)
+        {
+            var point1 = ol.proj.transform([parseFloat(coords[obj][1]), parseFloat(coords[obj][2])], "EPSG:4326", "EPSG:3857");
+            feature_list.push(new ol.Feature({
+                geometry: new ol.geom.Point(point1),
+                name: coords[obj][0]
+            }));
+            var point2 = ol.proj.transform([parseFloat(coords[obj][4]), parseFloat(coords[obj][5])], "EPSG:4326", "EPSG:3857");
+            feature_list.push(new ol.Feature({
+                geometry: new ol.geom.Point(point2),
+                name: coords[obj][3]
+            }));
+
+            if(query = 'isNorthOf')
+            {
+                line_list_north.push(new ol.Feature({
+                    geometry: new ol.geom.LineString([point1, point2]),
+                    name: 'LineNorth'
+                }));
+            }
+            else if(query = 'isSouthOf')
+            {
+                line_list_south.push(new ol.Feature({
+                    geometry: new ol.geom.LineString([point1, point2]),
+                    name: 'LineSouth'
+                }));
+            }
+            else if(query = 'isSEastOf')
+            {
+                line_list_east.push(new ol.Feature({
+                    geometry: new ol.geom.LineString([point1, point2]),
+                    name: 'LineEast'
+                }));
+            }
+            else if(query = 'isWestOf')
+            {
+                line_list_west.push(new ol.Feature({
+                    geometry: new ol.geom.LineString([point1, point2]),
+                    name: 'LineWest'
+                }));
+            }
+
+            //Adds an arrow
+            var dx = parseFloat(coords[obj][4]) - parseFloat(coords[obj][1]);
+            var dy = parseFloat(coords[obj][2]) - parseFloat(coords[obj][5]);
+            var rotation_val = Math.atan2(dy, dx);
+            // console.log(rotation_val);
+            var lineStyles = [
+                new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        // color: rand_color,
+                        color: '#000000',
+                        width: 3
+                    })
+                }),
+                new ol.style.Style({
+                    geometry: new ol.geom.Point(point2),
+                    image: new ol.style.Icon(
+                    {
+                        src: '../Downloads/arrow4.png',
+                        anchor: [0.3, 0.5],
+                        rotateWithView: false,
+                        rotation: rotation_val - Math.PI,
+                        scale:0.05
+                    })
+                })
+            ];
+
+            if(query = 'isNorthOf')
+            {
+                lineStyles[0].getStroke().setColor('rgb(123, 145, 167)');
+                line_list_north[obj].setStyle(lineStyles);
+            }
+            else if(query = 'isSouthOf')
+            {
+                lineStyles[0].getStroke().setColor('rgb(121, 199, 46)');
+                line_list_south[obj].setStyle(lineStyles);
+            }
+            else if(query = 'isEastOf')
+            {
+                lineStyles[0].getStroke().setColor('rgb(49, 17, 52)');
+                line_list_south[obj].setStyle(lineStyles);
+            }
+            else if(query = 'isWestOf')
+            {
+                lineStyles[0].getStroke().setColor('rgb(100, 100, 100)');
+                line_list_west[obj].setStyle(lineStyles);
+            }
+        }
+
+    for(var i in feature_list)
+    {
+        feature_list[i].setStyle(iconStyle);
+    }
+
+    //Define Sources
+    var vectorSource = new ol.source.Vector({
+        features: feature_list
+    });
+
+    var lineSource = new ol.source.Vector({
+        // features: line_list_north
+    });
+
+    if(query = 'isNorthOf')
+    {
+        lineSource.addFeatures(line_list_north);
+    }
+    else if(query = 'isSouthOf')
+    {
+        lineSource.addFeatures(line_list_south);
+    }
+    else if(query = 'isEastOf')
+    {
+        lineSource.addFeatures(line_list_east);
+    }
+    else if(query = 'isWestOf')
+    {
+        lineSource.addFeatures(line_list_west);
+    }
+
+
+    //Define Layers
+    vectorLayer = new ol.layer.Vector({
+        source: vectorSource
+    });
+
+    lineLayer = new ol.layer.Vector({
+        source: lineSource
+    });
+
+    // Create a View, set it center and zoom level
+    var view = new ol.View({
+        center: baghdad,
+        zoom: 7
+    });
+
+    // Add the layers to the Map
+    map.addLayer(osmLayer);
+    map.addLayer(vectorLayer);
+    map.addLayer(lineLayer);
+
+    // Set the view for the map
+    map.setView(view);
+
+}
+
+
+function checkBoxes()
+{
+    if(n_box.checked)
+    {
+        vectorLayer.getSource().clear();
+        lineLayer.getSource().clear();
+        query = n_box.value;
+        query_func(query);
+    }
+    if(!n_box.checked)
+    {
+        vectorLayer.getSource().clear();
+        lineLayer.getSource().clear();
+        feature_list = [];
+        line_list_north = [];
+    }
+    if(s_box.checked)
+    {
+        vectorLayer.getSource().clear();
+        lineLayer.getSource().clear();
+        query = s_box.value;
+        query_func(query);
+    }
+    if(!s_box.checked)
+    {
+        vectorLayer.getSource().clear();
+        lineLayer.getSource().clear();
+        feature_list = [];
+        line_list_south = [];
+    }
+    if(e_box.checked)
+    {
+        vectorLayer.getSource().clear();
+        lineLayer.getSource().clear();
+        query = e_box.value;
+        query_func(query);
+
+    }
+    if(!e_box.checked)
+    {
+        vectorLayer.getSource().clear();
+        lineLayer.getSource().clear();
+        feature_list = [];
+        line_list_east = [];
+    }
+    if(w_box.checked)
+    {
+        vectorLayer.getSource().clear();
+        lineLayer.getSource().clear();
+        query = w_box.value;
+        query_func(query);
+
+    }
+    if(!w_box.checked)
+    {
+        vectorLayer.getSource().clear();
+        lineLayer.getSource().clear();
+        feature_list = [];
+        line_list_west = [];
+    }
+
+}
+
+</script>
+<!-- </head> -->
+
+</html>
