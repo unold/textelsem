@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+	<head>
+		<script src="http://openlayers.org/en/v3.16.0/build/ol.js"></script>
+		<style>
+			#map { width: 100%; height: 500px; border: 1px solid black;}
+		</style>
+		<script>
+			function init() {
+				var map = new ol.Map({target: 'myMap'});
+				
+				var myLayer = new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'sat'})});
+				map.addLayer(myLayer);
+				
+				var myView = new ol.View({center: [0,0], zoom: 4});
+				map.setView(myView);
+			}
+		</script>
+	</head>
+	<body onload="init()">
+		<div id="myMap"></div>
+	</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+	<head>
+		<script src="http://openlayers.org/en/v3.16.0/build/ol.js"></script>
+		<script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script>
+			function exec() {
+				var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
+				var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+					+ "SELECT ?n WHERE {"
+					+ "  ?f higeomes:name ?n . "
+					+ "  ?f higeomes:country ?c . "
+					+ "  ?c rdfs:label 'Iran' . "
+					+ "}";
+				
+				$.ajax({
+					url: repo,
+					dataType: 'jsonp',
+					data: {
+						queryLn: 'SPARQL',
+						query: query,
+						Accept: 'application/json'
+					},
+					success: callback
+				});
+			}
+			function callback(data) {
+				// the results of the sparql-query as a set of rows
+				console.log(data);
+				var rows = data.results.bindings;
+				for (var i in rows)
+					display(rows[i]);
+			}
+			function display(row) {
+				// each row contains values for each variable selected in the query
+				$('#results').append("<p>" + row.n.value + "</p>");
+			}
+		</script>
+	</head>
+	<body onload="exec()">
+		<div id="results"></div>
+	</body>
+</html>
