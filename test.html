@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+	<head>
+		<script src="http://openlayers.org/en/v3.16.0/build/ol.js"></script>
+		<link rel="stylesheet" href="http://openlayers.org/en/v3.16.0/css/ol.css" type="text/css">
+		<style>
+			#map { width: 100%; height: 100%; border: 1px solid black; }
+		</style>
+		<script>
+			function probability(reference,value) {
+				var index = reference.length;
+				for (var i=0; i<reference.length; ++i) {
+					if (value < reference[i]) {
+						index = i;
+						break;
+					}
+				}
+				if (index <= reference.length/2)
+					return (2-1.0/reference.length)*index/reference.length;
+				else
+					return (2-1.0/reference.length)*(reference.length-index)/reference.length;
+			}
+			function init() {
+				document.getElementById("result").innerHTML = probability([3,4,5,7,8,15,34],2);
+				var map = new ol.Map({target: 'myMap'});
+				
+				
+				var myLayer = new ol.layer.Tile({source: new ol.source.MapQuest({layer: 'sat'})});
+				map.addLayer(myLayer);
+				
+				var myView = new ol.View({center: [0,0], zoom: 4});
+				map.setView(myView);
+				
+				var geojson = {
+					type: "FeatureCollection",
+					features: [
+						{
+							type: "Feature",
+							geometry: {
+								type: "Polygon",
+								coordinates: [[26,27],[18,27],[27,19],[26,27]]
+							}
+						},
+						{
+							type: "Feature",
+							geometry: {
+								type: "Polygon",
+								coordinates: [[36,37],[48,37],[37,49],[36,37]]
+							}
+						}
+					]
+				};
+				
+				var ring = [[26,27],[18,27],[27,19],[26,27]];
+				
+				var feature = new ol.Feature({geometry: new ol.geom.Polygon([ring])});
+				feature.getGeometry().transform('EPSG:4326','EPSG:3857');
+				feature.setStyle(new ol.style.Style({ fill: new ol.style.Fill({color: 'rgba(255,0,0,0.5)' }) }));
+				
+				//var features = (new ol.format.GeoJSON()).readFeatures();
+				var vectorSource = new ol.source.Vector();
+				vectorSource.addFeature(feature);
+				
+				var vectorLayer = new ol.layer.Vector({source: vectorSource});
+				map.addLayer(vectorLayer);
+				
+				
+				
+			}
+		</script>
+	</head>
+	<body onload="init()">
+		<div id="myMap"></div>
+		<div id="result"></div>
+	</body>
+</html>
