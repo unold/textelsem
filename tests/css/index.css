@@ -1,0 +1,35 @@
+h2 {
+    padding: 15px;
+}
+
+#table_container {
+    height: 100%;
+    overflow: hidden;
+    width: 50%;
+    float: left;
+}
+
+#inner {
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+}
+
+#toponym_dist_table {
+    overflow:auto;
+    float: left;
+    width: 100%;
+}
+
+.ui.checkbox {
+    float: right;
+    /*text:align
+    vertical-align: center;*/
+}
+
+.half-map {
+    float: right;
+    display: inline;
+    height: inherit;
+    width: 50%;
+}

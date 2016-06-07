@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Data Visualization for Uncertainty</title>
+
+        <!-- CSS Source Files -->
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://openlayers.org/en/v3.16.0/css/ol.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css" type="text/css" />
+        <link rel="stylesheet" href="./css/index.css" type="text/css" />
+
+        <!-- Javascript Sources -->
+        <script src="http://openlayers.org/en/v3.16.0/build/ol.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js"></script>
+        <script src="./js/index.js"></script>
+
+    </head>
+
+    <body>
+        <!-- <h2 class="ui header">
+            <i class="location arrow icon"></i>
+            <div class="content">
+                List of Resolved Toponyms
+                <div class="sub header">Property: isNearOf</div>
+            </div>
+        </h2> -->
+        <div id="table_container">
+            <div id="inner">
+                <table class="ui celled table" id="toponym_dist_table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="ui toggle checkbox" id="select_all">
+                                    <input type="checkbox">
+                                </div>
+                            </th>
+                            <th>Toponym 1</th>
+                            <th>Toponym 2</th>
+                            <th>Distance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_details">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="map" class="half-map">
+        </div>
+    </body>
+</html>
