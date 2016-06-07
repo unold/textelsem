@@ -27,25 +27,54 @@
             </div>
         </h2> -->
         <div id="table_container">
-            <div id="inner">
-                <table class="ui celled table" id="toponym_dist_table">
-                    <thead>
-                        <tr>
-                            <th>
-                                <div class="ui toggle checkbox" id="select_all">
-                                    <input type="checkbox">
-                                </div>
-                            </th>
-                            <th>Toponym 1</th>
-                            <th>Toponym 2</th>
-                            <th>Distance</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table_details">
-                    </tbody>
-                </table>
+            <div class="ui top attached tabular menu">
+                <a class="active item" data-tab="resolved" id="r_tab">Resolved Toponyms</a>
+                <a class="item" data-tab="unresolved" id="u_tab">Unresolved Toponyms</a>
+            </div>
+
+            <div class="ui bottom attached active tab segment" data-tab="resolved" id="r_table">
+                <div id="inner">
+                    <table class="ui celled table" id="toponym_dist_table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="ui toggle checkbox" id="select_all">
+                                        <input type="checkbox">
+                                    </div>
+                                </th>
+                                <th>Toponym 1</th>
+                                <th>Toponym 2</th>
+                                <th>Distance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_details">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="unresolved" id="u_table">
+                <div id="inner">
+                    <table class="ui celled table" id="unresolved_table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="ui toggle checkbox">
+                                        <input type="checkbox">
+                                    </div>
+                                </th>
+                                <th>Unknown Toponym 1</th>
+                                <th>Unknown Toponym 2</th>
+                                <th>Findspot - T2</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_details">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
+
         <div id="map" class="half-map">
         </div>
     </body>
