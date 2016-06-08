@@ -2,9 +2,12 @@ $(document).ready(function() {
 
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
     var resolved_distances = [];
+    var coords = [];
+    var resolved_coords = [];
 
     query_resolved();
     query_unresolved();
+
 
     function query_resolved()
     {
@@ -112,6 +115,7 @@ $(document).ready(function() {
 
     function draw_map2(coordinates)
     {
+
         var baghdad = ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857");
 
         var iconStyle = new ol.style.Style({
@@ -160,25 +164,11 @@ $(document).ready(function() {
                 console.log(features_list)
             }
         });
-
-        // var osmLayer = new ol.layer.Tile({
-        //     source: new ol.source.OSM()
-        // });
-        //
-        // var view = new ol.View({
-        //     center: baghdad,
-        //     zoom: 7
-        // });
-        //
-        // map.addLayer(osmLayer);
-        // map.setView(view);
-
     }
+    var globe_sphere = new ol.Sphere(6378137);
 
     function draw_map(coordinates)
     {
-
-
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
 
@@ -223,6 +213,7 @@ $(document).ready(function() {
                     source: lineSource
                 });
 
+
                 map.addLayer(vectorLayer);
                 map.addLayer(lineLayer);
 
@@ -236,9 +227,6 @@ $(document).ready(function() {
                 console.log(features_list)
             }
         });
-
-
-
     }
 
 
@@ -256,9 +244,8 @@ $(document).ready(function() {
 
     function resolved_data_handler(data)
     {
-        var coords = [];
+
         var row = data.results.bindings;
-        var globe_sphere = new ol.Sphere(6378137);
         var regex_filter = /(toponym)\D\d+/;
 
           for(var i in row)
@@ -270,22 +257,22 @@ $(document).ready(function() {
 
               resolved_distances.push(distance);
 
-              coords.push([row[i].t1.value, coordinate_1, row[i].t2.value, coordinate_2]);
+              resolved_coords.push([row[i].t1.value, coordinate_1, row[i].t2.value, coordinate_2]);
 
               $('#toponym_dist_table>#table_details').append("<tr><td><div  id='row' class='ui toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + distance + " km</td></tr>");
           }
 
-          resolved_distances.sort();
-        draw_map(coords);
+        resolved_distances.sort();
+        draw_map(resolved_coords);
     }
 
     function unresolved_data_hander(data)
     {
-      console.log("in function");
-        var coords = [];
+    //   console.log("in function");
+
         var row = data.results.bindings;
 
-        console.log(data);
+        // console.log(data);
 
         var globe_sphere = new ol.Sphere(6378137);
         // var regex_filter = /(toponym)\D\d+/;
@@ -300,31 +287,45 @@ $(document).ready(function() {
         for(var i in row)
         {
 
-            // console.log();
-                var normal_coords = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
-                findspot_loc = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
-                findspot_name = row[i].f1.value;
+            var normal_coords = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
+            findspot_loc = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
+            findspot_name = row[i].f1.value;
 
-                findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
-                findspot_name1 = findspot_name1.replace(/\//, " ");
+            findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
+            findspot_name1 = findspot_name1.replace(/\//, " ");
 
 
-            $(id+'>#table_details').append("<tr><td><div id='urow' class='ui toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].f1.value + ">" + findspot_name1 +"</a></td><td>"+row[i].f1_lon.value+" N, "+ row[i].f1_lat.value+" E</td><td>N/A</td></tr>");
+            $(id+'>#table_details').append("<tr><td><div id='urow' class='ui toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].f1.value + ">" + findspot_name1 +"</a></td><td>"+row[i].f1_lon.value+" N, "+ row[i].f1_lat.value+" E</td><td id='prob"+i+"'></td></tr>");
 
-            console.log(document.getElementsByName("'"+i+"'"));
             coords.push([findspot_name1, findspot_loc]);
-
 
         }
 
-        // Caculate probability
+        var unresolved_distance = [];
+
+        // for(var x in resolved_coords)
+        // {
+        //     unresolved_distance.push(globe_sphere.haversineDistance(resolved_coords[x][1], coords[i][1])/1000);
+        // }
+
+        for(var i in coords)
+        {
+            for(var j in resolved_coords)
+            {
+                var distance = globe_sphere.haversineDistance(resolved_coords[j][1], coords[i][1])/1000;
+            }
+            var prob = probability(resolved_distances, distance);
+            $('#prob'+i).append((Math.round(prob*10000)/100) + "%");
 
 
-
+        }
         draw_map2(coords);
     }
+
+
     function probability(reference,value)
     {
+        console.log("whatsup again");
         var index = reference.length;
         for (var i=0; i<reference.length; ++i) {
             if (value < reference[i]) {
