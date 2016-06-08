@@ -65,7 +65,36 @@ $(document).ready(function() {
         });
     }
 
-    function draw_map(coordinates)
+    var baghdad = ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857");
+
+    var iconStyle = new ol.style.Style({
+        image: new ol.style.Icon(({
+            anchor: [0.5, 0.5],
+            anchorOrigin: 'bottom-right',
+            opacity: 0.75,
+            src: './img/map-marker-2-xxl.png',
+            scale: .1
+        }))
+    });
+
+    var lineStyle = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            // color: rand_color,
+            color: '#000000',
+            width: 3
+        })
+    });
+
+    var map = new ol.Map({
+        target: 'map',
+    });
+
+    var vectorLayer;
+    var lineLayer;
+    var features_list = [];
+    var line_list = [];
+
+    function draw_map2(coordinates)
     {
         var baghdad = ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857");
 
@@ -79,22 +108,60 @@ $(document).ready(function() {
             }))
         });
 
-        var lineStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                // color: rand_color,
-                color: '#000000',
-                width: 3
-            })
-        });
-
-        var map = new ol.Map({
-            target: 'map',
-        });
-
         var vectorLayer;
-        var lineLayer;
         var features_list = [];
-        var line_list = [];
+
+        $(".ui.checkbox#urow").checkbox({
+            onChecked: function() {
+
+                var index = $(this).val();
+                console.log(coordinates[index][3]);
+                features_list.push(new ol.Feature({
+                    geometry: new ol.geom.Point(coordinates[index][3]),
+                    name: coordinates[index][2]
+                }));
+
+                for(var i in features_list)
+                {
+                    features_list[i].setStyle(iconStyle);
+                }
+
+                var vectorSource = new ol.source.Vector({
+                    features: features_list
+                });
+
+                vectorLayer = new ol.layer.Vector({
+                    source: vectorSource
+                });
+
+                map.addLayer(vectorLayer);
+
+            },
+
+            onUnchecked: function() {
+                vectorLayer.getSource().clear();
+                features_list = [];
+                console.log(features_list)
+            }
+        });
+
+        // var osmLayer = new ol.layer.Tile({
+        //     source: new ol.source.OSM()
+        // });
+        //
+        // var view = new ol.View({
+        //     center: baghdad,
+        //     zoom: 7
+        // });
+        //
+        // map.addLayer(osmLayer);
+        // map.setView(view);
+
+    }
+
+    function draw_map(coordinates)
+    {
+
 
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
@@ -154,19 +221,21 @@ $(document).ready(function() {
             }
         });
 
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
 
-        var view = new ol.View({
-            center: baghdad,
-            zoom: 7
-        });
-
-        map.addLayer(osmLayer);
-        map.setView(view);
 
     }
+
+    var osmLayer = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
+
+    var view = new ol.View({
+        center: baghdad,
+        zoom: 7
+    });
+
+    map.addLayer(osmLayer);
+    map.setView(view);
 
     function resolved_data_handler(data)
     {
@@ -225,10 +294,27 @@ $(document).ready(function() {
 
             }
 
-            $(id+'>#table_details').append("<tr><td><div  id='row' class='ui toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td><a href ="+ findspot_name + ">" + findspot_name1 + "</td></tr>");
+            $(id+'>#table_details').append("<tr><td><div  id='urow' class='ui toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td><a href ="+ findspot_name + ">" + findspot_name1 + "</td><td>N/A</td></tr>");
             coords.push([row[i].t1.value, row[i].t2.value, findspot_name1, findspot_loc]);
 
         }
+
+        draw_map2(coords);
+    }
+
+    function probability(reference,value)
+    {
+        var index = reference.length;
+        for (var i=0; i<reference.length; ++i) {
+            if (value < reference[i]) {
+                index = i;
+                break;
+            }
+        }
+        if (index <= reference.length/2)
+            return (2-1.0/reference.length)*index/reference.length;
+        else
+            return (2-1.0/reference.length)*(reference.length-index)/reference.length;
     }
 
     $('.tabular.menu .item').tab();
