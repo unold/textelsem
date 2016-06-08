@@ -168,6 +168,73 @@ $(document).ready(function() {
 
     }
 
+    function draw_map_unresolved(coordinates)
+    {
+        var baghdad = ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857");
+
+
+        var iconStyle = new ol.style.Style({
+            image: new ol.style.Icon(({
+                anchor: [0.5, 0.5],
+                anchorOrigin: 'bottom-right',
+                opacity: 0.75,
+                src: './img/map-marker-2-xxl.png',
+                scale: .1
+            }))
+        });
+
+        var map = new ol.Map({
+            target: 'map',
+        });
+
+        var vectorLayerUnresolved;
+        var features_list_unresolved = [];
+
+        $(".ui.checkbox#u_row").checkbox({
+            onChecked: function() {
+
+                var index = $(this).val();
+                console.log(coordinates[index][3]);
+                features_list_unresolved.push(new ol.Feature({
+                    geometry: new ol.geom.Point(coordinates[index][3]),
+                    name: coordinates[index][2]
+                }));
+
+                for(var i in features_list_unresolved)
+                {
+                    features_list_unresolved[i].setStyle(iconStyle);
+                }
+
+                var vectorSource = new ol.source.Vector({
+                    features: features_list_unresolved
+                });
+
+                vectorLayerUnresolved = new ol.layer.Vector({
+                    source: vectorSource
+                });
+
+                map.addLayer(vectorLayerUnresolved);
+            },
+
+            onUnchecked: function() {
+                vectorLayer.getSource().clear();
+                features_list_unresolved = [];
+            }
+        });
+
+        var osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        var view = new ol.View({
+            center: baghdad,
+            zoom: 7
+        });
+
+        map.addLayer(osmLayer);
+        map.setView(view);
+    }
+
     function resolved_data_handler(data)
     {
         var coords = [];
@@ -225,10 +292,10 @@ $(document).ready(function() {
 
             }
 
-            $(id+'>#table_details').append("<tr><td><div  id='row' class='ui toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td><a href ="+ findspot_name + ">" + findspot_name1 + "</td></tr>");
+            $(id+'>#table_details').append("<tr><td><div  id='u_row' class='ui toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td><a href ="+ findspot_name + ">" + findspot_name1 + "</td></tr>");
             coords.push([row[i].t1.value, row[i].t2.value, findspot_name1, findspot_loc]);
-
         }
+        draw_map_unresolved(coords);
     }
 
     $('.tabular.menu .item').tab();
