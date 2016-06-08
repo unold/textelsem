@@ -313,15 +313,15 @@ $(document).ready(function() {
             console.log(document.getElementsByName("'"+i+"'"));
             coords.push([findspot_name1, findspot_loc]);
 
+
         }
 
         // Caculate probability
 
-        // probability(resolved_distances,)
+
 
         draw_map2(coords);
     }
-
     function probability(reference,value)
     {
         var index = reference.length;
