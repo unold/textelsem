@@ -1,10 +1,10 @@
 $(document).ready(function() {
 
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
+
     var resolved_distances = [];
     var resolved_coords = [];
-    var coords = [];
-
+    var unresolved_coords = [];
 
     if (typeof(Number.prototype.toRad) === "undefined") {
         Number.prototype.toRad = function() {
@@ -64,6 +64,7 @@ $(document).ready(function() {
         success: callback
     });
 
+// Create Map ================================================================
 
     var map = new ol.Map({
         target: 'map'
@@ -74,14 +75,13 @@ $(document).ready(function() {
     var lineLayer;
     var vectorLayer;
 
+// ============================================================================
     function draw_map(r_coords, u_coords)
     {
-
         var features_list = [];
         var line_list = [];
         var resolved = false;
         var index;
-
 
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
@@ -227,13 +227,16 @@ $(document).ready(function() {
                   var units = "kilometers";
 
                   var distance = turf.distance(coordinate_1, coordinate_2, units);
+                  var euro_distance = distance.toFixed(2).replace(/\./g, ',');
                   var point_1 = ol.proj.fromLonLat([parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]);
                   var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
 
                   resolved_distances.push(distance);
                   resolved_coords.push([row[i].t1.value, point_1, row[i].t2.value, point_2]);
 
-                  $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + distance + " km</td></tr>");
+                  $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                  + "<td><a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td>"
+                  +"<td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + euro_distance + " km</td></tr>");
                   resolved_distances.sort();
 
               }
@@ -250,12 +253,14 @@ $(document).ready(function() {
                   findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
                   findspot_name1 = findspot_name1.replace(/\//, " ");
 
-                  $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].f1.value + ">" + findspot_name1 +"</a></td><td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div><div class='content'><p>Testing to see if this works!</p></div></div></td></tr>");
-                  coords.push([findspot_name1, findspot_loc]);
-
+                  $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                  +"<td><a href ="+row[i].f1.value + ">" + findspot_name1+ "</a></td>"
+                  + "<td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div><div class='content'><p>Testing to see if this works!</p></div></div></td></tr>");
+                  unresolved_coords.push([findspot_name1, findspot_loc]);
               }
           }
-          draw_map(resolved_coords, coords);
+
+          draw_map(resolved_coords, unresolved_coords);
     }
 
     function probability(reference,value)
