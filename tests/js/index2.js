@@ -83,6 +83,8 @@ $(document).ready(function() {
         var resolved = false;
         var index;
 
+        $('.ui.accordion').accordion();
+
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
 
@@ -200,6 +202,8 @@ $(document).ready(function() {
 
         var regex_filter = /(toponym)\D\d+/;
         var regex_filter2 = /(Findspot)\/\d+/;
+        var units = "kilometers";
+        var complete = [];
 
         var html = [];
 
@@ -224,7 +228,7 @@ $(document).ready(function() {
                       }
                   };
 
-                  var units = "kilometers";
+
 
                   var distance = turf.distance(coordinate_1, coordinate_2, units);
                   var euro_distance = distance.toFixed(2).replace(/\./g, ',');
@@ -234,9 +238,11 @@ $(document).ready(function() {
                   resolved_distances.push(distance);
                   resolved_coords.push([row[i].t1.value, point_1, row[i].t2.value, point_2]);
 
+                //   Add row to table
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   + "<td><a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td>"
                   +"<td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + euro_distance + " km</td></tr>");
+
                   resolved_distances.sort();
 
               }
@@ -253,16 +259,64 @@ $(document).ready(function() {
                   findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
                   findspot_name1 = findspot_name1.replace(/\//, " ");
 
+                //   Add row to table
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   +"<td><a href ="+row[i].f1.value + ">" + findspot_name1+ "</a></td>"
                   + "<td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div><div class='content'><p>Testing to see if this works!</p></div></div></td></tr>");
+
                   unresolved_coords.push([findspot_name1, findspot_loc]);
               }
           }
 
+          //   Calculate Probability =====================================================================================
+
+          //   Calculate Distances
+
+          console.log(resolved_distances);
+          for(var i in unresolved_coords)
+          {
+              for(var j in resolved_coords)
+              {
+                  var unresolved_findspot = {
+                      "type": "Feature",
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": unresolved_coords[i][1]
+                      }
+                  };
+
+                  var resolved_findspot1 = {
+                      "type": "Feature",
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": resolved_coords[j][1]
+                      }
+                  };
+
+                  var resolved_findspot2 = {
+                      "type": "Feature",
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": resolved_coords[j][3]
+                      }
+                  };
+
+                  complete.push({"findspot_location": unresolved_coords[i][1], "r1_dist": turf.distance(unresolved_findspot, resolved_findspot1, units)/1000, "r1_name": resolved_coords[j][0], "r2_dist": turf.distance(unresolved_findspot, resolved_findspot2, units)/1000, "r2_name": resolved_coords[j][3]});
+              }
+          }
+
+          for(var key in complete)
+          {
+              complete[key].r1_prob = probability(resolved_distances, complete[key]["r1_dist"]);
+              complete[key].r2_prob = probability(resolved_distances, complete[key]["r2_dist"]);
+          }
+
+          console.log(complete);
+        //   =============================================================================================================
           draw_map(resolved_coords, unresolved_coords);
     }
 
+    // Calculate probability of an unresolved findspot
     function probability(reference,value)
     {
         var index = reference.length;
