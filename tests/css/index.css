@@ -21,12 +21,6 @@ h2 {
     width: 100%;
 }
 
-.ui.checkbox {
-    float: right;
-    /*text:align
-    vertical-align: center;*/
-}
-
 .half-map {
     float: right;
     display: inline;

@@ -3,6 +3,7 @@ $(document).ready(function() {
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
     var resolved_distances = [];
     var resolved_coords = [];
+    var coords = [];
 
     query_resolved();
     query_unresolved();
@@ -61,22 +62,6 @@ $(document).ready(function() {
 
       console.log(query);
 
-        // query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-        // + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-        // + "SELECT ?t1 ?t2 ?f2 ?f2_lat ?f2_lon\n"
-        // + "WHERE {"
-	      //  + "?t1 higeomes:isNearOf ?t2 ."
-  	    // +    "FILTER NOT EXISTS"
-  	    // +    "{"
-    	  // +      "?t1 higeomes:hasFindspot ?f1 ."
-  	    // +    "}"
-        // +   "OPTIONAL {"
-        // +       "?t2 higeomes:hasFindspot ?f2 ."
-        // +       "?f2 higeomes:lng ?f2_lon ."
-        // +       "?f2 higeomes:lat ?f2_lat ."
-        // +   "}"
-        // + "}";
-
         $.ajax({
             url: repo,
             dataType: 'jsonp',
@@ -103,7 +88,6 @@ $(document).ready(function() {
 
     var lineStyle = new ol.style.Style({
         stroke: new ol.style.Stroke({
-            // color: rand_color,
             color: '#000000',
             width: 3
         })
@@ -176,6 +160,51 @@ $(document).ready(function() {
 
     function draw_map(coordinates)
     {
+        var probability_array = [];
+        var unresolved_table = [];
+        var full_list = [];
+
+        var units = "kilometers";
+
+        for(var i in coords)
+        {
+            var coordinate_1 = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": coords[i][1]
+                }
+            };
+
+            var coordinate_2 = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": resolved_coords[j][1]
+                }
+            };
+
+            var coordinate_3 = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": resolved_coords[j][3]
+                }
+            };
+
+            for(var j in reoslved_coords)
+            {
+                unresolved_table.push([resolved_coords[j][0], turf.distance(coordinate_1, coordinate_2, units), resolved_coords[j][2], turf.distance(coordinate_1, coordinate_3, units)]);
+            }
+            full_list.push([unresolved_table[i]]);
+            for(var item in full_list)
+            {
+                probability_array.push([probability(resolved_distances, full_list[item][1]), full_list[item][0], probability(resolved_distances, full_list[item][3]), full_list[item][2]]);
+            }
+        }
+
+        console.log(coords);
+
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
 
@@ -242,10 +271,6 @@ $(document).ready(function() {
     });
 
     var view = new ol.View({
-        // projection: new ol.proj.Projection({
-        // code: 'EPSG:4326',
-        // units: 'm'
-        // }),
         center: baghdad,
         zoom: 7
     });
@@ -257,6 +282,7 @@ $(document).ready(function() {
     {
 
         var row = data.results.bindings;
+        console.log(row);
         var regex_filter = /(toponym)\D\d+/;
 
           for(var i in row)
@@ -282,31 +308,25 @@ $(document).ready(function() {
 
               var distance = turf.distance(coordinate_1, coordinate_2, units);
               var point_1 = ol.proj.fromLonLat([parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]);
-
               var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
-            //   var distance = globe_sphere.haversineDistance(coordinate_1, coordinate_2)/1000;
 
               resolved_distances.push(distance);
-
               resolved_coords.push([row[i].t1.value, point_1, row[i].t2.value, point_2]);
 
-
-              $('#toponym_dist_table>#table_details').append("<tr><td><div  id='row' class='ui toggle collapsing checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + distance + " km</td></tr>");
+              $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + distance + " km</td></tr>");
           }
 
           resolved_distances.sort();
+
+          console.log(resolved_distances);
 
         draw_map(resolved_coords);
     }
 
     function unresolved_data_hander(data)
     {
-        var coords = [];
         var row = data.results.bindings;
 
-        // console.log(data);
-
-        var globe_sphere = new ol.Sphere(6378137);
         var regex_filter2 = /(Findspot)\/\d+/;
 
         var id = "#unresolved_table"
@@ -317,7 +337,6 @@ $(document).ready(function() {
 
         for(var i in row)
         {
-
             var normal_coords = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
             findspot_loc = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
             findspot_name = row[i].f1.value;
@@ -325,43 +344,8 @@ $(document).ready(function() {
             findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
             findspot_name1 = findspot_name1.replace(/\//, " ");
 
-            $(id+'>#table_details').append("<tr><td><div id='urow' class='ui collapsing toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].f1.value + ">" + findspot_name1 +"</a></td><td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div><div class='content'><p>Testing to see if this works!</p></div></div></td></tr>");
-
-
+            $(id+'>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].f1.value + ">" + findspot_name1 +"</a></td><td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div><div class='content'><p>Testing to see if this works!</p></div></div></td></tr>");
             coords.push([findspot_name1, findspot_loc]);
-
-        }
-
-
-        var probability_array = [];
-        var unresolved_table = [];
-        var full_list = [];
-
-        //
-        // for(var i in coords)
-        // {
-        //     for(var j in reoslved_coords)
-        //     {
-        //         unresolved_table.push([resolved_coords[j][0], globe_sphere.haversineDistance(resolved_coords[j][1], coords[i][1])/1000, resolved_coords[j][2], globe_sphere.haversineDistance(resolved_coords[j][3], coords[i][1])/1000]);
-        //     }
-        //     full_list.push([unresolved_table[i]]);
-        //     for(var item in full_list)
-        //     {
-        //         probability_array.push([probability(resolved_distances, full_list[item][1]), full_list[item][0], probability(resolved_distances, full_list[item][3]), full_list[item][2]]);
-        //     }
-        // }
-        // probability_array""
-
-
-        for(var i in coords)
-        {
-            for(var j in resolved_coords)
-            {
-                var distance = globe_sphere.haversineDistance(resolved_coords[j][1], coords[i][1])/1000;
-            }
-            var prob = probability(resolved_distances, distance);
-            $('#prob'+i).append((Math.round(prob*10000)/100) + "%");
-
         }
 
         // Caculate probability
@@ -370,7 +354,6 @@ $(document).ready(function() {
 
     function probability(reference,value)
     {
-        console.log("whatsup again");
         var index = reference.length;
         for (var i=0; i<reference.length; ++i) {
             if (value < reference[i]) {
@@ -385,6 +368,5 @@ $(document).ready(function() {
     }
 
     $('.tabular.menu .item').tab();
-
 
 });
