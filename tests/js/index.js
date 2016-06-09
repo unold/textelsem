@@ -2,23 +2,17 @@ $(document).ready(function() {
 
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
     var resolved_distances = [];
-<<<<<<< HEAD
-=======
-    var coords = [];
->>>>>>> origin/master
     var resolved_coords = [];
 
     query_resolved();
     query_unresolved();
 
-<<<<<<< HEAD
+
     if (typeof(Number.prototype.toRad) === "undefined") {
         Number.prototype.toRad = function() {
             return this * Math.PI / 180;
         }
     }
-=======
->>>>>>> origin/master
 
     function query_resolved()
     {
@@ -294,31 +288,20 @@ $(document).ready(function() {
 
               resolved_distances.push(distance);
 
-<<<<<<< HEAD
               resolved_coords.push([row[i].t1.value, point_1, row[i].t2.value, point_2]);
-=======
-              resolved_coords.push([row[i].t1.value, coordinate_1, row[i].t2.value, coordinate_2]);
->>>>>>> origin/master
+
 
               $('#toponym_dist_table>#table_details').append("<tr><td><div  id='row' class='ui toggle collapsing checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + distance + " km</td></tr>");
           }
 
-<<<<<<< HEAD
           resolved_distances.sort();
-=======
-        resolved_distances.sort();
->>>>>>> origin/master
+
         draw_map(resolved_coords);
     }
 
     function unresolved_data_hander(data)
     {
-<<<<<<< HEAD
         var coords = [];
-=======
-    //   console.log("in function");
-
->>>>>>> origin/master
         var row = data.results.bindings;
 
         // console.log(data);
@@ -342,18 +325,14 @@ $(document).ready(function() {
             findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
             findspot_name1 = findspot_name1.replace(/\//, " ");
 
-
-<<<<<<< HEAD
             $(id+'>#table_details').append("<tr><td><div id='urow' class='ui collapsing toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].f1.value + ">" + findspot_name1 +"</a></td><td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div><div class='content'><p>Testing to see if this works!</p></div></div></td></tr>");
-=======
-            $(id+'>#table_details').append("<tr><td><div id='urow' class='ui toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].f1.value + ">" + findspot_name1 +"</a></td><td>"+row[i].f1_lon.value+" N, "+ row[i].f1_lat.value+" E</td><td id='prob"+i+"'></td></tr>");
->>>>>>> origin/master
+
 
             coords.push([findspot_name1, findspot_loc]);
 
         }
 
-<<<<<<< HEAD
+
         var probability_array = [];
         var unresolved_table = [];
         var full_list = [];
@@ -372,14 +351,7 @@ $(document).ready(function() {
         //     }
         // }
         // probability_array""
-=======
-        var unresolved_distance = [];
 
-        // for(var x in resolved_coords)
-        // {
-        //     unresolved_distance.push(globe_sphere.haversineDistance(resolved_coords[x][1], coords[i][1])/1000);
-        // }
->>>>>>> origin/master
 
         for(var i in coords)
         {
@@ -390,19 +362,12 @@ $(document).ready(function() {
             var prob = probability(resolved_distances, distance);
             $('#prob'+i).append((Math.round(prob*10000)/100) + "%");
 
+        }
 
-<<<<<<< HEAD
         // Caculate probability
         draw_map2(coords);
     }
 
-=======
-        }
-        draw_map2(coords);
-    }
-
-
->>>>>>> origin/master
     function probability(reference,value)
     {
         console.log("whatsup again");
