@@ -262,17 +262,14 @@ $(document).ready(function() {
                 //   Add row to table
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   +"<td><a href ="+row[i].f1.value + ">" + findspot_name1+ "</a></td>"
-                  + "<td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div><div class='content'><p>Testing to see if this works!</p></div></div></td></tr>");
+                  + "<td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div>"
+                  + "<div class='content'><div class='ui selection list'></div></div></div></td></tr>");
 
                   unresolved_coords.push([findspot_name1, findspot_loc]);
               }
           }
 
           //   Calculate Probability =====================================================================================
-
-          //   Calculate Distances
-
-          console.log(resolved_distances);
           for(var i in unresolved_coords)
           {
               for(var j in resolved_coords)
@@ -309,9 +306,14 @@ $(document).ready(function() {
           {
               complete[key].r1_prob = probability(resolved_distances, complete[key]["r1_dist"]);
               complete[key].r2_prob = probability(resolved_distances, complete[key]["r2_dist"]);
+
+
+            //   $('.ui.list').append("<div class='item'>Probability for " + complete[key]["r2_name"] + ": " + complete[key]["r2_prob"].toFixed(2) + "</div>");
+            //   $('.ui.list').append("<div class='item'>Probability for " + complete[0]["r1_name"] + ": " + complete[key]["r1_prob"].toFixed(2) + "</div>");
           }
 
-          console.log(complete);
+
+
         //   =============================================================================================================
           draw_map(resolved_coords, unresolved_coords);
     }
