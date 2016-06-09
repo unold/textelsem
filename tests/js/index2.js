@@ -64,128 +64,44 @@ $(document).ready(function() {
         success: callback
     });
 
-    var baghdad = ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857");
-
-    var iconStyle = new ol.style.Style({
-        image: new ol.style.Icon(({
-            anchor: [0.5, 0.5],
-            anchorOrigin: 'bottom-right',
-            opacity: 0.75,
-            src: './img/map-marker-2-xxl.png',
-            scale: .1
-        }))
-    });
-
-    var lineStyle = new ol.style.Style({
-        stroke: new ol.style.Stroke({
-            color: '#000000',
-            width: 3
-        })
-    });
 
     var map = new ol.Map({
-        target: 'map',
+        target: 'map'
     });
 
-    var vectorLayer;
+    var vectorSource;
+    var lineSource;
     var lineLayer;
-    var features_list = [];
-    var line_list = [];
+    var vectorLayer;
 
-    function draw_map2(coordinates)
+    function draw_map(r_coords, u_coords)
     {
 
-        $('.ui.accordion').accordion('toggle');
-
-        var vectorLayer;
         var features_list = [];
+        var line_list = [];
+        var resolved = false;
+        var index;
 
-        $(".ui.checkbox#urow").checkbox({
-            onChecked: function() {
-
-                var index = $(this).val();
-                console.log(coordinates[index][1]);
-                features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(coordinates[index][1]),
-                    name: coordinates[index][0]
-                }));
-
-                for(var i in features_list)
-                {
-                    features_list[i].setStyle(iconStyle);
-                }
-
-                var vectorSource = new ol.source.Vector({
-                    features: features_list
-                });
-
-                vectorLayer = new ol.layer.Vector({
-                    source: vectorSource
-                });
-
-                map.addLayer(vectorLayer);
-
-            },
-
-            onUnchecked: function() {
-                vectorLayer.getSource().clear();
-                features_list = [];
-                console.log(features_list)
-            }
-        });
-    }
-
-    function draw_map(coordinates)
-    {
 
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
 
-                var index = $(this).val();
-                console.log(coordinates[index][1]);
+                resolved = true;
+                index = $(this).val();
                 features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(coordinates[index][1]),
-                    name: coordinates[index][0]
+                    geometry: new ol.geom.Point(r_coords[index][1]),
+                    name: r_coords[index][0]
                 }));
                 features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(coordinates[index][3]),
-                    name: coordinates[index][2]
+                    geometry: new ol.geom.Point(r_coords[index][3]),
+                    name: r_coords[index][2]
                 }));
                 line_list.push(new ol.Feature({
-                    geometry: new ol.geom.LineString([coordinates[index][1], coordinates[index][3]]),
+                    geometry: new ol.geom.LineString([r_coords[index][1], r_coords[index][3]]),
                     name: 'Line'
                 }));
 
-                for(var i in features_list)
-                {
-                    features_list[i].setStyle(iconStyle);
-                }
-
-                for(var i in line_list)
-                {
-                    line_list[i].setStyle(lineStyle);
-                }
-
-                var vectorSource = new ol.source.Vector({
-                    features: features_list
-                });
-
-                var lineSource = new ol.source.Vector({
-                    features: line_list
-                });
-
-                vectorLayer = new ol.layer.Vector({
-                    source: vectorSource
-                });
-
-                lineLayer = new ol.layer.Vector({
-                    source: lineSource
-                });
-
-
-                map.addLayer(vectorLayer);
-                map.addLayer(lineLayer);
-
+                render_points(resolved, features_list, line_list);
             },
 
             onUnchecked: function() {
@@ -196,20 +112,87 @@ $(document).ready(function() {
                 console.log(features_list)
             }
         });
+
+        $(".ui.checkbox#urow").checkbox({
+            onChecked: function() {
+
+                index = $(this).val();
+                features_list.push(new ol.Feature({
+                    geometry: new ol.geom.Point(u_coords[index][1]),
+                    name: u_coords[index][0]
+                }));
+                render_points(resolved, features_list, line_list);
+            },
+
+            onUnchecked: function() {
+                vectorLayer.getSource().clear();
+                features_list = [];
+                console.log(features_list)
+            }
+        });
+
+        var osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        var map_view = new ol.View({
+            center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
+            zoom: 7
+        });
+
+        map.addLayer(osmLayer);
+        map.setView(map_view);
+
     }
 
+    function render_points(isResolved, features, lines)
+    {
+        console.log("in rendering function");
+        console.log(features)
 
-    var osmLayer = new ol.layer.Tile({
-        source: new ol.source.OSM()
-    });
 
-    var view = new ol.View({
-        center: baghdad,
-        zoom: 7
-    });
+        var iconStyle = new ol.style.Style({
+            image: new ol.style.Icon(({
+                anchor: [0.5, 0.5],
+                anchorOrigin: 'bottom-right',
+                opacity: 0.75,
+                src: './img/map-marker-2-xxl.png',
+                scale: .1
+            }))
+        });
 
-    map.addLayer(osmLayer);
-    map.setView(view);
+        var lineStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#000000',
+                width: 3
+            })
+        });
+
+        vectorSource = new ol.source.Vector({
+            features: features
+        });
+
+        vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+            style: iconStyle
+        });
+
+        if(isResolved)
+        {
+            lineSource = new ol.source.Vector({
+                features: lines
+            });
+
+            lineLayer = new ol.layer.Vector({
+                source: lineSource,
+                style: lineStyle
+            });
+
+            map.addLayer(lineLayer);
+        }
+
+        map.addLayer(vectorLayer);
+    }
 
     function callback(data)
     {
@@ -217,6 +200,8 @@ $(document).ready(function() {
 
         var regex_filter = /(toponym)\D\d+/;
         var regex_filter2 = /(Findspot)\/\d+/;
+
+        var html = [];
 
           for(var i in row)
           {
@@ -251,7 +236,6 @@ $(document).ready(function() {
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td><td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + distance + " km</td></tr>");
                   resolved_distances.sort();
 
-                  draw_map(resolved_coords);
               }
               else
               {
@@ -269,9 +253,9 @@ $(document).ready(function() {
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td><td>" + "<a href ="+row[i].f1.value + ">" + findspot_name1 +"</a></td><td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div><div class='content'><p>Testing to see if this works!</p></div></div></td></tr>");
                   coords.push([findspot_name1, findspot_loc]);
 
-                  draw_map2(coords);
               }
           }
+          draw_map(resolved_coords, coords);
     }
 
     function probability(reference,value)
