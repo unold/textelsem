@@ -156,7 +156,6 @@ $(document).ready(function() {
             onUnchecked: function() {
                 vectorLayer.getSource().clear();
                 features_list = [];
-                console.log(features_list)
             }
         });
 
@@ -165,7 +164,8 @@ $(document).ready(function() {
 
                 index = $(this).val();
                 features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(n_coords[index])
+                    geometry: new ol.geom.Point(n_coords[index][1]),
+                    name: n_coords[index][0]
                 }));
                 render_points(resolved, features_list, line_list);
             },
@@ -252,7 +252,7 @@ $(document).ready(function() {
           {
               if (row[i].hasOwnProperty('top1'))
               {
-                    findspot_coordinates.push(ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857"));
+                    findspot_coordinates.push([row[i].find1.value, ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857"), row[i].top2.value]);
 
                   //   Add row to table
                     $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
@@ -314,55 +314,60 @@ $(document).ready(function() {
                 //   Add row to table
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   +"<td><a href ="+row[i].f1.value + ">" + findspot_name1+ "</a></td>"
-                  + "<td><div class='ui fluid accordion'><div class='title'><i class='dropdown icon'></i>Show All Results</div>"
-                  + "<div class='content'><div class='ui selection list'></div></div></div></td></tr>");
+                  + "<td id='probability" + i +"'></td></tr>");
 
                   unresolved_coords.push([findspot_name1, findspot_loc]);
               }
           }
 
-          //   Calculate Probability =====================================================================================
           for(var i in unresolved_coords)
           {
-              for(var j in resolved_coords)
+              var unresolved_findspot = {
+                  "type": "Feature",
+                  "geometry": {
+                      "type": "Point",
+                      "coordinates": unresolved_coords[i][1]
+                  }
+              };
+              var temp_array = [];
+
+              for(var j in findspot_coordinates)
               {
-                  var unresolved_findspot = {
+
+                  var resolved_findspot = {
                       "type": "Feature",
                       "geometry": {
                           "type": "Point",
-                          "coordinates": unresolved_coords[i][1]
+                          "coordinates": findspot_coordinates[j][1]
                       }
                   };
 
-                  var resolved_findspot1 = {
-                      "type": "Feature",
-                      "geometry": {
-                          "type": "Point",
-                          "coordinates": resolved_coords[j][1]
-                      }
-                  };
-
-                  var resolved_findspot2 = {
-                      "type": "Feature",
-                      "geometry": {
-                          "type": "Point",
-                          "coordinates": resolved_coords[j][3]
-                      }
-                  };
-
-                  complete.push({"findspot_location": unresolved_coords[i][1], "r1_dist": turf.distance(unresolved_findspot, resolved_findspot1, units)/1000, "r1_name": resolved_coords[j][0], "r2_dist": turf.distance(unresolved_findspot, resolved_findspot2, units)/1000, "r2_name": resolved_coords[j][2]});
+                  temp_array.push({"dist": turf.distance(unresolved_findspot, resolved_findspot, units)/1000, "nearby_top_name": findspot_coordinates[j][2]});
               }
+
+              complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
+              temp_array = [];
           }
 
-          for(var key in complete)
-          {
-              complete[key].r1_prob = probability(resolved_distances, complete[key]["r1_dist"]);
-              complete[key].r2_prob = probability(resolved_distances, complete[key]["r2_dist"]);
+        //   for(var key in complete)
+        //   {
+        //       if(complete[key]["dist"] < 10 && complete[key]["dist"] > 5)
+        //         complete[key].prob = .90;
+        //       else if(complete[key]["dist"] < 5)
+        //         complete[key].prob = 1;
+        //       else if(complete[key]["dist"] > 10 && complete[key]["dist"] < 20)
+        //         complete[key].prob = .75;
+        //       else
+        //         complete[key].prob = 0;
+          //
+        //   }
+          //
+        //   for(var key in complete)
+        //   {
+        //       $('#probability'+ key).append("<div class='item'>Probability for " + regex_filter.exec(complete[key]["nearby_top_name"])[0].toString() + ": " + complete[key]["prob"].toFixed(2) + "</div>");
+        //   }
 
-
-            //   $('.ui.list').append("<div class='item'>Probability for " + regex_filter.exec(complete[key]["r2_name"])[0].toString() + ": " + complete[key]["r2_prob"].toFixed(2) + "</div>");
-            //   $('.ui.list').append("<div class='item'>Probability for " + regex_filter.exec(complete[key]["r1_name"])[0].toString() + ": " + complete[key]["r1_prob"].toFixed(2) + "</div>");
-          }
+          console.log(complete);
 
         //   =============================================================================================================
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates);
