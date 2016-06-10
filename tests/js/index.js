@@ -5,6 +5,7 @@ $(document).ready(function() {
     var resolved_distances = [];
     var resolved_coords = [];
     var unresolved_coords = [];
+    var findspot_coordinates = [];
 
     if (typeof(Number.prototype.toRad) === "undefined") {
         Number.prototype.toRad = function() {
@@ -64,6 +65,32 @@ $(document).ready(function() {
         success: callback
     });
 
+    // Query for all unresolved findspots
+    query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+    + "SELECT ?top1 ?find1 ?f1_lon ?f1_lat ?top2\n"
+    + "WHERE {"
+    + "?top1 higeomes:isNearOf ?top2 ."
+    + "?top1 higeomes:hasFindspot ?find1 ."
+    + "FILTER NOT EXISTS"
+    + "{"
+    +   "?top2 higeomes:hasFindspot ?find2 ."
+    + "}"
+    + "?find1 higeomes:lng ?f1_lon ."
+    + "?find1 higeomes:lat ?f1_lat ."
+    + "}";
+
+    $.ajax({
+        url: repo,
+        dataType: 'jsonp',
+        data: {
+            queryLn: 'SPARQL',
+            query: query,
+            Accept: 'application/json'
+        },
+        success: callback
+    });
+
 // Create Map ================================================================
 
     var map = new ol.Map({
@@ -76,7 +103,7 @@ $(document).ready(function() {
     var vectorLayer;
 
 // ============================================================================
-    function draw_map(r_coords, u_coords)
+    function draw_map(r_coords, u_coords, n_coords)
     {
         var features_list = [];
         var line_list = [];
@@ -133,6 +160,23 @@ $(document).ready(function() {
             }
         });
 
+        $(".ui.checkbox#nrow").checkbox({
+            onChecked: function() {
+
+                index = $(this).val();
+                features_list.push(new ol.Feature({
+                    geometry: new ol.geom.Point(n_coords[index])
+                }));
+                render_points(resolved, features_list, line_list);
+            },
+
+            onUnchecked: function() {
+                vectorLayer.getSource().clear();
+                features_list = [];
+                console.log(features_list)
+            }
+        });
+
         var osmLayer = new ol.layer.Tile({
             source: new ol.source.OSM()
         });
@@ -149,10 +193,6 @@ $(document).ready(function() {
 
     function render_points(isResolved, features, lines)
     {
-        console.log("in rendering function");
-        console.log(features)
-
-
         var iconStyle = new ol.style.Style({
             image: new ol.style.Icon(({
                 anchor: [0.5, 0.5],
@@ -205,11 +245,23 @@ $(document).ready(function() {
         var units = "kilometers";
         var complete = [];
 
+
         var html = [];
 
           for(var i in row)
           {
-              if(row[i].hasOwnProperty('t1'))
+              if (row[i].hasOwnProperty('top1'))
+              {
+                    findspot_coordinates.push(ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857"));
+
+                  //   Add row to table
+                    $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                    + "<td><a href ="+row[i].top1.value + ">" + regex_filter.exec(row[i].top1.value)[0] +"</a></td>"
+                    +"<td><a href =" +row[i].top2.value + ">" + regex_filter2.exec(row[i].find1.value)[0].replace(/\//, " ") + "</a></td>"
+                    + "<td><a href =" +row[i].find1.value + ">" + regex_filter.exec(row[i].top2.value)[0] + "</a></td></tr>");
+              }
+
+              else if(row[i].hasOwnProperty('t1'))
               {
                   // Calculate Distance
                   var coordinate_1 = {
@@ -298,7 +350,7 @@ $(document).ready(function() {
                       }
                   };
 
-                  complete.push({"findspot_location": unresolved_coords[i][1], "r1_dist": turf.distance(unresolved_findspot, resolved_findspot1, units)/1000, "r1_name": resolved_coords[j][0], "r2_dist": turf.distance(unresolved_findspot, resolved_findspot2, units)/1000, "r2_name": resolved_coords[j][3]});
+                  complete.push({"findspot_location": unresolved_coords[i][1], "r1_dist": turf.distance(unresolved_findspot, resolved_findspot1, units)/1000, "r1_name": resolved_coords[j][0], "r2_dist": turf.distance(unresolved_findspot, resolved_findspot2, units)/1000, "r2_name": resolved_coords[j][2]});
               }
           }
 
@@ -308,14 +360,12 @@ $(document).ready(function() {
               complete[key].r2_prob = probability(resolved_distances, complete[key]["r2_dist"]);
 
 
-            //   $('.ui.list').append("<div class='item'>Probability for " + complete[key]["r2_name"] + ": " + complete[key]["r2_prob"].toFixed(2) + "</div>");
-            //   $('.ui.list').append("<div class='item'>Probability for " + complete[0]["r1_name"] + ": " + complete[key]["r1_prob"].toFixed(2) + "</div>");
+            //   $('.ui.list').append("<div class='item'>Probability for " + regex_filter.exec(complete[key]["r2_name"])[0].toString() + ": " + complete[key]["r2_prob"].toFixed(2) + "</div>");
+            //   $('.ui.list').append("<div class='item'>Probability for " + regex_filter.exec(complete[key]["r1_name"])[0].toString() + ": " + complete[key]["r1_prob"].toFixed(2) + "</div>");
           }
 
-
-
         //   =============================================================================================================
-          draw_map(resolved_coords, unresolved_coords);
+          draw_map(resolved_coords, unresolved_coords, findspot_coordinates);
     }
 
     // Calculate probability of an unresolved findspot
