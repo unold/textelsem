@@ -314,7 +314,8 @@ $(document).ready(function() {
                 //   Add row to table
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   +"<td><a href ="+row[i].f1.value + ">" + findspot_name1+ "</a></td>"
-                  + "<td id='probability" + i +"'></td></tr>");
+                  + "<td><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
+                  + "<div class='content'><div class='ui list'  id='probability" + i +"'></div></div></div></td></tr>");
 
                   unresolved_coords.push([findspot_name1, findspot_loc]);
               }
@@ -349,23 +350,24 @@ $(document).ready(function() {
               temp_array = [];
           }
 
-        //   for(var key in complete)
-        //   {
-        //       if(complete[key]["dist"] < 10 && complete[key]["dist"] > 5)
-        //         complete[key].prob = .90;
-        //       else if(complete[key]["dist"] < 5)
-        //         complete[key].prob = 1;
-        //       else if(complete[key]["dist"] > 10 && complete[key]["dist"] < 20)
-        //         complete[key].prob = .75;
-        //       else
-        //         complete[key].prob = 0;
-          //
-        //   }
-          //
-        //   for(var key in complete)
-        //   {
-        //       $('#probability'+ key).append("<div class='item'>Probability for " + regex_filter.exec(complete[key]["nearby_top_name"])[0].toString() + ": " + complete[key]["prob"].toFixed(2) + "</div>");
-        //   }
+          for(var key in complete)
+          {
+              var obj = complete[key][1];
+              for(var i = 0; i < 8; i++)
+              {
+                  obj[i].prob = probability(resolved_distances,obj[i]["dist"]);
+              }
+          }
+
+
+          for(var key in complete)
+          {
+              var obj = complete[key][1];
+              for(var i = 0; i < 8; i++)
+              {
+                  $('#probability'+ key).append("<div class='item'>Probability for " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+              }
+          }
 
           console.log(complete);
 
