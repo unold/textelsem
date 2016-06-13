@@ -177,40 +177,53 @@ $(document).ready(function() {
             features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(id)), 1)
         });
 
-        // $(".ui.checkbox#row").checkbox({
-        //     onChecked: function() {
-        //
-        //         resolved = true;
-        //         index = $(this).val();
-        //         features_list.push([new ol.Feature({
-        //             geometry: new ol.geom.Point(r_coords[index][1]),
-        //             name: r_coords[index][0]
-        //         })),
-        //         features_list.push(new ol.Feature({
-        //             geometry: new ol.geom.Point(r_coords[index][3]),
-        //             name: r_coords[index][2]
-        //         }))]
-        //         line_list.push(new ol.Feature({
-        //             geometry: new ol.geom.LineString([r_coords[index][1], r_coords[index][3]]),
-        //             name: 'Line'
-        //         }));
-        //
-        //
-        //
-        //         vectorSource.addFeatures(features_list[features_list.length - 1]);
-        //         lineSource.addFeature(features_list[line_list.length - 1])
-        //     },
-        //
-        //     onUnchecked: function() {
-        //
-        //         index = $(this).val();
-        //
-        //         vectorLayer.getSource().clear();
-        //         lineLayer.getSource().clear();
-        //         features_list.length = 0;
-        //         line_list.length = 0;
-        //     }
-        // });
+        $(".ui.checkbox#row").checkbox({
+            onChecked: function() {
+
+                resolved = true;
+                index = $(this).val();
+                var first_id = index + 0;
+                var sec_id = index + 1;
+                features_list.push([new ol.Feature({
+                    geometry: new ol.geom.Point(r_coords[index][1]),
+                    name: r_coords[index][0],
+                    id: first_id
+                }),
+                new ol.Feature({
+                    geometry: new ol.geom.Point(r_coords[index][3]),
+                    name: r_coords[index][2],
+                    id: sec_id
+                })]);
+                line_list.push(new ol.Feature({
+                    geometry: new ol.geom.LineString([r_coords[index][1], r_coords[index][3]]),
+                    name: 'Line',
+                    id: index
+                }));
+
+
+                line_list[line_list.length - 1].setId(index);
+                features_list[features_list.length - 1][0].setId(first_id);
+                features_list[features_list.length - 1][1].setId(sec_id);
+                console.log(line_list[line_list.length - 1]);
+                vectorLayer.getSource().addFeature(features_list[features_list.length - 1][0]);
+                vectorLayer.getSource().addFeature(features_list[features_list.length - 1][1]);
+                lineLayer.getSource().addFeature(line_list[line_list.length - 1]);
+                map.addLayer(vectorLayer);
+                map.addLayer(lineLayer);
+            },
+
+            onUnchecked: function() {
+
+                index = $(this).val();
+
+                vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'0'));
+                vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'1'));
+                // console.log(lineLayer.getSource().getFeatureById(index));
+                lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
+                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(id)), 1);
+                line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(id)), 1)
+            }
+        });
 
         $(".ui.checkbox#urow").checkbox({
             onChecked: function() {
