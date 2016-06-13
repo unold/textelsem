@@ -103,6 +103,9 @@ $(document).ready(function() {
     var vectorLayer;
 
 // ============================================================================
+
+
+
     function draw_map(r_coords, u_coords, n_coords)
     {
         var features_list = [];
@@ -111,6 +114,27 @@ $(document).ready(function() {
         var index;
 
         $('.ui.accordion').accordion();
+
+        $('.ui.selection.list>.item').click(function()
+        {
+            var id = $(this).attr('id');
+            index = id % 10;
+
+            console.log(id % 10);
+            features_list.push(new ol.Feature({
+                geometry: new ol.geom.Point(n_coords[index][1]),
+                name: n_coords[index][0]
+            }));
+            console.log(features_list);
+            render_points(resolved, features_list, line_list);
+        });
+
+        $('.remove').click(function()
+        {
+            vectorLayer.getSource().clear();
+            features_list.length = 0;
+            console.log(features_list);
+        });
 
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
@@ -136,9 +160,8 @@ $(document).ready(function() {
             onUnchecked: function() {
                 vectorLayer.getSource().clear();
                 lineLayer.getSource().clear();
-                features_list = [];
-                line_list = [];
-                console.log(features_list)
+                features_list.length = 0;
+                line_list.length = 0;
             }
         });
 
@@ -155,7 +178,7 @@ $(document).ready(function() {
 
             onUnchecked: function() {
                 vectorLayer.getSource().clear();
-                features_list = [];
+                features_list.length = 0;
             }
         });
 
@@ -172,7 +195,7 @@ $(document).ready(function() {
 
             onUnchecked: function() {
                 vectorLayer.getSource().clear();
-                features_list = [];
+                features_list.length = 0;
                 console.log(features_list)
             }
         });
@@ -315,7 +338,7 @@ $(document).ready(function() {
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   +"<td><a href ="+row[i].f1.value + ">" + findspot_name1+ "</a></td>"
                   + "<td><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
-                  + "<div class='content'><div class='ui list'  id='probability" + i +"'></div></div></div></td></tr>");
+                  + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
 
                   unresolved_coords.push([findspot_name1, findspot_loc]);
               }
@@ -365,7 +388,7 @@ $(document).ready(function() {
               var obj = complete[key][1];
               for(var i = 0; i < 8; i++)
               {
-                  $('#probability'+ key).append("<div class='item'>Probability for " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                  $('#probability'+ key).append("<i class='remove link icon'></i><div class='item' id='"+key+i+"'>Probability for " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
               }
           }
 

@@ -27,3 +27,11 @@ h2 {
     height: inherit;
     width: 50%;
 }
+
+.ui.list .item {
+    display: inline;
+}
+
+.remove.icon {
+    color: red;
+}
