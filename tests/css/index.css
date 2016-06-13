@@ -35,3 +35,7 @@ h2 {
 .remove.icon {
     color: red;
 }
+
+.ui.button {
+    float:right;
+}
