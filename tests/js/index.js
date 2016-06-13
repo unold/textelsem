@@ -113,6 +113,16 @@ $(document).ready(function() {
         var resolved = false;
         var index;
 
+        var iconStyle2 = new ol.style.Style({
+            image: new ol.style.Icon(({
+                anchor: [0.5, 0.5],
+                anchorOrigin: 'bottom-right',
+                opacity: 0.75,
+                src: './img/map-marker-2.png',
+                scale: .1
+            }))
+        });
+
         var iconStyle = new ol.style.Style({
             image: new ol.style.Icon(({
                 anchor: [0.5, 0.5],
@@ -131,7 +141,6 @@ $(document).ready(function() {
         });
 
         vectorSource = new ol.source.Vector({
-            // features: features
         });
 
         vectorLayer = new ol.layer.Vector({
@@ -140,7 +149,6 @@ $(document).ready(function() {
         });
 
         lineSource = new ol.source.Vector({
-            // features: lines
         });
 
         lineLayer = new ol.layer.Vector({
@@ -158,12 +166,12 @@ $(document).ready(function() {
             var id = $(this).attr('id');
             index = id % 10;
 
-            console.log(id % 10);
             features_list.push(new ol.Feature({
                 geometry: new ol.geom.Point(n_coords[index][1]),
                 name: n_coords[index][0],
                 id: id
             }));
+
 
             features_list[features_list.length - 1].setId(id);
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
@@ -204,7 +212,6 @@ $(document).ready(function() {
                 line_list[line_list.length - 1].setId(index);
                 features_list[features_list.length - 1][0].setId(first_id);
                 features_list[features_list.length - 1][1].setId(sec_id);
-                console.log(line_list[line_list.length - 1]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][0]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][1]);
                 lineLayer.getSource().addFeature(line_list[line_list.length - 1]);
@@ -218,7 +225,6 @@ $(document).ready(function() {
 
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'0'));
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'1'));
-                // console.log(lineLayer.getSource().getFeatureById(index));
                 lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(id)), 1);
                 line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(id)), 1)
@@ -283,51 +289,6 @@ $(document).ready(function() {
         map.setView(map_view);
 
     }
-
-    // function render_points(isResolved, features, lines)
-    // {
-    //     var iconStyle = new ol.style.Style({
-    //         image: new ol.style.Icon(({
-    //             anchor: [0.5, 0.5],
-    //             anchorOrigin: 'bottom-right',
-    //             opacity: 0.75,
-    //             src: './img/map-marker-2-xxl.png',
-    //             scale: .1
-    //         }))
-    //     });
-    //
-    //     var lineStyle = new ol.style.Style({
-    //         stroke: new ol.style.Stroke({
-    //             color: '#000000',
-    //             width: 3
-    //         })
-    //     });
-    //
-    //     vectorSource = new ol.source.Vector({
-    //         features: features
-    //     });
-    //
-    //     vectorLayer = new ol.layer.Vector({
-    //         source: vectorSource,
-    //         style: iconStyle
-    //     });
-    //
-    //     if(isResolved)
-    //     {
-    //         lineSource = new ol.source.Vector({
-    //             features: lines
-    //         });
-    //
-    //         lineLayer = new ol.layer.Vector({
-    //             source: lineSource,
-    //             style: lineStyle
-    //         });
-    //
-    //         map.addLayer(lineLayer);
-    //     }
-    //
-    //     map.addLayer(vectorLayer);
-    // }
 
     function callback(data)
     {
@@ -458,11 +419,9 @@ $(document).ready(function() {
               var obj = complete[key][1];
               for(var i = 0; i < 8; i++)
               {
-                  $('#probability'+ key).append("<i id='"+key+i+"' class='remove link icon'></i><div class='item' id='"+key+i+"'>Probability for " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                  $('#probability'+ key).append("<i id='"+key+i+"' class='remove link icon'></i><div class='item' id='"+key+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
               }
           }
-
-          console.log(complete);
 
         //   =============================================================================================================
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates);
