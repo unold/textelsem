@@ -101,121 +101,18 @@ $(document).ready(function() {
     var lineSource;
     var lineLayer;
     var vectorLayer;
-
+    var features_list = [];
 // ============================================================================
 
 
 
     function draw_map(r_coords, u_coords, n_coords)
     {
-        var features_list = [];
+
         var line_list = [];
         var resolved = false;
         var index;
 
-        $('.ui.accordion').accordion();
-
-        $('.ui.selection.list>.item').click(function()
-        {
-            var id = $(this).attr('id');
-            index = id % 10;
-
-            console.log(id % 10);
-            features_list.push(new ol.Feature({
-                geometry: new ol.geom.Point(n_coords[index][1]),
-                name: n_coords[index][0]
-            }));
-            console.log(features_list);
-            render_points(resolved, features_list, line_list);
-        });
-
-        $('.remove').click(function()
-        {
-            vectorLayer.getSource().clear();
-            features_list.length = 0;
-            console.log(features_list);
-        });
-
-        $(".ui.checkbox#row").checkbox({
-            onChecked: function() {
-
-                resolved = true;
-                index = $(this).val();
-                features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(r_coords[index][1]),
-                    name: r_coords[index][0]
-                }));
-                features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(r_coords[index][3]),
-                    name: r_coords[index][2]
-                }));
-                line_list.push(new ol.Feature({
-                    geometry: new ol.geom.LineString([r_coords[index][1], r_coords[index][3]]),
-                    name: 'Line'
-                }));
-
-                render_points(resolved, features_list, line_list);
-            },
-
-            onUnchecked: function() {
-                vectorLayer.getSource().clear();
-                lineLayer.getSource().clear();
-                features_list.length = 0;
-                line_list.length = 0;
-            }
-        });
-
-        $(".ui.checkbox#urow").checkbox({
-            onChecked: function() {
-
-                index = $(this).val();
-                features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(u_coords[index][1]),
-                    name: u_coords[index][0]
-                }));
-                render_points(resolved, features_list, line_list);
-            },
-
-            onUnchecked: function() {
-                vectorLayer.getSource().clear();
-                features_list.length = 0;
-            }
-        });
-
-        $(".ui.checkbox#nrow").checkbox({
-            onChecked: function() {
-
-                index = $(this).val();
-                features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(n_coords[index][1]),
-                    name: n_coords[index][0]
-                }));
-                render_points(resolved, features_list, line_list);
-            },
-
-            onUnchecked: function() {
-                vectorLayer.getSource().clear();
-                features_list.length = 0;
-                console.log(features_list)
-            }
-        });
-
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-
-        var map_view = new ol.View({
-            center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
-            zoom: 7
-        });
-
-        map.addLayer(osmLayer);
-        map.setView(map_view);
-
-    }
-
-    function render_points(isResolved, features, lines)
-    {
         var iconStyle = new ol.style.Style({
             image: new ol.style.Icon(({
                 anchor: [0.5, 0.5],
@@ -234,7 +131,7 @@ $(document).ready(function() {
         });
 
         vectorSource = new ol.source.Vector({
-            features: features
+            // features: features
         });
 
         vectorLayer = new ol.layer.Vector({
@@ -242,22 +139,182 @@ $(document).ready(function() {
             style: iconStyle
         });
 
-        if(isResolved)
+        lineSource = new ol.source.Vector({
+            // features: lines
+        });
+
+        lineLayer = new ol.layer.Vector({
+            source: lineSource,
+            style: lineStyle
+        });
+
+        map.addLayer(lineLayer);
+        map.addLayer(vectorLayer);
+
+        $('.ui.accordion').accordion();
+
+        $('.ui.selection.list>.item').click(function()
         {
-            lineSource = new ol.source.Vector({
-                features: lines
-            });
+            var id = $(this).attr('id');
+            index = id % 10;
 
-            lineLayer = new ol.layer.Vector({
-                source: lineSource,
-                style: lineStyle
-            });
+            console.log(id % 10);
+            features_list.push(new ol.Feature({
+                geometry: new ol.geom.Point(n_coords[index][1]),
+                name: n_coords[index][0],
+                id: id
+            }));
 
-            map.addLayer(lineLayer);
-        }
+            features_list[features_list.length - 1].setId(id);
+            vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
+            map.addLayer(vectorLayer);
+        });
+
+        $('.remove').click(function()
+        {
+            var id = $(this).attr('id');
+            vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(id));
+            features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(id)), 1)
+        });
+
+        // $(".ui.checkbox#row").checkbox({
+        //     onChecked: function() {
+        //
+        //         resolved = true;
+        //         index = $(this).val();
+        //         features_list.push([new ol.Feature({
+        //             geometry: new ol.geom.Point(r_coords[index][1]),
+        //             name: r_coords[index][0]
+        //         })),
+        //         features_list.push(new ol.Feature({
+        //             geometry: new ol.geom.Point(r_coords[index][3]),
+        //             name: r_coords[index][2]
+        //         }))]
+        //         line_list.push(new ol.Feature({
+        //             geometry: new ol.geom.LineString([r_coords[index][1], r_coords[index][3]]),
+        //             name: 'Line'
+        //         }));
+        //
+        //
+        //
+        //         vectorSource.addFeatures(features_list[features_list.length - 1]);
+        //         lineSource.addFeature(features_list[line_list.length - 1])
+        //     },
+        //
+        //     onUnchecked: function() {
+        //
+        //         index = $(this).val();
+        //
+        //         vectorLayer.getSource().clear();
+        //         lineLayer.getSource().clear();
+        //         features_list.length = 0;
+        //         line_list.length = 0;
+        //     }
+        // });
+
+        $(".ui.checkbox#urow").checkbox({
+            onChecked: function() {
+
+                index = $(this).val();
+                features_list.push(new ol.Feature({
+                    geometry: new ol.geom.Point(u_coords[index][1]),
+                    name: u_coords[index][0],
+                    id: index
+                }));
+
+                features_list[features_list.length - 1].setId(index);
+                vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
+                map.addLayer(vectorLayer);
+            },
+
+            onUnchecked: function() {
+                index = $(this).val();
+                vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
+                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
+            }
+        });
+
+        $(".ui.checkbox#nrow").checkbox({
+            onChecked: function() {
+
+                index = $(this).val();
+                features_list.push(new ol.Feature({
+                    geometry: new ol.geom.Point(n_coords[index][1]),
+                    name: n_coords[index][0],
+                    id: index
+                }));
+
+                features_list[features_list.length - 1].setId(index);
+                vectorSource.addFeature(features_list[features_list.length - 1]);
+                map.addLayer(vectorLayer);
+            },
+
+            onUnchecked: function() {
+                index = $(this).val();
+                vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
+                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
+            }
+        });
+
+        var osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        var map_view = new ol.View({
+            center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
+            zoom: 7
+        });
 
         map.addLayer(vectorLayer);
+        map.addLayer(osmLayer);
+        map.setView(map_view);
+
     }
+
+    // function render_points(isResolved, features, lines)
+    // {
+    //     var iconStyle = new ol.style.Style({
+    //         image: new ol.style.Icon(({
+    //             anchor: [0.5, 0.5],
+    //             anchorOrigin: 'bottom-right',
+    //             opacity: 0.75,
+    //             src: './img/map-marker-2-xxl.png',
+    //             scale: .1
+    //         }))
+    //     });
+    //
+    //     var lineStyle = new ol.style.Style({
+    //         stroke: new ol.style.Stroke({
+    //             color: '#000000',
+    //             width: 3
+    //         })
+    //     });
+    //
+    //     vectorSource = new ol.source.Vector({
+    //         features: features
+    //     });
+    //
+    //     vectorLayer = new ol.layer.Vector({
+    //         source: vectorSource,
+    //         style: iconStyle
+    //     });
+    //
+    //     if(isResolved)
+    //     {
+    //         lineSource = new ol.source.Vector({
+    //             features: lines
+    //         });
+    //
+    //         lineLayer = new ol.layer.Vector({
+    //             source: lineSource,
+    //             style: lineStyle
+    //         });
+    //
+    //         map.addLayer(lineLayer);
+    //     }
+    //
+    //     map.addLayer(vectorLayer);
+    // }
 
     function callback(data)
     {
@@ -388,7 +445,7 @@ $(document).ready(function() {
               var obj = complete[key][1];
               for(var i = 0; i < 8; i++)
               {
-                  $('#probability'+ key).append("<i class='remove link icon'></i><div class='item' id='"+key+i+"'>Probability for " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                  $('#probability'+ key).append("<i id='"+key+i+"' class='remove link icon'></i><div class='item' id='"+key+i+"'>Probability for " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
               }
           }
 
