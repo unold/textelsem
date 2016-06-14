@@ -40,6 +40,6 @@ h2 {
     float:right;
 }
 
-/*.popover {
-    width: 100%;
-}*/
+.ui.modal {
+    height: 200px;
+}
