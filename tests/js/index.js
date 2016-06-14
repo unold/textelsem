@@ -275,6 +275,17 @@ $(document).ready(function() {
             }
         });
 
+        var element = document.getElementById('popup');
+
+        var popup = new ol.Overlay({
+          element: element,
+          positioning: 'bottom-center',
+          stopEvent: false
+        });
+
+
+        map.addOverlay(popup);
+
         var osmLayer = new ol.layer.Tile({
             source: new ol.source.OSM()
         });
@@ -284,6 +295,29 @@ $(document).ready(function() {
             zoom: 7
         });
 
+        map.on('click', function(evt) {
+            console.log("clicked");
+            var feature = map.forEachFeatureAtPixel(evt.pixel,
+                function(feature, layer) {
+                    return feature;
+                });
+
+                if (feature) {
+                    var geometry = feature.getGeometry();
+                    var coord = geometry.getCoordinates();
+                    popup.setPosition(coord);
+                    $('#popup').popover({
+                        'placement': 'top',
+                        'html': true,
+                        'content': feature.get('name')
+                    });
+                    $('#popup').popover('show');
+                } else {
+                    $('#popup').popover('destroy');
+                }
+            });
+
+        map.addOverlay(popup);
         map.addLayer(vectorLayer);
         map.addLayer(osmLayer);
         map.setView(map_view);
@@ -423,7 +457,6 @@ $(document).ready(function() {
               }
           }
 
-        //   =============================================================================================================
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates);
     }
 
