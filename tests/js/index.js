@@ -106,9 +106,10 @@ $(document).ready(function() {
 
 
 
-    function draw_map(r_coords, u_coords, n_coords)
+    function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
 
+        console.log(complete_list);
         var line_list = [];
         var resolved = false;
         var index;
@@ -163,26 +164,42 @@ $(document).ready(function() {
 
         $('.ui.selection.list>.item').click(function()
         {
-            var id = $(this).attr('id');
-            index = id % 10;
+            var big_id = $(this).attr('id');
+
+            big_id = big_id.split("-");
+
+            var new_id = big_id[0] + big_id[1];
+            var id = big_id[0];
+            var index = big_id[1];
+
+            // console.log(big_id);
+            var distance = complete_list[id][1][index]["dist"];
+
+            console.log(distance);
+            var prob = complete_list[id][1][index]["prob"];
+            $("#popup").attr('data-content', "The probability is " + prob + ", because this findspot is " + distance + "km away from a known Findspot listed as nearby.");
 
             features_list.push(new ol.Feature({
                 geometry: new ol.geom.Point(n_coords[index][1]),
                 name: n_coords[index][0],
-                id: id
+                id: new_id
             }));
 
-
-            features_list[features_list.length - 1].setId(id);
+            features_list[features_list.length - 1].setId(new_id);
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
         });
 
         $('.remove').click(function()
         {
-            var id = $(this).attr('id');
-            vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(id));
-            features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(id)), 1)
+            var big_id = $(this).attr('id');
+
+            big_id = big_id.split("-");
+            var new_id = big_id[0] + big_id[1];
+
+            vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
+            features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(new_id)), 1);
+
         });
 
         $(".ui.checkbox#row").checkbox({
@@ -227,7 +244,7 @@ $(document).ready(function() {
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'1'));
                 lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(id)), 1);
-                line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(id)), 1)
+                line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(id)), 1);
             }
         });
 
@@ -295,9 +312,7 @@ $(document).ready(function() {
             zoom: 7
         });
 
-        var regex = /(Findspot)\/\d+/;
         map.on('click', function(evt) {
-            console.log("clicked");
             var feature = map.forEachFeatureAtPixel(evt.pixel,
                 function(feature, layer) {
                     return feature;
@@ -310,37 +325,15 @@ $(document).ready(function() {
 
                     $('#popup').attr('data-placement', 'top');
                     $('#popup').attr('data-html', true);
-                    $('#popup').attr('data-content', feature.get('name'));
+                    $('#popup').attr('data-title', feature.get('name'));
 
                     $('#popup').popover('show');
                 } else {
                     $('#popup').popover('destroy');
                 }
-
-                // var center = {
-                //     "type": "Feature",
-                //     "properties": {
-                //         "marker-color": "#0f0"
-                //     },
-                //     "geometry": {
-                //         "type": "Point",
-                //         "coordinates": [-75.343, 39.984]
-                //     }
-                // };
-                // var radius = 5;
-                // var steps = 10;
-                // var units = 'kilometers';
-                //
-                // var circle = turf.circle(center, radius, steps, units);
-                //
-                // var result = {
-                //     "type": "FeatureCollection",
-                //     "features": [center, circle]
-                // };
             });
 
         map.addOverlay(popup);
-        map.addLayer(vectorLayer);
         map.addLayer(osmLayer);
         map.setView(map_view);
 
@@ -476,11 +469,11 @@ $(document).ready(function() {
               var obj = complete[key][1];
               for(var i = 0; i < 8; i++)
               {
-                  $('#probability'+ key).append("<i id='"+key+i+"' class='remove link icon'></i><div class='item' id='"+key+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                  $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
               }
           }
 
-          draw_map(resolved_coords, unresolved_coords, findspot_coordinates);
+          draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
     }
 
     // Calculate probability of an unresolved findspot
