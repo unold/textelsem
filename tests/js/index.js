@@ -295,7 +295,7 @@ $(document).ready(function() {
             zoom: 7
         });
 
-
+        var regex = /(Findspot)\/\d+/;
         map.on('click', function(evt) {
             console.log("clicked");
             var feature = map.forEachFeatureAtPixel(evt.pixel,
@@ -316,6 +316,27 @@ $(document).ready(function() {
                 } else {
                     $('#popup').popover('destroy');
                 }
+
+                // var center = {
+                //     "type": "Feature",
+                //     "properties": {
+                //         "marker-color": "#0f0"
+                //     },
+                //     "geometry": {
+                //         "type": "Point",
+                //         "coordinates": [-75.343, 39.984]
+                //     }
+                // };
+                // var radius = 5;
+                // var steps = 10;
+                // var units = 'kilometers';
+                //
+                // var circle = turf.circle(center, radius, steps, units);
+                //
+                // var result = {
+                //     "type": "FeatureCollection",
+                //     "features": [center, circle]
+                // };
             });
 
         map.addOverlay(popup);
@@ -343,7 +364,7 @@ $(document).ready(function() {
               {
                     var normal_coords1 = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
                     var transformed_coords = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
-                    findspot_coordinates.push([row[i].find1.value, transformed_coords, row[i].top2.value, normal_coords1]);
+                    findspot_coordinates.push([regex_filter2.exec(row[i].find1.value)[0].replace(/\//, " "), transformed_coords, regex_filter.exec(row[i].top2.value)[0], normal_coords1]);
 
                   //   Add row to table
                     $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
@@ -379,7 +400,7 @@ $(document).ready(function() {
                   var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
 
                   resolved_distances.push(distance);
-                  resolved_coords.push([row[i].t1.value, point_1, row[i].t2.value, point_2]);
+                  resolved_coords.push([regex_filter.exec(row[i].t1.value)[0], point_1, regex_filter.exec(row[i].t2.value)[0], point_2]);
 
                 //   Add row to table
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
