@@ -307,15 +307,10 @@ $(document).ready(function() {
                     var geometry = feature.getGeometry();
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
-                    // $('#popup').popover({
-                    //     'placement': 'top',
-                    //     'html': true,
-                    //     'content': feature.get('name')
-                    // });
 
-                    $(element).attr('data-placement', 'top');
-                    $(element).attr('data-html', true);
-                    $(element).attr('data-content', feature.get('name'));
+                    $('#popup').attr('data-placement', 'top');
+                    $('#popup').attr('data-html', true);
+                    $('#popup').attr('data-content', feature.get('name'));
 
                     $('#popup').popover('show');
                 } else {
@@ -346,7 +341,9 @@ $(document).ready(function() {
           {
               if (row[i].hasOwnProperty('top1'))
               {
-                    findspot_coordinates.push([row[i].find1.value, ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857"), row[i].top2.value]);
+                    var normal_coords1 = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
+                    var transformed_coords = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
+                    findspot_coordinates.push([row[i].find1.value, transformed_coords, row[i].top2.value, normal_coords1]);
 
                   //   Add row to table
                     $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
@@ -411,7 +408,7 @@ $(document).ready(function() {
                   + "<td><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
                   + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
 
-                  unresolved_coords.push([findspot_name1, findspot_loc]);
+                  unresolved_coords.push([findspot_name1, findspot_loc, normal_coords]);
               }
           }
 
@@ -421,7 +418,7 @@ $(document).ready(function() {
                   "type": "Feature",
                   "geometry": {
                       "type": "Point",
-                      "coordinates": unresolved_coords[i][1]
+                      "coordinates": unresolved_coords[i][2]
                   }
               };
               var temp_array = [];
@@ -433,11 +430,10 @@ $(document).ready(function() {
                       "type": "Feature",
                       "geometry": {
                           "type": "Point",
-                          "coordinates": findspot_coordinates[j][1]
+                          "coordinates": findspot_coordinates[j][3]
                       }
                   };
-
-                  temp_array.push({"dist": turf.distance(unresolved_findspot, resolved_findspot, units)/1000, "nearby_top_name": findspot_coordinates[j][2]});
+                  temp_array.push({"dist": turf.distance(unresolved_findspot, resolved_findspot, units), "nearby_top_name": findspot_coordinates[j][2]});
               }
 
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
