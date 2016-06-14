@@ -295,6 +295,7 @@ $(document).ready(function() {
             zoom: 7
         });
 
+
         map.on('click', function(evt) {
             console.log("clicked");
             var feature = map.forEachFeatureAtPixel(evt.pixel,
@@ -306,11 +307,16 @@ $(document).ready(function() {
                     var geometry = feature.getGeometry();
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
-                    $('#popup').popover({
-                        'placement': 'top',
-                        'html': true,
-                        'content': feature.get('name')
-                    });
+                    // $('#popup').popover({
+                    //     'placement': 'top',
+                    //     'html': true,
+                    //     'content': feature.get('name')
+                    // });
+
+                    $(element).attr('data-placement', 'top');
+                    $(element).attr('data-html', true);
+                    $(element).attr('data-content', feature.get('name'));
+
                     $('#popup').popover('show');
                 } else {
                     $('#popup').popover('destroy');
