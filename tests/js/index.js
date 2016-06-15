@@ -177,7 +177,7 @@ $(document).ready(function() {
 
             console.log(distance);
             var prob = complete_list[id][1][index]["prob"];
-            $(".description").html("The probability is " + prob + ", because this findspot is "
+            $("#popup").attr('data-content', "The probability is " + prob + ", because this findspot is "
             + distance.toFixed(2) + " km away from a known Findspot listed as nearby.");
 
             features_list.push(new ol.Feature({
@@ -326,7 +326,7 @@ $(document).ready(function() {
 
                     $('#popup').attr('data-placement', 'top');
                     $('#popup').attr('data-html', true);
-                    $('#popup').attr('data-content', feature.get('name'));
+                    $('#popup').attr('data-title', feature.get('name'));
                     // $('.header').html(feature.get('name'));
 
                     $('#popup').popover('show');
