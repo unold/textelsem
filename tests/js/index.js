@@ -232,12 +232,13 @@ $(document).ready(function() {
                 })]);
                 line_list.push(new ol.Feature({
                     geometry: new ol.geom.LineString([point1, point2]),
-                    name: 'Line',
+                    name: 'Distance',
                     id: index
                 }));
 
 
                 line_list[line_list.length - 1].setId(index);
+                line_list[line_list.length - 1].set('distance', r_coords[index][8]);
                 features_list[features_list.length - 1][0].setId(first_id);
                 features_list[features_list.length - 1][0].set('status', "Resolved");
                 features_list[features_list.length - 1][0].set('country',r_coords[index][2]);
@@ -368,25 +369,32 @@ $(document).ready(function() {
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
-                    + "<div class='description'>Location: " + feature.get('location') + "<br><div class='stats'></div></div>"
-                    + "</div><div class='extra content'><div class='left floated country'>Country: " + feature.get('country') + " <i class='"+ l_country + " flag'></i></div>"
-                    + "<div class='right floated status'>"
+                    + "<div class='description'><div class='dist'></div><div class='stats'></div></div>"
+                    + "</div><div class='extra content'>"
+                    + "<div class='left floated country'></div><div class='right floated status'>"
                     + "</div></div></div>");
 
                     if(feature.get('status') == "Unresolved")
                     {
                         $('.right.floated.status').html("Status: <i class='remove circle outline icon'></i>");
                     }
-                    else {
+                    else if(feature.get('status') == "Resolved") {
                         $('.right.floated.status').html("Status: <i class='check circle outline green icon'></i>");
                     }
 
-                    // $('.right.floated.status').popup();
-                    // if(feature.hasOwnProperty('country'))
-                    // {
-                    //     console.log("hello");
-                    //     $('.extra.content').html("Country: " + feature.get('country') + "<i class='"+ feature.get('country') + " flag'");
-                    // }
+                    if(feature.U.hasOwnProperty('country'))
+                    {
+                        $('.country').html("Country: " + feature.get('country') + " <i class='"+ l_country + " flag'></i>")
+                    }
+
+                    if(feature.U.hasOwnProperty('distance'))
+                    {
+                        $('.dist').html("<div class='ui statistic'>"
+                        + "<div class='value'>"+feature.get('distance').toFixed(2)+"</div>"
+                        + "<div class='label'>Kilometers</div>"
+                        + "</div>"
+                        );
+                    }
 
                     if(feature.get('class') == 'Toponym Estimate')
                     {
@@ -481,7 +489,7 @@ $(document).ready(function() {
                   var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
 
                   resolved_distances.push(distance);
-                  resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0]]);
+                  resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance]);
 
                 //   Add row to table
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
