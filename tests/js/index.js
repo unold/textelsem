@@ -175,8 +175,6 @@ $(document).ready(function() {
 
             console.log(distance);
             var prob = complete_list[id][1][index]["prob"];
-            $("#popup").attr('data-content', "The probability is " + prob + ", because this findspot is "
-            + distance.toFixed(2) + " km away from a known Findspot listed as nearby.");
 
             features_list.push(new ol.Feature({
                 geometry: new ol.geom.Point(n_coords[index][1]),
@@ -185,7 +183,8 @@ $(document).ready(function() {
             }));
 
             features_list[features_list.length - 1].setId(new_id);
-            features_list[features_list.length - 1].set('class','Resolved Findspot');
+            features_list[features_list.length - 1].set('class','Toponym Estimate');
+            features_list[features_list.length - 1].set('desc', (prob.toFixed(2)*100) + "%");
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
         });
@@ -229,8 +228,10 @@ $(document).ready(function() {
                 line_list[line_list.length - 1].setId(index);
                 features_list[features_list.length - 1][0].setId(first_id);
                 features_list[features_list.length - 1][0].set('class','Resolved Findspot');
+                features_list[features_list.length - 1][0].set('desc', features_list[features_list.length - 1][0].get('name') + " is listed as nearby " + features_list[features_list.length - 1][1].get('name') + ".");
                 features_list[features_list.length - 1][1].setId(sec_id);
                 features_list[features_list.length - 1][1].set('class','Resolved Findspot');
+                features_list[features_list.length - 1][1].set('desc', features_list[features_list.length - 1][1].get('name') + " is listed as nearby " + features_list[features_list.length - 1][0].get('name') + ".");
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][0]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][1]);
                 lineLayer.getSource().addFeature(line_list[line_list.length - 1]);
@@ -262,6 +263,7 @@ $(document).ready(function() {
 
                 features_list[features_list.length - 1].setId(index);
                 features_list[features_list.length - 1].set('class','Unesolved Findspot');
+                features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is an unresolved findspot.");
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
             },
@@ -286,6 +288,7 @@ $(document).ready(function() {
 
                 features_list[features_list.length - 1].setId(index);
                 features_list[features_list.length - 1].set('class','Resolved Findspot');
+                features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot with the toponym x that is listed as nearby the unresolved toponym x");
                 console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
@@ -334,8 +337,33 @@ $(document).ready(function() {
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
-                    + "<div class='description'>Lorem ipsum dolor sit amet</div>"
+                    + "<div class='description'></div>"
                     + "</div></div>");
+
+                    if(feature.get('class') == 'Toponym Estimate')
+                    {
+                        $('.description').html("<div class='ui statistic'>"
+                        + "<div class='value'>"+feature.get('desc')+"</div>"
+                        + "<div class='label'>Probability</div>"
+                        + "</div>");
+
+                        if(feature.get('desc').replace('%', '') <= 20)
+                        {
+                            $('.ui.statistic').addClass('red');
+                        }
+                        else if(feature.get('desc').replace('%', '') >= 80)
+                        {
+                            $('.ui.statistic').addClass('green');
+                        }
+                        else {
+                            $('.ui.statistic').addClass('yellow');
+                        }
+
+
+                    }
+                    else {
+                        $('.description').html(feature.get('desc'));
+                    }
 
                     $('.ui.remove.icon').click(function() {
                         $('#popup').html("");
