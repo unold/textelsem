@@ -177,7 +177,8 @@ $(document).ready(function() {
 
             console.log(distance);
             var prob = complete_list[id][1][index]["prob"];
-            $(".description").html("The probability is " + prob + ", because this findspot is " + distance.toFixed(2) + " km away from a known Findspot listed as nearby.");
+            $(".description").html("The probability is " + prob + ", because this findspot is "
+            + distance.toFixed(2) + " km away from a known Findspot listed as nearby.");
 
             features_list.push(new ol.Feature({
                 geometry: new ol.geom.Point(n_coords[index][1]),
@@ -323,13 +324,16 @@ $(document).ready(function() {
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
 
-                    // $('.header').attr('data-placement', 'top');
-                    // $('#popup').attr('data-html', true);
-                    $('.header').html(feature.get('name'));
+                    $('#popup').attr('data-placement', 'top');
+                    $('#popup').attr('data-html', true);
+                    $('#popup').attr('data-content', feature.get('name'));
+                    // $('.header').html(feature.get('name'));
 
-                    $('.ui.modal').modal('show');
+                    $('#popup').popover('show');
+                    // $('.ui.modal').modal('show');
                 } else {
-                    $('.ui.modal').modal('destroy');
+                    $('#popup').popover('destroy');
+                    // $('.ui.modal').modal('destroy');
                 }
             });
 
