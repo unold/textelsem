@@ -49,13 +49,14 @@ $(document).ready(function() {
     // Query for all unresolved findspots
     query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
     + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?f1 ?f1_lat ?f1_lon\n"
+    + "SELECT ?f1 ?f1_lat ?f1_lon ?name\n"
     + "WHERE {"
     + "?f1 higeomes:id ?f2 ."
     + "FILTER NOT EXISTS"
     + "{"
     +   "?f1 higeomes:hasToponym ?t1 ."
     + "}"
+    + "?f1 higeomes:name ?name ."
     + "?f1 higeomes:lng ?f1_lon ."
     + "?f1 higeomes:lat ?f1_lat ."
     + "}";
@@ -191,6 +192,7 @@ $(document).ready(function() {
             features_list[features_list.length - 1].setId(new_id);
             features_list[features_list.length - 1].set('class','Toponym Estimate');
             features_list[features_list.length - 1].set('desc', (prob.toFixed(2)*100) + "%");
+            features_list[features_list.length - 1].set('status', "Unresolved");
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
         });
@@ -236,11 +238,13 @@ $(document).ready(function() {
 
                 line_list[line_list.length - 1].setId(index);
                 features_list[features_list.length - 1][0].setId(first_id);
+                features_list[features_list.length - 1][0].set('status', "Resolved");
                 features_list[features_list.length - 1][0].set('country',r_coords[index][2]);
                 features_list[features_list.length - 1][0].set('class',r_coords[index][3]);
                 features_list[features_list.length - 1][0].set('location',r_coords[index][1][0] + " N" + ", " + r_coords[index][1][1] + " E");
                 features_list[features_list.length - 1][0].set('desc', features_list[features_list.length - 1][0].get('name') + " is listed as nearby " + features_list[features_list.length - 1][1].get('name') + ".");
                 features_list[features_list.length - 1][1].setId(sec_id);
+                features_list[features_list.length - 1][1].set('status', "Resolved");
                 features_list[features_list.length - 1][1].set('country',r_coords[index][6]);
                 features_list[features_list.length - 1][1].set('class',r_coords[index][7]);
                 features_list[features_list.length - 1][1].set('location',r_coords[index][5]);
@@ -270,12 +274,14 @@ $(document).ready(function() {
                 index = $(this).val();
                 features_list.push(new ol.Feature({
                     geometry: new ol.geom.Point(u_coords[index][1]),
-                    name: u_coords[index][0],
+                    name: u_coords[index][3],
                     id: index
                 }));
 
                 features_list[features_list.length - 1].setId(index);
-                features_list[features_list.length - 1].set('class','Unesolved Findspot');
+                features_list[features_list.length - 1].set('status', "Unresolved");
+                features_list[features_list.length - 1].set('class',u_coords[index][0]);
+                features_list[features_list.length - 1].set('location',u_coords[index][2][0] + " N, " + u_coords[index][2][1] + " E");
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is an unresolved findspot.");
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
@@ -300,6 +306,7 @@ $(document).ready(function() {
                 }));
 
                 features_list[features_list.length - 1].setId(index);
+                features_list[features_list.length - 1].set('status', "Resolved");
                 features_list[features_list.length - 1].set('class','Resolved Findspot');
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot with the toponym x that is listed as nearby the unresolved toponym x");
                 console.log(features_list);
@@ -349,14 +356,23 @@ $(document).ready(function() {
                     {
                         var l_country = feature.get('country').toString().toLowerCase();
                     }
+
+
                     $('#popup').html("<div class='ui card'>"
                     + "<div class='content'>"
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
                     + "<div class='description'>Location: " + feature.get('location') + "<br>" + feature.get('desc') + "<div class='stats'></div></div>"
-                    + "</div><div class='extra content'>Country: " + feature.get('country') + " <i class='"+ l_country + " flag'</div></div>");
+                    + "</div><div class='extra content'><div class='left floated country'>Country: " + feature.get('country') + " <i class='"+ l_country + " flag'></i></div><div class='right floated status'></div></div></div>");
 
+                    if(feature.get('status') == "Unresolved")
+                    {
+                        $('.right.floated.status').html("Status: <i class='remove circle outline icon'></i>");
+                    }
+                    else {
+                        $('.right.floated.status').html("Status: <i class='check circle outline green icon'></i>");
+                    }
                     // if(feature.hasOwnProperty('country'))
                     // {
                     //     console.log("hello");
@@ -487,7 +503,7 @@ $(document).ready(function() {
                   + "<td><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
                   + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
 
-                  unresolved_coords.push([findspot_name1, findspot_loc, normal_coords]);
+                  unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
               }
           }
 
