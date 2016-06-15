@@ -363,7 +363,7 @@ $(document).ready(function() {
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
-                    + "<div class='description'>Location: " + feature.get('location') + "<br>" + feature.get('desc') + "<div class='stats'></div></div>"
+                    + "<div class='description'>Location: " + feature.get('location') + "<br><div class='stats'></div></div>"
                     + "</div><div class='extra content'><div class='left floated country'>Country: " + feature.get('country') + " <i class='"+ l_country + " flag'></i></div><div class='right floated status'></div></div></div>");
 
                     if(feature.get('status') == "Unresolved")
@@ -381,7 +381,7 @@ $(document).ready(function() {
 
                     if(feature.get('class') == 'Toponym Estimate')
                     {
-                        $('.description').append("<div class='ui statistic'>"
+                        $('.stats').html("<div class='ui statistic'>"
                         + "<div class='value'>"+feature.get('desc')+"</div>"
                         + "<div class='label'>Probability</div>"
                         + "</div>");
@@ -397,12 +397,7 @@ $(document).ready(function() {
                         else {
                             $('.ui.statistic').addClass('yellow');
                         }
-
-
                     }
-                    // else {
-                    //     $('.description').ap(feature.get('desc'));
-                    // }
 
                     $('.ui.remove.icon').click(function() {
                         $('#popup').html("");
