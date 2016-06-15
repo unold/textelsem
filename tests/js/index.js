@@ -16,7 +16,7 @@ $(document).ready(function() {
     // Query for all resolved toponyms that are listed as nearby
     var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
     + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon\n"
+    + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon ?f1_name ?f2_name ?f1_country ?f2_country\n"
     + "WHERE { "
     + "  ?t1 higeomes:isNearOf ?t2 ."
     + "  ?t1 higeomes:hasFindspot ?f1 ."
@@ -25,6 +25,12 @@ $(document).ready(function() {
     + "  ?f1 higeomes:lng ?t1_lon ."
     + "  ?f2 higeomes:lat ?t2_lat ."
     + "  ?f2 higeomes:lng ?t2_lon ."
+    + "  ?f1 higeomes:name ?f1_name ."
+    + "  ?f2 higeomes:name ?f2_name ."
+    + "  ?f1 higeomes:country ?country1 ."
+    + "  ?country1 rdfs:label ?f1_country ."
+    + "  ?f2 higeomes:country ?country2 ."
+    + "  ?country2 rdfs:label ?f2_country ."
     + " }";
 
     var id = "#toponym_dist_table";
@@ -208,18 +214,21 @@ $(document).ready(function() {
                 index = $(this).val();
                 var first_id = index + 0;
                 var sec_id = index + 1;
+
+                var point1 = ol.proj.transform([r_coords[index][1][0], r_coords[index][1][1]], "EPSG:4326", "EPSG:3857");
+                var point2 = ol.proj.transform([r_coords[index][5][0], r_coords[index][5][1]], "EPSG:4326", "EPSG:3857")
                 features_list.push([new ol.Feature({
-                    geometry: new ol.geom.Point(r_coords[index][1]),
+                    geometry: new ol.geom.Point(point1),
                     name: r_coords[index][0],
                     id: first_id
                 }),
                 new ol.Feature({
-                    geometry: new ol.geom.Point(r_coords[index][3]),
-                    name: r_coords[index][2],
+                    geometry: new ol.geom.Point(point2),
+                    name: r_coords[index][4],
                     id: sec_id
                 })]);
                 line_list.push(new ol.Feature({
-                    geometry: new ol.geom.LineString([r_coords[index][1], r_coords[index][3]]),
+                    geometry: new ol.geom.LineString([point1, point2]),
                     name: 'Line',
                     id: index
                 }));
@@ -227,10 +236,14 @@ $(document).ready(function() {
 
                 line_list[line_list.length - 1].setId(index);
                 features_list[features_list.length - 1][0].setId(first_id);
-                features_list[features_list.length - 1][0].set('class','Resolved Findspot');
+                features_list[features_list.length - 1][0].set('country',r_coords[index][2]);
+                features_list[features_list.length - 1][0].set('class',r_coords[index][3]);
+                features_list[features_list.length - 1][0].set('location',r_coords[index][1][0] + " N" + ", " + r_coords[index][1][1] + " E");
                 features_list[features_list.length - 1][0].set('desc', features_list[features_list.length - 1][0].get('name') + " is listed as nearby " + features_list[features_list.length - 1][1].get('name') + ".");
                 features_list[features_list.length - 1][1].setId(sec_id);
-                features_list[features_list.length - 1][1].set('class','Resolved Findspot');
+                features_list[features_list.length - 1][1].set('country',r_coords[index][6]);
+                features_list[features_list.length - 1][1].set('class',r_coords[index][7]);
+                features_list[features_list.length - 1][1].set('location',r_coords[index][5]);
                 features_list[features_list.length - 1][1].set('desc', features_list[features_list.length - 1][1].get('name') + " is listed as nearby " + features_list[features_list.length - 1][0].get('name') + ".");
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][0]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][1]);
@@ -332,17 +345,27 @@ $(document).ready(function() {
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
 
+                    if(feature.get('country') !== undefined)
+                    {
+                        var l_country = feature.get('country').toString().toLowerCase();
+                    }
                     $('#popup').html("<div class='ui card'>"
                     + "<div class='content'>"
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
-                    + "<div class='description'></div>"
-                    + "</div></div>");
+                    + "<div class='description'>Location: " + feature.get('location') + "<br>" + feature.get('desc') + "<div class='stats'></div></div>"
+                    + "</div><div class='extra content'>Country: " + feature.get('country') + " <i class='"+ l_country + " flag'</div></div>");
+
+                    // if(feature.hasOwnProperty('country'))
+                    // {
+                    //     console.log("hello");
+                    //     $('.extra.content').html("Country: " + feature.get('country') + "<i class='"+ feature.get('country') + " flag'");
+                    // }
 
                     if(feature.get('class') == 'Toponym Estimate')
                     {
-                        $('.description').html("<div class='ui statistic'>"
+                        $('.description').append("<div class='ui statistic'>"
                         + "<div class='value'>"+feature.get('desc')+"</div>"
                         + "<div class='label'>Probability</div>"
                         + "</div>");
@@ -361,9 +384,9 @@ $(document).ready(function() {
 
 
                     }
-                    else {
-                        $('.description').html(feature.get('desc'));
-                    }
+                    // else {
+                    //     $('.description').ap(feature.get('desc'));
+                    // }
 
                     $('.ui.remove.icon').click(function() {
                         $('#popup').html("");
@@ -427,6 +450,7 @@ $(document).ready(function() {
                   };
 
 
+                  console.log("f1 country: " + row[i].f1_country.value, "f2 country: " + row[i].f2_country.value);
 
                   var distance = turf.distance(coordinate_1, coordinate_2, units);
                   var euro_distance = distance.toFixed(2).replace(/\./g, ',');
@@ -434,12 +458,12 @@ $(document).ready(function() {
                   var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
 
                   resolved_distances.push(distance);
-                  resolved_coords.push([regex_filter.exec(row[i].t1.value)[0], point_1, regex_filter.exec(row[i].t2.value)[0], point_2]);
+                  resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0]]);
 
                 //   Add row to table
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                  + "<td><a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td>"
-                  +"<td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</td><td>" + euro_distance + " km</td></tr>");
+                  + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
+                  +"<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td></tr>");
 
                   resolved_distances.sort();
 
