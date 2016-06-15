@@ -109,7 +109,6 @@ $(document).ready(function() {
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
 
-        console.log(complete_list);
         var line_list = [];
         var resolved = false;
         var index;
@@ -172,7 +171,6 @@ $(document).ready(function() {
             var id = big_id[0];
             var index = big_id[1];
 
-            // console.log(big_id);
             var distance = complete_list[id][1][index]["dist"];
 
             console.log(distance);
@@ -187,6 +185,7 @@ $(document).ready(function() {
             }));
 
             features_list[features_list.length - 1].setId(new_id);
+            features_list[features_list.length - 1].set('class','Resolved Findspot');
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
         });
@@ -229,7 +228,9 @@ $(document).ready(function() {
 
                 line_list[line_list.length - 1].setId(index);
                 features_list[features_list.length - 1][0].setId(first_id);
+                features_list[features_list.length - 1][0].set('class','Resolved Findspot');
                 features_list[features_list.length - 1][1].setId(sec_id);
+                features_list[features_list.length - 1][1].set('class','Resolved Findspot');
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][0]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][1]);
                 lineLayer.getSource().addFeature(line_list[line_list.length - 1]);
@@ -260,6 +261,7 @@ $(document).ready(function() {
                 }));
 
                 features_list[features_list.length - 1].setId(index);
+                features_list[features_list.length - 1].set('class','Unesolved Findspot');
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
             },
@@ -279,9 +281,12 @@ $(document).ready(function() {
                     geometry: new ol.geom.Point(n_coords[index][1]),
                     name: n_coords[index][0],
                     id: index
+
                 }));
 
                 features_list[features_list.length - 1].setId(index);
+                features_list[features_list.length - 1].set('class','Resolved Findspot');
+                console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
             },
@@ -297,7 +302,7 @@ $(document).ready(function() {
 
         var popup = new ol.Overlay({
           element: element,
-          positioning: 'bottom-center',
+          positioning: 'top-left',
           stopEvent: false
         });
 
@@ -324,16 +329,20 @@ $(document).ready(function() {
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
 
-                    $('#popup').attr('data-placement', 'top');
-                    $('#popup').attr('data-html', true);
-                    $('#popup').attr('data-title', feature.get('name'));
-                    // $('.header').html(feature.get('name'));
+                    $('#popup').html("<div class='ui card'>"
+                    + "<div class='content'>"
+                    + "<i class='right floated large link remove icon'></i>"
+                    + "<div class='header'>"+feature.get('name')+"</div>"
+                    + "<div class='meta'>"+feature.get('class')+"</div>"
+                    + "<div class='description'>Lorem ipsum dolor sit amet</div>"
+                    + "</div></div>");
 
-                    $('#popup').popover('show');
-                    // $('.ui.modal').modal('show');
+                    $('.ui.remove.icon').click(function() {
+                        $('#popup').html("");
+                    });
+
                 } else {
-                    $('#popup').popover('destroy');
-                    // $('.ui.modal').modal('destroy');
+                    $('#popup').html("");
                 }
             });
 
