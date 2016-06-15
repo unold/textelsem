@@ -33,8 +33,6 @@ $(document).ready(function() {
     + "  ?country2 rdfs:label ?f2_country ."
     + " }";
 
-    var id = "#toponym_dist_table";
-
     $.ajax({
         url: repo,
         dataType: 'jsonp',
@@ -75,16 +73,19 @@ $(document).ready(function() {
     // Query for all unresolved findspots
     query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
     + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?top1 ?find1 ?f1_lon ?f1_lat ?top2\n"
+    + "SELECT ?top1 ?find1 ?f1_lon ?f1_lat ?top2 ?name ?country\n"
     + "WHERE {"
     + "?top1 higeomes:isNearOf ?top2 ."
     + "?top1 higeomes:hasFindspot ?find1 ."
+    + "?find1 higeomes:country ?c ."
+    + "?c rdfs:label ?country ."
     + "FILTER NOT EXISTS"
     + "{"
     +   "?top2 higeomes:hasFindspot ?find2 ."
     + "}"
     + "?find1 higeomes:lng ?f1_lon ."
     + "?find1 higeomes:lat ?f1_lat ."
+    + "?find1 higeomes:name ?name ."
     + "}";
 
     $.ajax({
@@ -307,7 +308,8 @@ $(document).ready(function() {
 
                 features_list[features_list.length - 1].setId(index);
                 features_list[features_list.length - 1].set('status', "Resolved");
-                features_list[features_list.length - 1].set('class','Resolved Findspot');
+                features_list[features_list.length - 1].set('class',n_coords[index][2]);
+                features_list[features_list.length - 1].set('country',n_coords[index][4]);
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot with the toponym x that is listed as nearby the unresolved toponym x");
                 console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
@@ -432,12 +434,12 @@ $(document).ready(function() {
               {
                     var normal_coords1 = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
                     var transformed_coords = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
-                    findspot_coordinates.push([regex_filter2.exec(row[i].find1.value)[0].replace(/\//, " "), transformed_coords, regex_filter.exec(row[i].top2.value)[0], normal_coords1]);
+                    findspot_coordinates.push([row[i].name.value, transformed_coords, regex_filter.exec(row[i].top2.value)[0], normal_coords1, row[i].country.value]);
 
                   //   Add row to table
                     $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                     + "<td><a href ="+row[i].top1.value + ">" + regex_filter.exec(row[i].top1.value)[0] +"</a></td>"
-                    +"<td><a href =" +row[i].top2.value + ">" + regex_filter2.exec(row[i].find1.value)[0].replace(/\//, " ") + "</a></td>"
+                    +"<td><a href =" +row[i].top2.value + ">" + row[i].name.value + "</a></td>"
                     + "<td><a href =" +row[i].find1.value + ">" + regex_filter.exec(row[i].top2.value)[0] + "</a></td></tr>");
               }
 
