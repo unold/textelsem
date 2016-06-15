@@ -310,6 +310,7 @@ $(document).ready(function() {
                 features_list[features_list.length - 1].set('status', "Resolved");
                 features_list[features_list.length - 1].set('class',n_coords[index][2]);
                 features_list[features_list.length - 1].set('country',n_coords[index][4]);
+                features_list[features_list.length - 1].set('location', n_coords[index][3][0] + " N, " + n_coords[index][3][1] + " E");
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot with the toponym x that is listed as nearby the unresolved toponym x");
                 console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
@@ -359,6 +360,8 @@ $(document).ready(function() {
                         var l_country = feature.get('country').toString().toLowerCase();
                     }
 
+                    var legend_html = "<div><i class='check circle outline green icon'></i> : Resolved<br><i class='remove circle outline icon'></i> : Unresolved</div>"
+
 
                     $('#popup').html("<div class='ui card'>"
                     + "<div class='content'>"
@@ -366,7 +369,9 @@ $(document).ready(function() {
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
                     + "<div class='description'>Location: " + feature.get('location') + "<br><div class='stats'></div></div>"
-                    + "</div><div class='extra content'><div class='left floated country'>Country: " + feature.get('country') + " <i class='"+ l_country + " flag'></i></div><div class='right floated status'></div></div></div>");
+                    + "</div><div class='extra content'><div class='left floated country'>Country: " + feature.get('country') + " <i class='"+ l_country + " flag'></i></div>"
+                    + "<div class='right floated status'>"
+                    + "</div></div></div>");
 
                     if(feature.get('status') == "Unresolved")
                     {
@@ -375,6 +380,8 @@ $(document).ready(function() {
                     else {
                         $('.right.floated.status').html("Status: <i class='check circle outline green icon'></i>");
                     }
+
+                    // $('.right.floated.status').popup();
                     // if(feature.hasOwnProperty('country'))
                     // {
                     //     console.log("hello");
@@ -399,6 +406,9 @@ $(document).ready(function() {
                         else {
                             $('.ui.statistic').addClass('yellow');
                         }
+                    }
+                    else {
+                        $('.description').append(feature.get('desc'));
                     }
 
                     $('.ui.remove.icon').click(function() {
