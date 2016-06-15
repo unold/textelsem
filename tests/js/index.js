@@ -494,7 +494,7 @@ $(document).ready(function() {
 
                 //   Add row to table
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                  +"<td><a href ="+row[i].f1.value + ">" + findspot_name1+ "</a></td>"
+                  +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
                   + "<td><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
                   + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
 
