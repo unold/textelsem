@@ -151,10 +151,11 @@ $(document).ready(function() {
 
         var circleStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
-                color: '#40ff00',
-                anchor: [0.5,0.5],
-                anchorOrigin: 'bottom-right',
+                color: 'green',
                 width: 3
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(0,180,0,0.1)'
             })
         });
 
@@ -178,12 +179,14 @@ $(document).ready(function() {
         });
 
         circleLayer = new ol.layer.Vector({
-            source: circleSource
+            source: circleSource,
+            style: circleStyle
         });
 
         map.addLayer(lineLayer);
-        map.addLayer(vectorLayer);
         map.addLayer(circleLayer);
+        map.addLayer(vectorLayer);
+
 
         $('.ui.accordion').accordion();
 
@@ -298,8 +301,7 @@ $(document).ready(function() {
                 console.log(u_coords[index][2]);
                 features_list.push(new ol.Feature({
                     geometry: new ol.geom.Circle(u_coords[index][1], 40000),
-                    id: "circle" + index,
-                    style: circleStyle
+                    id: "circle" + index
                 }));
                 features_list.push(new ol.Feature({
                     geometry: new ol.geom.Point(u_coords[index][1]),
