@@ -99,94 +99,87 @@ $(document).ready(function() {
         success: callback
     });
 
-// Create Map ================================================================
-
-    var map = new ol.Map({
-        target: 'map'
-            // layers: [vectorLayer, lineLayer]
-    });
-
-    var vectorSource;
-    var lineSource;
-    var lineLayer;
-    var vectorLayer;
-    var features_list = [];
-// ============================================================================
-
-
-
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
-
         var line_list = [];
-        var resolved = false;
+        var features_list = [];
+        var circle_list = [];
         var index;
 
-        var iconStyle2 = new ol.style.Style({
-            image: new ol.style.Icon(({
-                anchor: [0.5, 0.5],
-                anchorOrigin: 'bottom-right',
-                opacity: 0.75,
-                src: './img/map-marker-2.png',
-                scale: .1
-            }))
-        });
 
-        var iconStyle = new ol.style.Style({
-            image: new ol.style.Icon(({
-                anchor: [0.5, 0.5],
-                anchorOrigin: 'bottom-right',
-                opacity: 0.75,
-                src: './img/map-marker-2-xxl.png',
-                scale: .1
-            }))
-        });
-
-        var lineStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: '#000000',
-                width: 3
-            })
-        });
-
-        var circleStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'green',
-                width: 3
+// ===============================================================================================================================================
+        var styles = {
+            'Point': new ol.style.Style({
+                image: new ol.style.Icon(({
+                    anchor: [0.5, 0.5],
+                    anchorOrigin: 'bottom-right',
+                    opacity: 0.75,
+                    src: './img/map-marker-2-xxl.png',
+                    scale: .1
+                }))
             }),
-            fill: new ol.style.Fill({
-                color: 'rgba(0,180,0,0.1)'
+            'LineString': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: '#000000',
+                    width: 3
+                })
+            }),
+            'Circle': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'green',
+                    width: 2
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(0,180,0,0.1)'
+                })
+            })
+        };
+
+        var styleFunction = function(feature) {
+            return styles[feature.getGeometry().getType()];
+        };
+
+        var vectorSource = new ol.source.Vector({
+            features: features_list
+        });
+
+        var vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+            style: styleFunction
+        });
+
+        var lineSource = new ol.source.Vector({
+            features: line_list
+        });
+
+        var lineLayer = new ol.layer.Vector({
+            source: lineSource,
+            style: styleFunction
+        });
+
+        var circleSource = new ol.source.Vector({
+            features: circle_list
+        });
+
+        var circleLayer = new ol.layer.Vector({
+            source: circleSource,
+            style: styleFunction
+        });
+
+        var map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                vectorLayer, lineLayer, circleLayer],
+            view: new ol.View({
+                center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
+                zoom: 7
             })
         });
 
-        vectorSource = new ol.source.Vector({
-        });
-
-        vectorLayer = new ol.layer.Vector({
-            source: vectorSource,
-            style: iconStyle
-        });
-
-        lineSource = new ol.source.Vector({
-        });
-
-        lineLayer = new ol.layer.Vector({
-            source: lineSource,
-            style: lineStyle
-        });
-
-        circleSource = new ol.source.Vector({
-        });
-
-        circleLayer = new ol.layer.Vector({
-            source: circleSource,
-            style: circleStyle
-        });
-
-        map.addLayer(lineLayer);
-        map.addLayer(circleLayer);
-        map.addLayer(vectorLayer);
-
+// =======================================================================================================================================================================
 
         $('.ui.accordion').accordion();
 
@@ -203,14 +196,33 @@ $(document).ready(function() {
 
             var distance = complete_list[id][1][index]["dist"];
 
-            console.log(distance);
             var prob = complete_list[id][1][index]["prob"];
 
             features_list.push(new ol.Feature({
                 geometry: new ol.geom.Point(n_coords[index][1]),
+                type: 'Point',
                 name: n_coords[index][0],
                 id: new_id
             }));
+
+            // var geoJSONObject = {
+            //     'type': 'FeatureCollection',
+            //     'crs': {
+            //         'type': 'name',
+            //         'properties': {
+            //             'name': 'EPSG:3857'
+            //         }
+            //     },
+            //     'features': [{
+            //         'type': 'Feature',
+            //         'geometry': {
+            //             'type': 'Point',
+            //             'coordinates': new ol.geom.Point(n_coords[index][1]),
+            //             'name': n_coords[index][0],
+            //             'id': new_id
+            //         }
+            //     }]
+            // };
 
             features_list[features_list.length - 1].setId(new_id);
             features_list[features_list.length - 1].set('class','Toponym Estimate');
@@ -218,6 +230,7 @@ $(document).ready(function() {
             features_list[features_list.length - 1].set('status', "Unresolved");
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
+
         });
 
         $('.remove').click(function()
@@ -236,26 +249,28 @@ $(document).ready(function() {
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
 
-                resolved = true;
                 index = $(this).val();
                 var first_id = index + 0;
                 var sec_id = index + 1;
 
                 var point1 = ol.proj.transform([r_coords[index][1][0], r_coords[index][1][1]], "EPSG:4326", "EPSG:3857");
-                var point2 = ol.proj.transform([r_coords[index][5][0], r_coords[index][5][1]], "EPSG:4326", "EPSG:3857")
+                var point2 = ol.proj.transform([r_coords[index][5][0], r_coords[index][5][1]], "EPSG:4326", "EPSG:3857");
                 features_list.push([new ol.Feature({
                     geometry: new ol.geom.Point(point1),
+                    type: 'Point',
                     name: r_coords[index][0],
                     id: first_id
                 }),
                 new ol.Feature({
                     geometry: new ol.geom.Point(point2),
                     name: r_coords[index][4],
+                    type: 'Point',
                     id: sec_id
                 })]);
                 line_list.push(new ol.Feature({
                     geometry: new ol.geom.LineString([point1, point2]),
                     name: 'Distance',
+                    type: 'LineString',
                     id: index
                 }));
 
@@ -299,28 +314,29 @@ $(document).ready(function() {
                 index = $(this).val();
 
                 console.log(u_coords[index][2]);
-                features_list.push(new ol.Feature({
+                circle_list.push(new ol.Feature({
                     geometry: new ol.geom.Circle(u_coords[index][1], 40000),
+                    type: 'Circle',
                     id: "circle" + index
                 }));
                 features_list.push(new ol.Feature({
                     geometry: new ol.geom.Point(u_coords[index][1]),
+                    type: 'Point',
                     name: u_coords[index][3],
                     id: index
                 }));
 
 
                 features_list[features_list.length - 1].setId(index);
-                features_list[features_list.length - 2].setId("circle"+index);
+                circle_list[features_list.length - 1].setId("circle"+index);
                 features_list[features_list.length - 1].set('status', "Unresolved");
                 features_list[features_list.length - 1].set('class',u_coords[index][0]);
                 features_list[features_list.length - 1].set('location',u_coords[index][2][0] + " N, " + u_coords[index][2][1] + " E");
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is an unresolved findspot.");
 
-                circleLayer.getSource().addFeature(features_list[features_list.length - 2]);
+                circleLayer.getSource().addFeature(circle_list[circle_list.length - 1]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
-                map.addLayer(circleLayer);
-                map.addLayer(vectorLayer);
+
 
             },
 
@@ -329,7 +345,7 @@ $(document).ready(function() {
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
-                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById("circle"+index)), 1);
+                circle_list.splice(circle_list.indexOf(vectorLayer.getSource().getFeatureById("circle"+index)), 1);
             }
         });
 
@@ -339,6 +355,7 @@ $(document).ready(function() {
                 index = $(this).val();
                 features_list.push(new ol.Feature({
                     geometry: new ol.geom.Point(n_coords[index][1]),
+                    type: 'Point',
                     name: n_coords[index][0],
                     id: index
 
@@ -352,7 +369,7 @@ $(document).ready(function() {
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot with the toponym x that is listed as nearby the unresolved toponym x");
                 console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
-                map.addLayer(vectorLayer);
+                vectorLayer.getSource().refresh();
             },
 
             onUnchecked: function() {
@@ -370,17 +387,14 @@ $(document).ready(function() {
           stopEvent: false
         });
 
+        var hover = new ol.Overlay({
+          element: document.getElementById('hover'),
+          positioning: 'top-left',
+          stopEvent: false
+        });
+
 
         map.addOverlay(popup);
-
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-
-        var map_view = new ol.View({
-            center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
-            zoom: 7
-        });
 
         map.on('click', function(evt) {
             var feature = map.forEachFeatureAtPixel(evt.pixel,
@@ -392,14 +406,6 @@ $(document).ready(function() {
                     var geometry = feature.getGeometry();
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
-
-                    if(feature.get('country') !== undefined)
-                    {
-                        var l_country = feature.get('country').toString().toLowerCase();
-                    }
-
-                    var legend_html = "<div><i class='check circle outline green icon'></i> : Resolved<br><i class='remove circle outline icon'></i> : Unresolved</div>"
-
 
                     $('#popup').html("<div class='ui card'>"
                     + "<div class='content'>"
@@ -468,8 +474,7 @@ $(document).ready(function() {
             });
 
         map.addOverlay(popup);
-        map.addLayer(osmLayer);
-        map.setView(map_view);
+
 
     }
 
@@ -518,9 +523,6 @@ $(document).ready(function() {
                           "coordinates": [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]
                       }
                   };
-
-
-                //   console.log("f1 country: " + row[i].f1_country.value, "f2 country: " + row[i].f2_country.value);
 
                   var distance = turf.distance(coordinate_1, coordinate_2, units);
                   var euro_distance = distance.toFixed(2).replace(/\./g, ',');
@@ -608,15 +610,6 @@ $(document).ready(function() {
                   $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
               }
           }
-
-          var sum = 0;
-          for(var i in resolved_distances)
-          {
-              console.log
-              sum += resolved_distances[i];
-          }
-          sum = sum/resolved_distances.length;
-          console.log(sum);
 
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
     }
