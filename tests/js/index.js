@@ -371,15 +371,17 @@ $(document).ready(function() {
                     + "<div class='meta'>"+feature.get('class')+"</div>"
                     + "<div class='description'><div class='dist'></div><div class='stats'></div></div>"
                     + "</div><div class='extra content'>"
-                    + "<div class='left floated country'></div><div class='right floated status'>"
+                    + "<div class='left floated country'></div><div class='right floated status' data-toggle='tooltip' data-placement='bottom'>"
                     + "</div></div></div>");
 
                     if(feature.get('status') == "Unresolved")
                     {
                         $('.right.floated.status').html("Status: <i class='remove circle outline icon'></i>");
+                        $('.right.floated.status').attr('title', 'Unresolved');
                     }
                     else if(feature.get('status') == "Resolved") {
                         $('.right.floated.status').html("Status: <i class='check circle outline green icon'></i>");
+                        $('.right.floated.status').attr('title', 'Resolved');
                     }
 
                     if(feature.U.hasOwnProperty('country'))
