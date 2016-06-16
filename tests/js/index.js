@@ -103,6 +103,7 @@ $(document).ready(function() {
 
     var map = new ol.Map({
         target: 'map'
+            // layers: [vectorLayer, lineLayer]
     });
 
     var vectorSource;
@@ -148,6 +149,15 @@ $(document).ready(function() {
             })
         });
 
+        var circleStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#40ff00',
+                anchor: [0.5,0.5],
+                anchorOrigin: 'bottom-right',
+                width: 3
+            })
+        });
+
         vectorSource = new ol.source.Vector({
         });
 
@@ -164,8 +174,16 @@ $(document).ready(function() {
             style: lineStyle
         });
 
+        circleSource = new ol.source.Vector({
+        });
+
+        circleLayer = new ol.layer.Vector({
+            source: circleSource
+        });
+
         map.addLayer(lineLayer);
         map.addLayer(vectorLayer);
+        map.addLayer(circleLayer);
 
         $('.ui.accordion').accordion();
 
@@ -202,7 +220,6 @@ $(document).ready(function() {
         $('.remove').click(function()
         {
             var big_id = $(this).attr('id');
-            console.log('div#'+ big_id.toString() +'.item');
             $('div#'+ big_id.toString() +'.item').css({'font-weight': 'normal', 'color': 'rgba(0,0,0,.4)'});
 
             big_id = big_id.split("-");
@@ -275,27 +292,42 @@ $(document).ready(function() {
 
         $(".ui.checkbox#urow").checkbox({
             onChecked: function() {
-
+                var wgs84Sphere = new ol.Sphere(6378137);
                 index = $(this).val();
+
+                console.log(u_coords[index][2]);
+                features_list.push(new ol.Feature({
+                    geometry: new ol.geom.Circle(u_coords[index][1], 40000),
+                    id: "circle" + index,
+                    style: circleStyle
+                }));
                 features_list.push(new ol.Feature({
                     geometry: new ol.geom.Point(u_coords[index][1]),
                     name: u_coords[index][3],
                     id: index
                 }));
 
+
                 features_list[features_list.length - 1].setId(index);
+                features_list[features_list.length - 2].setId("circle"+index);
                 features_list[features_list.length - 1].set('status', "Unresolved");
                 features_list[features_list.length - 1].set('class',u_coords[index][0]);
                 features_list[features_list.length - 1].set('location',u_coords[index][2][0] + " N, " + u_coords[index][2][1] + " E");
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is an unresolved findspot.");
+
+                circleLayer.getSource().addFeature(features_list[features_list.length - 2]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
+                map.addLayer(circleLayer);
                 map.addLayer(vectorLayer);
+
             },
 
             onUnchecked: function() {
                 index = $(this).val();
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
+                circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
+                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById("circle"+index)), 1);
             }
         });
 
@@ -486,7 +518,7 @@ $(document).ready(function() {
                   };
 
 
-                  console.log("f1 country: " + row[i].f1_country.value, "f2 country: " + row[i].f2_country.value);
+                //   console.log("f1 country: " + row[i].f1_country.value, "f2 country: " + row[i].f2_country.value);
 
                   var distance = turf.distance(coordinate_1, coordinate_2, units);
                   var euro_distance = distance.toFixed(2).replace(/\./g, ',');
@@ -500,6 +532,7 @@ $(document).ready(function() {
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
                   +"<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td></tr>");
+
 
                   resolved_distances.sort();
 
@@ -573,6 +606,15 @@ $(document).ready(function() {
                   $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
               }
           }
+
+          var sum = 0;
+          for(var i in resolved_distances)
+          {
+              console.log
+              sum += resolved_distances[i];
+          }
+          sum = sum/resolved_distances.length;
+          console.log(sum);
 
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
     }
