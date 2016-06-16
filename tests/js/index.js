@@ -171,6 +171,7 @@ $(document).ready(function() {
 
         $('.ui.selection.list>.item').click(function()
         {
+            $(this).css({'font-weight': 'bold', 'color': 'black'});
             var big_id = $(this).attr('id');
 
             big_id = big_id.split("-");
@@ -201,6 +202,8 @@ $(document).ready(function() {
         $('.remove').click(function()
         {
             var big_id = $(this).attr('id');
+            console.log('div#'+ big_id.toString() +'.item');
+            $('div#'+ big_id.toString() +'.item').css({'font-weight': 'normal', 'color': 'rgba(0,0,0,.4)'});
 
             big_id = big_id.split("-");
             var new_id = big_id[0] + big_id[1];
