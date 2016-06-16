@@ -265,8 +265,8 @@ $(document).ready(function() {
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'0'));
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'1'));
                 lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
-                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(id)), 1);
-                line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(id)), 1);
+                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
+                line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(index)), 1);
             }
         });
 
