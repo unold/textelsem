@@ -205,24 +205,6 @@ $(document).ready(function() {
                 id: new_id
             }));
 
-            // var geoJSONObject = {
-            //     'type': 'FeatureCollection',
-            //     'crs': {
-            //         'type': 'name',
-            //         'properties': {
-            //             'name': 'EPSG:3857'
-            //         }
-            //     },
-            //     'features': [{
-            //         'type': 'Feature',
-            //         'geometry': {
-            //             'type': 'Point',
-            //             'coordinates': new ol.geom.Point(n_coords[index][1]),
-            //             'name': n_coords[index][0],
-            //             'id': new_id
-            //         }
-            //     }]
-            // };
 
             features_list[features_list.length - 1].setId(new_id);
             features_list[features_list.length - 1].set('class','Toponym Estimate');
