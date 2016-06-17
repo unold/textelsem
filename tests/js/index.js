@@ -126,7 +126,6 @@ $(document).ready(function() {
     var circleSource;
     var circleLayer;
     var vectorLayer;
-    var features_list = [];
 // ============================================================================
 
     function draw_map(r_coords, u_coords, n_coords, complete_list)
@@ -158,11 +157,11 @@ $(document).ready(function() {
 
         var circleStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
-                color: 'green',
+                color: 'rgba(85, 191, 63, 1)',
                 width: 2
             }),
             fill: new ol.style.Fill({
-                color: 'rgba(0,180,0,0.1)'
+                color: 'rgba(85, 191, 63, 0.4)'
             })
         });
 
@@ -323,7 +322,7 @@ $(document).ready(function() {
 
 
                 features_list[features_list.length - 1].setId(index);
-                circle_list[features_list.length - 1].setId("circle"+index);
+                circle_list[circle_list.length - 1].setId("circle"+index);
                 features_list[features_list.length - 1].set('status', "Unresolved");
                 features_list[features_list.length - 1].set('class',u_coords[index][0]);
                 features_list[features_list.length - 1].set('location',u_coords[index][2][0] + " N, " + u_coords[index][2][1] + " E");
@@ -332,8 +331,9 @@ $(document).ready(function() {
                 circleLayer.getSource().addFeature(circle_list[circle_list.length - 1]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
 
-                map.addLayer(vectorLayer);
                 map.addLayer(circleLayer);
+                map.addLayer(vectorLayer);
+
 
 
             },
@@ -430,7 +430,7 @@ $(document).ready(function() {
 
                     if(feature.U.hasOwnProperty('country'))
                     {
-                        $('.country').html("Country: " + feature.get('country') + " <i class='"+ l_country + " flag'></i>")
+                        $('.country').html("Country: " + feature.get('country') + " <i class='"+ feature.get('country').toString().toLowerCase() + " flag'></i>")
                     }
 
                     if(feature.U.hasOwnProperty('distance'))
