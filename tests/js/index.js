@@ -99,6 +99,36 @@ $(document).ready(function() {
         success: callback
     });
 
+
+
+    // var map = new ol.Map({
+    //     target: 'map',
+    //     layers: [
+    //         new ol.layer.Tile({
+    //             source: new ol.source.OSM()
+    //         }),
+    //         vectorLayer, lineLayer, circleLayer],
+    //     view: new ol.View({
+    //         center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
+    //         zoom: 7
+    //     })
+    // });
+
+    // Create Map ================================================================
+
+    var map = new ol.Map({
+        target: 'map'
+    });
+
+    var vectorSource;
+    var lineSource;
+    var lineLayer;
+    var circleSource;
+    var circleLayer;
+    var vectorLayer;
+    var features_list = [];
+// ============================================================================
+
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
         var line_list = [];
@@ -108,76 +138,59 @@ $(document).ready(function() {
 
 
 // ===============================================================================================================================================
-        var styles = {
-            'Point': new ol.style.Style({
-                image: new ol.style.Icon(({
-                    anchor: [0.5, 0.5],
-                    anchorOrigin: 'bottom-right',
-                    opacity: 0.75,
-                    src: './img/map-marker-2-xxl.png',
-                    scale: .1
-                }))
-            }),
-            'LineString': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: '#000000',
-                    width: 3
-                })
-            }),
-            'Circle': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'green',
-                    width: 2
-                }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(0,180,0,0.1)'
-                })
+
+        var pointStyle = new ol.style.Style({
+            image: new ol.style.Icon(({
+                anchor: [0.5, 0.5],
+                anchorOrigin: 'bottom-right',
+                opacity: 0.75,
+                src: './img/map-marker-2-xxl.png',
+                scale: .1
             })
-        };
+        )});
 
-        var styleFunction = function(feature) {
-            return styles[feature.getGeometry().getType()];
-        };
-
-        var vectorSource = new ol.source.Vector({
-            features: features_list
+        var lineStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#000000',
+                width: 3
+            })
         });
 
-        var vectorLayer = new ol.layer.Vector({
+        var circleStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'green',
+                width: 2
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(0,180,0,0.1)'
+            })
+        });
+
+        vectorSource = new ol.source.Vector({
+        });
+
+        vectorLayer = new ol.layer.Vector({
             source: vectorSource,
-            style: styleFunction
+            style: pointStyle
         });
 
-        var lineSource = new ol.source.Vector({
-            features: line_list
+        lineSource = new ol.source.Vector({
         });
 
-        var lineLayer = new ol.layer.Vector({
+        lineLayer = new ol.layer.Vector({
             source: lineSource,
-            style: styleFunction
+            style: lineStyle
         });
 
-        var circleSource = new ol.source.Vector({
-            features: circle_list
+        circleSource = new ol.source.Vector({
         });
 
-        var circleLayer = new ol.layer.Vector({
+        circleLayer = new ol.layer.Vector({
             source: circleSource,
-            style: styleFunction
+            style: circleStyle
         });
 
-        var map = new ol.Map({
-            target: 'map',
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                }),
-                vectorLayer, lineLayer, circleLayer],
-            view: new ol.View({
-                center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
-                zoom: 7
-            })
-        });
+
 
 // =======================================================================================================================================================================
 
@@ -319,6 +332,9 @@ $(document).ready(function() {
                 circleLayer.getSource().addFeature(circle_list[circle_list.length - 1]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
 
+                map.addLayer(vectorLayer);
+                map.addLayer(circleLayer);
+
 
             },
 
@@ -351,7 +367,7 @@ $(document).ready(function() {
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot with the toponym x that is listed as nearby the unresolved toponym x");
                 console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
-                vectorLayer.getSource().refresh();
+                map.addLayer(vectorLayer);
             },
 
             onUnchecked: function() {
@@ -369,14 +385,17 @@ $(document).ready(function() {
           stopEvent: false
         });
 
-        var hover = new ol.Overlay({
-          element: document.getElementById('hover'),
-          positioning: 'top-left',
-          stopEvent: false
-        });
-
 
         map.addOverlay(popup);
+
+        var osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        var map_view = new ol.View({
+            center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
+            zoom: 7
+        });
 
         map.on('click', function(evt) {
             var feature = map.forEachFeatureAtPixel(evt.pixel,
@@ -456,6 +475,8 @@ $(document).ready(function() {
             });
 
         map.addOverlay(popup);
+        map.addLayer(osmLayer);
+        map.setView(map_view);
 
 
     }
