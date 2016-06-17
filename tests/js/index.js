@@ -134,7 +134,6 @@ $(document).ready(function() {
     var circleSource;
     var circleLayer;
     var vectorLayer;
-// ============================================================================
 
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
@@ -142,9 +141,6 @@ $(document).ready(function() {
         var features_list = [];
         var circle_list = [];
         var index;
-
-
-// ===============================================================================================================================================
 
         var pointStyle = new ol.style.Style({
             image: new ol.style.Icon(({
@@ -158,8 +154,8 @@ $(document).ready(function() {
 
         var lineStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
-                color: '#000000',
-                width: 3
+                color: 'rgba(180, 0, 0, .3)',
+                width: 4
             })
         });
 
@@ -300,6 +296,11 @@ $(document).ready(function() {
                 map.addLayer(lineLayer);
                 map.addLayer(vectorLayer);
 
+                console.log(r_coords[index][9]['geometry']['coordinates']);
+
+                map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+                map.getView().setZoom(10);
+
             },
 
             onUnchecked: function() {
@@ -343,6 +344,8 @@ $(document).ready(function() {
                 circleLayer.getSource().addFeature(circle_list[circle_list.length - 1]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
 
+                console.log(circle_list);
+
                 map.addLayer(circleLayer);
                 map.addLayer(vectorLayer);
 
@@ -357,6 +360,7 @@ $(document).ready(function() {
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
                 circle_list.splice(circle_list.indexOf(vectorLayer.getSource().getFeatureById("circle"+index)), 1);
+                console.log(circle_list);
             }
         });
 
@@ -534,12 +538,13 @@ $(document).ready(function() {
                   };
 
                   var distance = turf.distance(coordinate_1, coordinate_2, units);
+                  var center = turf.midpoint(coordinate_1, coordinate_2);
                   var euro_distance = distance.toFixed(2).replace(/\./g, ',');
                   var point_1 = ol.proj.fromLonLat([parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]);
                   var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
 
                   resolved_distances.push(distance);
-                  resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance]);
+                  resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
 
                 //   Add row to table
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
