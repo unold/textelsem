@@ -117,8 +117,16 @@ $(document).ready(function() {
     // Create Map ================================================================
 
     var map = new ol.Map({
-        target: 'map'
+        target: 'map',
+        view: new ol.View({
+            center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
+            zoom: 7
+        }),
+        layers: [new ol.layer.Tile({
+            source: new ol.source.OSM()
+        })]
     });
+
 
     var vectorSource;
     var lineSource;
@@ -157,11 +165,11 @@ $(document).ready(function() {
 
         var circleStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
-                color: 'rgba(168, 230, 142, 0.9)',
-                width: 2
+                color: 'rgba(161, 237, 181, 0.9)',
+                width: 3
             }),
             fill: new ol.style.Fill({
-                color: 'rgba(168, 230, 142, 0.42)'
+                color: 'rgba(161, 237, 181, 0.42)'
             })
         });
 
@@ -224,6 +232,9 @@ $(document).ready(function() {
             features_list[features_list.length - 1].set('status', "Unresolved");
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
+
+            map.getView().setCenter(n_coords[index][1]);
+            map.getView().setZoom(10);
 
         });
 
@@ -335,7 +346,8 @@ $(document).ready(function() {
                 map.addLayer(circleLayer);
                 map.addLayer(vectorLayer);
 
-
+                map.getView().setCenter(u_coords[index][1]);
+                map.getView().setZoom(10);
 
             },
 
@@ -369,6 +381,9 @@ $(document).ready(function() {
                 console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
+
+                map.getView().setCenter(n_coords[index][1]);
+                map.getView().setZoom(10);
             },
 
             onUnchecked: function() {
@@ -389,14 +404,6 @@ $(document).ready(function() {
 
         map.addOverlay(popup);
 
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.MapQuest({layer: 'sat'})
-        });
-
-        var map_view = new ol.View({
-            center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
-            zoom: 7
-        });
 
         map.on('click', function(evt) {
             var feature = map.forEachFeatureAtPixel(evt.pixel,
@@ -476,8 +483,6 @@ $(document).ready(function() {
             });
 
         map.addOverlay(popup);
-        map.addLayer(osmLayer);
-        map.setView(map_view);
 
 
     }
