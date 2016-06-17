@@ -142,9 +142,9 @@ $(document).ready(function() {
             image: new ol.style.Icon(({
                 anchor: [0.5, 0.5],
                 anchorOrigin: 'bottom-right',
-                opacity: 0.75,
-                src: './img/map-marker-2-xxl.png',
-                scale: .1
+                opacity: 1,
+                src: './img/svgs/circle-15.svg',
+                scale: 1
             })
         )});
 
@@ -157,11 +157,11 @@ $(document).ready(function() {
 
         var circleStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
-                color: 'rgba(85, 191, 63, 1)',
+                color: 'rgba(168, 230, 142, 0.9)',
                 width: 2
             }),
             fill: new ol.style.Fill({
-                color: 'rgba(85, 191, 63, 0.4)'
+                color: 'rgba(168, 230, 142, 0.42)'
             })
         });
 
@@ -286,8 +286,9 @@ $(document).ready(function() {
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][0]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][1]);
                 lineLayer.getSource().addFeature(line_list[line_list.length - 1]);
-                map.addLayer(vectorLayer);
                 map.addLayer(lineLayer);
+                map.addLayer(vectorLayer);
+
             },
 
             onUnchecked: function() {
@@ -389,7 +390,7 @@ $(document).ready(function() {
         map.addOverlay(popup);
 
         var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
+            source: new ol.source.MapQuest({layer: 'sat'})
         });
 
         var map_view = new ol.View({
