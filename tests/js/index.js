@@ -312,6 +312,7 @@ $(document).ready(function() {
                 lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
                 line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(index)), 1);
+                map.removeLayer(lineLayer);
             }
         });
 
@@ -360,6 +361,7 @@ $(document).ready(function() {
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
                 circle_list.splice(circle_list.indexOf(vectorLayer.getSource().getFeatureById("circle"+index)), 1);
+                map.removeLayer(circleLayer);
                 console.log(circle_list);
             }
         });
