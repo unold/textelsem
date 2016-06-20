@@ -223,15 +223,21 @@ $(document).ready(function() {
         //     }
         // });
 
-        $('#sat_toggle').checkbox({
-            onChecked: function() {
-                // map.removeLayer(osm);
-                map.addLayer(mapquest);
-            },
-            onUnchecked: function() {
-                map.removeLayer(mapquest);
-            }
-        });
+        // $('#sat_toggle').checkbox({
+        //     onChecked: function() {
+        //         map.addLayer(mapquest);
+        //         map.addLayer(lineLayer);
+        //         map.addLayer(circleLayer);
+        //         map.addLayer(vectorLayer);
+        //
+        //     },
+        //     onUnchecked: function() {
+        //         map.removeLayer(mapquest);
+        //         map.removeLayer(lineLayer);
+        //         map.removeLayer(circleLayer);
+        //         map.removeLayer(vectorLayer);
+        //     }
+        // });
 
         $('.ui.selection.list>.item').click(function()
         {
@@ -420,7 +426,6 @@ $(document).ready(function() {
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
                 circle_list.splice(circle_list.indexOf(vectorLayer.getSource().getFeatureById("circle"+index)), 1);
                 map.removeLayer(circleLayer);
-                console.log(circle_list);
             }
         });
 
