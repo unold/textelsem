@@ -221,23 +221,31 @@ $(document).ready(function() {
                 id: new_id
             }));
 
-            console.log(n_coords);
-
+            console.log(distance);
 
             features_list[features_list.length - 1].setId(new_id);
             features_list[features_list.length - 1].set('class','Resolved Toponym');
             features_list[features_list.length - 1].set('prob', (prob.toFixed(2)*100) + "%");
-            features_list[features_list.length - 1].set('status', "Unresolved");
+            features_list[features_list.length - 1].set('status', "Resolved");
             features_list[features_list.length - 1].set('desc', n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.');
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
 
-            if(distance > 50)
+            console.log(complete_list[id][1][index]["mid"]['geometry']['coordinates']);
+
+            if(distance > 100)
+            {
+                map.getView().setZoom(7);
+                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+            }
+            else if(distance > 50 && distance < 100)
             {
                 map.getView().setZoom(8);
+                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
             }
             else {
-                map.getView().setZoom(10);
+                map.getView().setZoom(9);
+                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
             }
 
             // map.getView().setCenter(n_coords[index][1]);
@@ -440,7 +448,7 @@ $(document).ready(function() {
                     + "<div class='meta'>"+feature.get('class')+"</div>"
                     + "<div class='description'><div class='dist'></div><div class='stats'></div></div>"
                     + "</div><div class='extra content'>"
-                    + "<div class='left floated country'></div><div class='right floated status' data-toggle='tooltip' data-placement='bottom'>"
+                    + "<div class='left floated radius'></div><div class='left floated country'></div><div class='right floated status' data-toggle='tooltip' data-placement='bottom'>"
                     + "</div></div></div>");
 
                     if(feature.get('status') == "Unresolved")
@@ -485,7 +493,11 @@ $(document).ready(function() {
                         else {
                             $('.ui.statistic').addClass('yellow');
                         }
+
                     }
+
+                    if(feature.get('status') == 'Unresolved')
+                        $('.left.floated.radius').html('Shown Radius: 40km');
 
                     $('.description').append(feature.get('desc'));
 
@@ -612,7 +624,7 @@ $(document).ready(function() {
                           "coordinates": findspot_coordinates[j][3]
                       }
                   };
-                  temp_array.push({"dist": turf.distance(unresolved_findspot, resolved_findspot, units), "nearby_top_name": findspot_coordinates[j][2]});
+                  temp_array.push({"dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "nearby_top_name": findspot_coordinates[j][2]});
               }
 
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);

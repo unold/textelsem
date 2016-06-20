@@ -15,6 +15,10 @@ h2 {
     height: 100%;
 }
 
+.ui.statistic {
+    right:10px;
+}
+
 #toponym_dist_table {
     overflow:auto;
     float: left;
