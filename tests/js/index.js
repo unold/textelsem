@@ -221,16 +221,27 @@ $(document).ready(function() {
                 id: new_id
             }));
 
+            console.log(n_coords);
+
 
             features_list[features_list.length - 1].setId(new_id);
-            features_list[features_list.length - 1].set('class','Toponym Estimate');
-            features_list[features_list.length - 1].set('desc', (prob.toFixed(2)*100) + "%");
+            features_list[features_list.length - 1].set('class','Resolved Toponym');
+            features_list[features_list.length - 1].set('prob', (prob.toFixed(2)*100) + "%");
             features_list[features_list.length - 1].set('status', "Unresolved");
+            features_list[features_list.length - 1].set('desc', n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.');
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
 
+            if(distance > 50)
+            {
+                map.getView().setZoom(8);
+            }
+            else {
+                map.getView().setZoom(10);
+            }
+
             // map.getView().setCenter(n_coords[index][1]);
-            // map.getView().setZoom(10);
+
 
         });
 
@@ -449,25 +460,25 @@ $(document).ready(function() {
 
                     if(feature.U.hasOwnProperty('distance'))
                     {
-                        $('.dist').html("<div class='ui statistic'>"
+                        $('.dist').html("<div class='ui center statistic'>"
                         + "<div class='value'>"+feature.get('distance').toFixed(2)+"</div>"
                         + "<div class='label'>Kilometers</div>"
                         + "</div>"
                         );
                     }
 
-                    if(feature.get('class') == 'Toponym Estimate')
+                    if(feature.U.hasOwnProperty('prob'))
                     {
                         $('.stats').html("<div class='ui statistic'>"
-                        + "<div class='value'>"+feature.get('desc')+"</div>"
+                        + "<div class='value'>"+feature.get('prob')+"</div>"
                         + "<div class='label'>Probability</div>"
                         + "</div>");
 
-                        if(feature.get('desc').replace('%', '') <= 20)
+                        if(feature.get('prob').replace('%', '') <= 20)
                         {
                             $('.ui.statistic').addClass('red');
                         }
-                        else if(feature.get('desc').replace('%', '') >= 80)
+                        else if(feature.get('prob').replace('%', '') >= 80)
                         {
                             $('.ui.statistic').addClass('green');
                         }
@@ -475,9 +486,9 @@ $(document).ready(function() {
                             $('.ui.statistic').addClass('yellow');
                         }
                     }
-                    else {
-                        $('.description').append(feature.get('desc'));
-                    }
+
+                    $('.description').append(feature.get('desc'));
+
 
                     $('.ui.remove.icon').click(function() {
                         $('#popup').html("");

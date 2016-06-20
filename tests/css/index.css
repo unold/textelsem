@@ -21,6 +21,10 @@ h2 {
     width: 100%;
 }
 
+#clearAll {
+    display:inline
+}
+
 .half-map {
     float: right;
     display: inline;
