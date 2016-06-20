@@ -15,10 +15,7 @@ h2 {
     height: 100%;
 }
 
-/*.stats {
-    text-align: center;
-    margin: auto;
-}*/
+
 
 .ui.statistic,
 .ui.statistic>div.label {
@@ -31,6 +28,10 @@ h2 {
     overflow:auto;
     float: left;
     width: 100%;
+}
+
+.checkbox input[type=checkbox] {
+    margin-left: 0px;
 }
 
 .settings_description {
