@@ -37,7 +37,12 @@
                     <table class="ui celled table" id="toponym_dist_table">
                         <thead>
                             <tr>
-                                <th class="one wide">Select</th>
+                                <th class="one wide">
+                                    <div class="ui fitted toggle checkbox" id='selectAll_Resolved'>
+                                        <input type='checkbox'>
+                                        <label></label>
+                                    </div>
+                                </th>
                                 <th>Toponym 1</th>
                                 <th>Toponym 2</th>
                                 <th>Distance (approx)</th>
@@ -53,7 +58,12 @@
                     <table class="ui celled table" id="unresolved_table">
                         <thead>
                             <tr>
-                                <th class="one wide">Select</th>
+                                <th class="one wide">
+                                    <div class="ui fitted toggle checkbox" id='selectAll_Unresolved'>
+                                        <input type='checkbox' >
+                                        <label></label>
+                                    </div>
+                                </th>
                                 <th>Unresolved Findspot</th>
                                 <th class="nine wide">Probability</th>
                             </tr>
@@ -63,12 +73,18 @@
                     </table>
                 </div>
             </div>
+
             <div class="ui bottom attached tab segment" data-tab="new" id="n_table">
                 <div id="inner">
                     <table class="ui celled table" id="new_table">
                         <thead>
                             <tr>
-                                <th class="one wide">Select</th>
+                                <th class="one wide">
+                                    <div class="ui fitted toggle checkbox" id='selectAll_Nearby'>
+                                        <input type='checkbox' >
+                                        <label></label>
+                                    </div>
+                                </th>
                                 <th>Resolved Toponym</th>
                                 <th>Findspot</th>
                                 <th>Unresolved Toponym</th>
@@ -104,10 +120,19 @@
                             </div>
                             <p class='settings_description'>Remove all points from the map</p>
                         </div>
+                        <!-- <div class="ui buttons">
+                            <button class="ui button">English</button>
+                            <div class="or"></div>
+                            <button class="ui button">Deutsch</button>
+                        </div> -->
+                        <!-- <div class="field">
+                            <button class="ui fluid basic button">Save Changes</button>
+                        </div> -->
                     </div>
                 </div>
-            </div>
 
+                <!-- <button style='display: block' class='fluid ui basic button'>Save Changes</button> -->
+            </div>
         </div>
 
         <div id="map" class="half-map">

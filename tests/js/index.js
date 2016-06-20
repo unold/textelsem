@@ -199,6 +199,24 @@ $(document).ready(function() {
 
         $('.ui.accordion').accordion();
 
+        $('#selectAll_Nearby').checkbox({
+            onChecked: function() {
+                $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('check');
+            },
+            onUnchecked: function() {
+                $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
+            }
+        });
+
+        // $('#selectAll_Unresolved').checkbox({
+        //     onChecked: function() {
+        //         $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('check');
+        //     },
+        //     onUnchecked: function() {
+        //         $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
+        //     }
+        // });
+
         $('.ui.selection.list>.item').click(function()
         {
             $(this).css({'font-weight': 'bold', 'color': 'black'});
@@ -248,9 +266,6 @@ $(document).ready(function() {
                 map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
             }
 
-            // map.getView().setCenter(n_coords[index][1]);
-
-
         });
 
         $('.remove').click(function()
@@ -260,7 +275,7 @@ $(document).ready(function() {
 
             big_id = big_id.split("-");
             var new_id = big_id[0] + big_id[1];
-
+            $('#popup').html("");
             vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
             features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(new_id)), 1);
 
@@ -317,15 +332,18 @@ $(document).ready(function() {
 
                 console.log(r_coords[index][9]['geometry']['coordinates']);
 
-                map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-                map.getView().setZoom(11);
+                if($('#selectAll_Resolved').checkbox('is unchecked'))
+                {
+                    map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+                    map.getView().setZoom(11);
+                }
 
             },
 
             onUnchecked: function() {
 
                 index = $(this).val();
-
+                $('#popup').html("");
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'0'));
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'1'));
                 lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
@@ -369,13 +387,18 @@ $(document).ready(function() {
                 map.addLayer(circleLayer);
                 map.addLayer(vectorLayer);
 
-                map.getView().setCenter(u_coords[index][1]);
-                map.getView().setZoom(10);
+                // if($('#selectAll_Unesolved').checkbox('is unchecked'))
+                // {
+                    map.getView().setCenter(u_coords[index][1]);
+                    map.getView().setZoom(10);
+                // }
+
 
             },
 
             onUnchecked: function() {
                 index = $(this).val();
+                $('#popup').html("");
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
@@ -407,11 +430,17 @@ $(document).ready(function() {
                 vectorSource.addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
 
-                map.getView().setCenter(n_coords[index][1]);
-                map.getView().setZoom(10);
+                if($('#selectAll_Nearby').checkbox('is unchecked'))
+                {
+                    map.getView().setCenter(n_coords[index][1]);
+                    map.getView().setZoom(10);
+                }
+
+
             },
 
             onUnchecked: function() {
+                $('#popup').html("");
                 index = $(this).val();
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
@@ -440,6 +469,9 @@ $(document).ready(function() {
                     var geometry = feature.getGeometry();
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
+
+                    // Optional
+                    // map.getView().setCenter(coord);
 
                     $('#popup').html("<div class='ui card'>"
                     + "<div class='content'>"
