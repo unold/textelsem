@@ -229,8 +229,8 @@ $(document).ready(function() {
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
 
-            map.getView().setCenter(n_coords[index][1]);
-            map.getView().setZoom(10);
+            // map.getView().setCenter(n_coords[index][1]);
+            // map.getView().setZoom(10);
 
         });
 
@@ -299,7 +299,7 @@ $(document).ready(function() {
                 console.log(r_coords[index][9]['geometry']['coordinates']);
 
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-                map.getView().setZoom(10);
+                map.getView().setZoom(11);
 
             },
 
