@@ -480,7 +480,7 @@ $(document).ready(function() {
                         $('.stats').html("<div class='ui statistic'>"
                         + "<div class='value'>"+feature.get('prob')+"</div>"
                         + "<div class='label'>Probability</div>"
-                        + "</div>");
+                        + "</div><div class='ui divider'><div>");
 
                         if(feature.get('prob').replace('%', '') <= 20)
                         {
