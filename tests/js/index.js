@@ -116,15 +116,21 @@ $(document).ready(function() {
 
     // Create Map ================================================================
 
+    var osm = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
+
+    var mapquest = new ol.layer.Tile({
+        source: new ol.source.MapQuest({layer: 'sat'})
+    });
+
     var map = new ol.Map({
         target: 'map',
         view: new ol.View({
             center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
             zoom: 7
         }),
-        layers: [new ol.layer.Tile({
-            source: new ol.source.OSM()
-        })]
+        layers: [osm]
     });
 
 
@@ -216,6 +222,16 @@ $(document).ready(function() {
         //         $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
         //     }
         // });
+
+        $('#sat_toggle').checkbox({
+            onChecked: function() {
+                // map.removeLayer(osm);
+                map.addLayer(mapquest);
+            },
+            onUnchecked: function() {
+                map.removeLayer(mapquest);
+            }
+        });
 
         $('.ui.selection.list>.item').click(function()
         {
