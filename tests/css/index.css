@@ -21,8 +21,9 @@ h2 {
     width: 100%;
 }
 
-#clearAll {
-    display:inline
+.description {
+    text-indent: 25px;
+    opacity: 0.6
 }
 
 .half-map {
