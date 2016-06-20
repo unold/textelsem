@@ -446,7 +446,7 @@ $(document).ready(function() {
                 features_list[features_list.length - 1].set('class',n_coords[index][2]);
                 features_list[features_list.length - 1].set('country',n_coords[index][4]);
                 features_list[features_list.length - 1].set('location', n_coords[index][3][0] + " N, " + n_coords[index][3][1] + " E");
-                features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot with the toponym x that is listed as nearby the unresolved toponym x");
+                features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot that is listed as nearby the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
                 console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
@@ -546,7 +546,6 @@ $(document).ready(function() {
                         else {
                             $('.ui.statistic').addClass('yellow');
                         }
-
                     }
 
                     if(feature.get('status') == 'Unresolved')
@@ -587,7 +586,7 @@ $(document).ready(function() {
               {
                     var normal_coords1 = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
                     var transformed_coords = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
-                    findspot_coordinates.push([row[i].name.value, transformed_coords, regex_filter.exec(row[i].top2.value)[0], normal_coords1, row[i].country.value]);
+                    findspot_coordinates.push([row[i].name.value, transformed_coords, regex_filter.exec(row[i].top1.value)[0], normal_coords1, row[i].country.value, regex_filter.exec(row[i].top2.value)[0]]);
 
                   //   Add row to table
                     $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
