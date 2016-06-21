@@ -351,7 +351,8 @@ $(document).ready(function() {
 
 
                 line_list[line_list.length - 1].setId(index);
-                line_list[line_list.length - 1].set('distance', r_coords[index][8]);
+                features_list[features_list.length - 1][0].set('distance', r_coords[index][8]);
+                features_list[features_list.length - 1][1].set('distance', r_coords[index][8]);
                 features_list[features_list.length - 1][0].setId(first_id);
                 features_list[features_list.length - 1][0].set('status', "Resolved");
                 features_list[features_list.length - 1][0].set('country',r_coords[index][2]);
@@ -541,8 +542,11 @@ $(document).ready(function() {
                     {
                         $('.dist').html("<div class='ui center statistic'>"
                         + "<div class='value'>"+feature.get('distance').toFixed(2)+"</div>"
-                        + "<div class='label'>Kilometers</div>"
-                        + "</div>"
+                        + "<div class='label'>Kilometers Away</div>"
+                        + "</div><div class='ui divider'><div>"
+                        // + "<div class='ui message'>"
+                        // + "<div class='header'>Average Distance</div>"
+                        // + "<p>The average distance of resolved findspots listed as nearby is </p></div>"
                         );
                     }
 
@@ -584,6 +588,30 @@ $(document).ready(function() {
         map.addOverlay(popup);
 
 
+    }
+
+    function toDegrees (angle)
+    {
+        return angle * (180 / Math.PI);
+    }
+
+    function toRadians (angle)
+    {
+        return angle * (Math.PI / 180);
+    }
+
+    function angleFromCoordinate(lat1, long1, lat2, long2)
+    {
+        var phi1 = toRadians(lat1);
+        var phi2 = toRadians(lat2);
+        var lambda1 = toRadians(long1);
+        var lambda2 = toRadians(long2);
+
+        var y = Math.sin(lambda2-lambda1) * Math.cos(phi2);
+        var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lambda2-lambda1);
+        var brng = toDegrees(Math.atan2(y, x));
+
+        return brng;
     }
 
     function callback(data)
@@ -644,7 +672,8 @@ $(document).ready(function() {
                 //   Add row to table
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
-                  +"<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td></tr>");
+                  + "<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td>"
+                  + "<td>"+ angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value)) +"</td></tr>");
 
 
                   resolved_distances.sort();
