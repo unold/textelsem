@@ -223,21 +223,15 @@ $(document).ready(function() {
         //     }
         // });
 
-        // $('#sat_toggle').checkbox({
-        //     onChecked: function() {
-        //         map.addLayer(mapquest);
-        //         map.addLayer(lineLayer);
-        //         map.addLayer(circleLayer);
-        //         map.addLayer(vectorLayer);
-        //
-        //     },
-        //     onUnchecked: function() {
-        //         map.removeLayer(mapquest);
-        //         map.removeLayer(lineLayer);
-        //         map.removeLayer(circleLayer);
-        //         map.removeLayer(vectorLayer);
-        //     }
-        // });
+        $('#sat_toggle').checkbox({
+            onChecked: function() {
+                osm.setSource(new ol.source.MapQuest({layer: 'sat'}));
+
+            },
+            onUnchecked: function() {
+                osm.setSource(new ol.source.OSM())
+            }
+        });
 
         $('.ui.selection.list>.item').click(function()
         {
