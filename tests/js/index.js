@@ -233,6 +233,30 @@ $(document).ready(function() {
             }
         });
 
+        // In Progress
+        // $('#zeroprob').checkbox({
+        //     onChecked: function() {
+        //
+        //         for(var i in complete_list)
+        //         {
+        //             var partition = complete_list[i][1];
+        //             for(var k = partition.length-1; k >= 0; k--)
+        //             {
+        //                 if(partition[k]["prob"] == 0)
+        //                 {
+        //                     complete_list[i][1].splice(partition.indexOf(partition[k]), 1);
+        //                 }
+        //             }
+        //         }
+        //
+        //     },
+        //     onUnchecked: function() {
+        //         complete_list = complete_clone;
+        //         console.log(complete_list);
+        //     }
+        // });
+
+
         $('.ui.selection.list>.item').click(function()
         {
             $(this).css({'font-weight': 'bold', 'color': 'black'});
