@@ -609,7 +609,7 @@ $(document).ready(function() {
 
         var y = Math.sin(lambda2-lambda1) * Math.cos(phi2);
         var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lambda2-lambda1);
-        var brng = toDegrees(Math.atan2(y, x));
+        var brng = toDegrees(Math.atan2(y, x)).toFixed(2);
 
         return brng;
     }
