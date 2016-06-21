@@ -2,6 +2,7 @@ $(document).ready(function() {
 
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
 
+    var s_distances = [];
     // Query for all resolved toponyms that are listed as nearby
     var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
     + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
@@ -24,68 +25,105 @@ $(document).ready(function() {
             query: query,
             Accept: 'application/json'
         },
-        success: callback
+        success: function(data)
+        {
+            var row = data.results.bindings;
+            var angle;
+
+            for(var i in row)
+            {
+                // Calculate Distance
+                var coordinate_1 = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]
+                    }
+                };
+
+                var coordinate_2 = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]
+                    }
+                };
+
+                angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value))
+
+                s_distances.push(turf.distance(coordinate_1, coordinate_2, "kilometers"));
+
+
+            }
+
+            s_distances.map( function (a) { if (a < 20) distances[a] ++; else hist[a] = 1; } );
+
+            s_distances = s_distances.sort(function(a,b) {
+                return a- b;
+            });
+
+            var ctx = document.getElementById("myChart");
+            console.log(s_distances);
+
+            var colors = [];
+            var borders = [];
+            var labels = [];
+
+            for(var i in s_distances)
+            {
+                colors.push('rgba(255, 99, 132, 0.2)');
+                borders.push('rgba(255, 99, 132, 1)');
+                labels.push('No. ' + i);
+            }
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Distances (isSouthOf)',
+                        data: s_distances,
+                        backgroundColor: colors,
+                        borderColor: borders,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+
+            function toDegrees (angle)
+            {
+                return angle * (180 / Math.PI);
+            }
+
+            function toRadians (angle)
+            {
+                return angle * (Math.PI / 180);
+            }
+
+            function angleFromCoordinate(lat1, long1, lat2, long2)
+            {
+                var phi1 = toRadians(lat1);
+                var phi2 = toRadians(lat2);
+                var lambda1 = toRadians(long1);
+                var lambda2 = toRadians(long2);
+
+                var y = Math.sin(lambda2-lambda1) * Math.cos(phi2);
+                var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lambda2-lambda1);
+                var brng = toDegrees(Math.atan2(y, x)).toFixed(2);
+
+                return brng;
+            }
+
+        }
     });
 
-    function callback(data)
-    {
-        var row = data.results.bindings;
-        var distances = [];
-        var angle;
 
-        for(var i in row)
-        {
-            // Calculate Distance
-            var coordinate_1 = {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]
-                }
-            };
-
-            var coordinate_2 = {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]
-                }
-            };
-
-            angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value))
-
-            distances.push({"dist": turf.distance(coordinate_1, coordinate_2, "kilometers"), "angle": angle});
-        }
-
-        distances.sort(function(a,b) {
-            return a.dist - b.dist;
-        });
-
-        for(var i in distances)
-        {
-            $('body').append("<div>Distance: "+ distances[i]["dist"] +"-----Angle: "+ distances[i]["angle"] +"</div>");
-        }
-    }
-
-    function toDegrees (angle)
-    {
-        return angle * (180 / Math.PI);
-    }
-
-    function angleFromCoordinate(lat1, long1, lat2, long2)
-    {
-        var dLon = (long2 - long1);
-
-        var y = Math.sin(dLon) * Math.cos(lat2);
-        var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-
-        var brng = Math.atan2(y, x);
-
-        brng = toDegrees(brng);
-        brng = (brng + 360) % 360;
-        brng = 360 - brng;
-        brng = brng.toFixed(2) + "%"
-
-        return brng;
-    }
 });
