@@ -13,6 +13,12 @@ $(document).ready(function() {
         }
     }
 
+    // var options = {{"nearby": function() { return "  ?t1 higeomes:isNearOf ?t2 ."; },
+    // {"north": function () { return "  ?t1 higeomes:isNorthOf ?t2 ."; },
+    // {"south": function () { return "  ?t1 higeomes:isSouthOf ?t2 .";},
+    // {"east": function () { return "  ?t1 higeomes:isEastOf ?t2 .";},
+    // {"west": function() { return "  ?t1 higeomes:isWestOf ?t2 .";}}
+
     // Query for all resolved toponyms that are listed as nearby
     var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
     + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
@@ -255,6 +261,8 @@ $(document).ready(function() {
         //         console.log(complete_list);
         //     }
         // });
+
+        $('.ui.dropdown').dropdown();
 
 
         $('.ui.selection.list>.item').click(function()
