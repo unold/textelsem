@@ -56,7 +56,7 @@ $(document).ready(function() {
 
             }
 
-            s_distances.map( function (a) { if (a < 20) distances[a] ++; else hist[a] = 1; } );
+            console.log(s_distances);
 
             s_distances = s_distances.sort(function(a,b) {
                 return a- b;

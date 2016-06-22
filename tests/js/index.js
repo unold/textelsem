@@ -685,7 +685,6 @@ $(document).ready(function() {
                   + "<td>"+ euro_angle +"&deg</td></tr>");
 
 
-                  resolved_distances.sort();
 
               }
               else
@@ -757,6 +756,44 @@ $(document).ready(function() {
                   $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
               }
           }
+
+          resolved_distances.sort();
+
+          var ctx = document.getElementById("myChart");
+        //   console.log(s_distances);
+
+          var colors = [];
+          var borders = [];
+          var labels = [];
+
+          for(var i in resolved_distances)
+          {
+              colors.push('rgba(255, 99, 132, 0.2)');
+              borders.push('rgba(255, 99, 132, 1)');
+              labels.push('No. ' + i);
+          }
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      label: 'Nearby Distances',
+                      data: resolved_distances,
+                      backgroundColor: colors,
+                      borderColor: borders,
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  }
+              }
+          });
 
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
     }
