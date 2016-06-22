@@ -13,11 +13,115 @@ $(document).ready(function() {
         }
     }
 
-    // var options = {{"nearby": function() { return "  ?t1 higeomes:isNearOf ?t2 ."; },
-    // {"north": function () { return "  ?t1 higeomes:isNorthOf ?t2 ."; },
-    // {"south": function () { return "  ?t1 higeomes:isSouthOf ?t2 .";},
-    // {"east": function () { return "  ?t1 higeomes:isEastOf ?t2 .";},
-    // {"west": function() { return "  ?t1 higeomes:isWestOf ?t2 .";}}
+    $(".ui.dropdown").dropdown({
+        onChange: function() {
+            var value = $(".ui.dropdown").dropdown('get value');
+            var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
+            console.log("hello");
+            $.ajax({
+                url: repo,
+                dataType: 'jsonp',
+                data: {
+                    queryLn: 'SPARQL',
+                    query: query_func(value),
+                    Accept: 'application/json'
+                },
+                success: function (data) {
+
+                    var row = data.results.bindings;
+
+                    var regex_filter = /(toponym)\D\d+/;
+                    var regex_filter2 = /(Findspot)\/\d+/;
+                    var units = "kilometers";
+                    var complete = [];
+
+                    $('#toponym_dist_table>#table_details').html("");
+                    resolved_coords = [];
+                    resolved_distances = [];
+
+                    for(var i in row)
+                    {
+                        // Calculate Distance
+                        var coordinate_1 = {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]
+                            }
+                        };
+
+                        var coordinate_2 = {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]
+                            }
+                        };
+
+                        var distance = turf.distance(coordinate_1, coordinate_2, units);
+                        var center = turf.midpoint(coordinate_1, coordinate_2);
+                        var euro_distance = distance.toFixed(2).replace(/\./g, ',');
+                        var point_1 = ol.proj.fromLonLat([parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]);
+                        var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
+                        var euro_angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value)).replace(/\./g, ',');
+
+                        resolved_distances.push(distance);
+                        resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
+
+                      //   Add row to table
+                        $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                        + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
+                        + "<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td>"
+                        + "<td>"+ euro_angle +"&deg</td></tr>");
+                    }
+
+                    draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
+                }
+
+            });
+        }
+    });
+
+    function query_func(condition)
+    {
+        var options = {
+            "nearby": function() {
+                return "  ?t1 higeomes:isNearOf ?t2 .";
+            },
+            "north": function () {
+                return "  ?t1 higeomes:isNorthOf ?t2 .";
+            },
+            "south": function () {
+                return "  ?t1 higeomes:isSouthOf ?t2 .";
+            },
+            "east": function () {
+                return "  ?t1 higeomes:isEastOf ?t2 .";
+            },
+            "west": function() {
+                return "  ?t1 higeomes:isWestOf ?t2 .";
+            }
+        }
+
+        return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+        + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+        + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon ?f1_name ?f2_name ?f1_country ?f2_country\n"
+        + "WHERE { "
+        + options[condition]()
+        + "  ?t1 higeomes:hasFindspot ?f1 ."
+        + "  ?t2 higeomes:hasFindspot ?f2 ."
+        + "  ?f1 higeomes:lat ?t1_lat ."
+        + "  ?f1 higeomes:lng ?t1_lon ."
+        + "  ?f2 higeomes:lat ?t2_lat ."
+        + "  ?f2 higeomes:lng ?t2_lon ."
+        + "  ?f1 higeomes:name ?f1_name ."
+        + "  ?f2 higeomes:name ?f2_name ."
+        + "  ?f1 higeomes:country ?country1 ."
+        + "  ?country1 rdfs:label ?f1_country ."
+        + "  ?f2 higeomes:country ?country2 ."
+        + "  ?country2 rdfs:label ?f2_country ."
+        + " }";
+    }
+
 
     // Query for all resolved toponyms that are listed as nearby
     var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
@@ -262,7 +366,7 @@ $(document).ready(function() {
         //     }
         // });
 
-        $('.ui.dropdown').dropdown();
+        // $('.ui.dropdown').dropdown();
 
 
         $('.ui.selection.list>.item').click(function()
@@ -622,6 +726,7 @@ $(document).ready(function() {
         return brng;
     }
 
+
     function callback(data)
     {
         var row = data.results.bindings;
@@ -633,6 +738,9 @@ $(document).ready(function() {
 
 
         var html = [];
+
+        // $('#toponym_dist_table>#table_details').html("");
+
 
           for(var i in row)
           {
@@ -683,8 +791,6 @@ $(document).ready(function() {
                   + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
                   + "<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td>"
                   + "<td>"+ euro_angle +"&deg</td></tr>");
-
-
 
               }
               else
@@ -759,41 +865,40 @@ $(document).ready(function() {
 
           resolved_distances.sort();
 
-          var ctx = document.getElementById("myChart");
-        //   console.log(s_distances);
-
-          var colors = [];
-          var borders = [];
-          var labels = [];
-
-          for(var i in resolved_distances)
-          {
-              colors.push('rgba(255, 99, 132, 0.2)');
-              borders.push('rgba(255, 99, 132, 1)');
-              labels.push('No. ' + i);
-          }
-          var myChart = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: labels,
-                  datasets: [{
-                      label: 'Nearby Distances',
-                      data: resolved_distances,
-                      backgroundColor: colors,
-                      borderColor: borders,
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  }
-              }
-          });
+        //   var ctx = document.getElementById("myChart");
+          //
+        //   var colors = [];
+        //   var borders = [];
+        //   var labels = [];
+          //
+        //   for(var i in resolved_distances)
+        //   {
+        //       colors.push('rgba(255, 99, 132, 0.2)');
+        //       borders.push('rgba(255, 99, 132, 1)');
+        //       labels.push('No. ' + i);
+        //   }
+        //   var myChart = new Chart(ctx, {
+        //       type: 'bar',
+        //       data: {
+        //           labels: labels,
+        //           datasets: [{
+        //               label: 'Nearby Distances',
+        //               data: resolved_distances,
+        //               backgroundColor: colors,
+        //               borderColor: borders,
+        //               borderWidth: 1
+        //           }]
+        //       },
+        //       options: {
+        //           scales: {
+        //               yAxes: [{
+        //                   ticks: {
+        //                       beginAtZero:true
+        //                   }
+        //               }]
+        //           }
+        //       }
+        //   });
 
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
     }
