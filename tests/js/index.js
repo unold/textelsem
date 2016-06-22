@@ -485,9 +485,13 @@ $(document).ready(function() {
 
                 console.log(r_coords[index][9]['geometry']['coordinates']);
 
-                if($('#selectAll_Resolved').checkbox('is unchecked'))
+                map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+
+                if(r_coords[index][8] > 70)
                 {
-                    map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+                    map.getView().setZoom(9);
+                }
+                else {
                     map.getView().setZoom(11);
                 }
 
