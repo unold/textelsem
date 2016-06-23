@@ -306,6 +306,11 @@ $(document).ready(function() {
             }
         });
 
+        map.addLayer(circleLayer);
+        map.addLayer(lineLayer);
+        map.addLayer(vectorLayer);
+
+
 // =======================================================================================================================================================================
 
         $('.ui.accordion').accordion();
@@ -357,7 +362,7 @@ $(document).ready(function() {
             features_list[features_list.length - 1].set('status', "Resolved");
             features_list[features_list.length - 1].set('desc', n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.');
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
-            map.addLayer(vectorLayer);
+            // map.addLayer(vectorLayer);
 
             if(distance > 100)
             {
@@ -436,8 +441,8 @@ $(document).ready(function() {
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][0]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1][1]);
                 lineLayer.getSource().addFeature(line_list[line_list.length - 1]);
-                map.addLayer(lineLayer);
-                map.addLayer(vectorLayer);
+                // map.addLayer(lineLayer);
+                // map.addLayer(vectorLayer);
 
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
 
@@ -460,7 +465,7 @@ $(document).ready(function() {
                 lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
                 line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(index)), 1);
-                map.removeLayer(lineLayer);
+                // map.removeLayer(lineLayer);
             }
         });
 
@@ -492,8 +497,8 @@ $(document).ready(function() {
                 circleLayer.getSource().addFeature(circle_list[circle_list.length - 1]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
 
-                map.addLayer(circleLayer);
-                map.addLayer(vectorLayer);
+                // map.addLayer(circleLayer);
+                // map.addLayer(vectorLayer);
 
 
                 map.getView().setCenter(u_coords[index][1]);
@@ -509,7 +514,7 @@ $(document).ready(function() {
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
                 features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
                 circle_list.splice(circle_list.indexOf(vectorLayer.getSource().getFeatureById("circle"+index)), 1);
-                map.removeLayer(circleLayer);
+                // map.removeLayer(circleLayer);
             }
         });
 
@@ -532,7 +537,7 @@ $(document).ready(function() {
                 features_list[features_list.length - 1].set('location', n_coords[index][3][0] + " N, " + n_coords[index][3][1] + " E");
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot that is listed as nearby the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
                 vectorSource.addFeature(features_list[features_list.length - 1]);
-                map.addLayer(vectorLayer);
+                // map.addLayer(vectorLayer);
 
                 if($('#selectAll_Nearby').checkbox('is unchecked'))
                 {
