@@ -1,21 +1,60 @@
 $(document).ready(function() {
 
+    $(".ui.dropdown").dropdown({
+        onChange: function() {
+            var value = $(".ui.dropdown").dropdown('get value');
+            var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
+
+            $.ajax({
+                url: repo,
+                dataType: 'jsonp',
+                data: {
+                    queryLn: 'SPARQL',
+                    query: query(value),
+                    Accept: 'application/json'
+                },
+                success: callback
+        }
+    }
+
+    function query_func(condition)
+    {
+
+        var options = {
+            "nearby": function() {
+                return "  ?t1 higeomes:isNearOf ?t2 .";
+            },
+            "north": function () {
+                return "  ?t1 higeomes:isNorthOf ?t2 .";
+            },
+            "south": function () {
+                return "  ?t1 higeomes:isSouthOf ?t2 .";
+            },
+            "east": function () {
+                return "  ?t1 higeomes:isEastOf ?t2 .";
+            },
+            "west": function() {
+                return "  ?t1 higeomes:isWestOf ?t2 .";
+            }
+        }
+
+        return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+        + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+        + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon\n"
+        + "WHERE { "
+        + options[condition]()
+        + "  ?t1 higeomes:hasFindspot ?f1 ."
+        + "  ?t2 higeomes:hasFindspot ?f2 ."
+        + "  ?f1 higeomes:lat ?t1_lat ."
+        + "  ?f1 higeomes:lng ?t1_lon ."
+        + "  ?f2 higeomes:lat ?t2_lat ."
+        + "  ?f2 higeomes:lng ?t2_lon ."
+        + " }";
+    }
+
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
 
     var s_distances = [];
-    // Query for all resolved toponyms that are listed as nearby
-    var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon\n"
-    + "WHERE { "
-    + "  ?t1 higeomes:isSouthOf ?t2 ."
-    + "  ?t1 higeomes:hasFindspot ?f1 ."
-    + "  ?t2 higeomes:hasFindspot ?f2 ."
-    + "  ?f1 higeomes:lat ?t1_lat ."
-    + "  ?f1 higeomes:lng ?t1_lon ."
-    + "  ?f2 higeomes:lat ?t2_lat ."
-    + "  ?f2 higeomes:lng ?t2_lon ."
-    + " }";
 
     $.ajax({
         url: repo,

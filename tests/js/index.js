@@ -17,7 +17,6 @@ $(document).ready(function() {
         onChange: function() {
             var value = $(".ui.dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
-            console.log("hello");
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
@@ -258,39 +257,41 @@ $(document).ready(function() {
         var circle_list = [];
         var index;
 
-        var pointStyle = new ol.style.Style({
-            image: new ol.style.Icon(({
-                anchor: [0.5, 0.5],
-                anchorOrigin: 'bottom-right',
-                opacity: 1,
-                src: './img/svgs/circle-15.svg',
-                scale: 1
-            })
-        )});
-
-        var lineStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'rgba(180, 0, 0, .3)',
-                width: 4
-            })
-        });
-
-        var circleStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'rgba(161, 237, 181, 0.9)',
-                width: 3
+        var styles = {
+            'Point': new ol.style.Style({
+                image: new ol.style.Icon(({
+                    anchor: [0.5, 0.5],
+                    anchorOrigin: 'bottom-right',
+                    opacity: 1,
+                    src: './img/svgs/circle-15.svg',
+                    scale: 1
+                })
+            )}),
+            'LineString': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(180, 0, 0, .3)',
+                    width: 4
+                })
             }),
-            fill: new ol.style.Fill({
-                color: 'rgba(161, 237, 181, 0.42)'
+            'Circle': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(161, 237, 181, 0.9)',
+                    width: 3
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(161, 237, 181, 0.42)'
+                })
             })
-        });
+        }
 
         vectorSource = new ol.source.Vector({
         });
 
         vectorLayer = new ol.layer.Vector({
             source: vectorSource,
-            style: pointStyle
+            style: function(feature) {
+                return styles[feature.get('type')]
+            }
         });
 
         lineSource = new ol.source.Vector({
@@ -298,7 +299,9 @@ $(document).ready(function() {
 
         lineLayer = new ol.layer.Vector({
             source: lineSource,
-            style: lineStyle
+            style: function(feature) {
+                return styles[feature.get('type')]
+            }
         });
 
         circleSource = new ol.source.Vector({
@@ -306,10 +309,10 @@ $(document).ready(function() {
 
         circleLayer = new ol.layer.Vector({
             source: circleSource,
-            style: circleStyle
+            style: function(feature) {
+                return styles[feature.get('type')]
+            }
         });
-
-
 
 // =======================================================================================================================================================================
 
@@ -343,32 +346,6 @@ $(document).ready(function() {
             }
         });
 
-        // In Progress
-        // $('#zeroprob').checkbox({
-        //     onChecked: function() {
-        //
-        //         for(var i in complete_list)
-        //         {
-        //             var partition = complete_list[i][1];
-        //             for(var k = partition.length-1; k >= 0; k--)
-        //             {
-        //                 if(partition[k]["prob"] == 0)
-        //                 {
-        //                     complete_list[i][1].splice(partition.indexOf(partition[k]), 1);
-        //                 }
-        //             }
-        //         }
-        //
-        //     },
-        //     onUnchecked: function() {
-        //         complete_list = complete_clone;
-        //         console.log(complete_list);
-        //     }
-        // });
-
-        // $('.ui.dropdown').dropdown();
-
-
         $('.ui.selection.list>.item').click(function()
         {
             $(this).css({'font-weight': 'bold', 'color': 'black'});
@@ -391,8 +368,6 @@ $(document).ready(function() {
                 id: new_id
             }));
 
-            console.log(distance);
-
             features_list[features_list.length - 1].setId(new_id);
             features_list[features_list.length - 1].set('class','Resolved Toponym');
             features_list[features_list.length - 1].set('prob', (prob.toFixed(2)*100) + "%");
@@ -400,8 +375,6 @@ $(document).ready(function() {
             features_list[features_list.length - 1].set('desc', n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.');
             vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
             map.addLayer(vectorLayer);
-
-            console.log(complete_list[id][1][index]["mid"]['geometry']['coordinates']);
 
             if(distance > 100)
             {
@@ -483,8 +456,6 @@ $(document).ready(function() {
                 map.addLayer(lineLayer);
                 map.addLayer(vectorLayer);
 
-                console.log(r_coords[index][9]['geometry']['coordinates']);
-
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
 
                 if(r_coords[index][8] > 70)
@@ -515,7 +486,6 @@ $(document).ready(function() {
                 var wgs84Sphere = new ol.Sphere(6378137);
                 index = $(this).val();
 
-                console.log(u_coords[index][2]);
                 circle_list.push(new ol.Feature({
                     geometry: new ol.geom.Circle(u_coords[index][1], 40000),
                     type: 'Circle',
@@ -538,8 +508,6 @@ $(document).ready(function() {
 
                 circleLayer.getSource().addFeature(circle_list[circle_list.length - 1]);
                 vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
-
-                console.log(circle_list);
 
                 map.addLayer(circleLayer);
                 map.addLayer(vectorLayer);
@@ -582,7 +550,6 @@ $(document).ready(function() {
                 features_list[features_list.length - 1].set('country',n_coords[index][4]);
                 features_list[features_list.length - 1].set('location', n_coords[index][3][0] + " N, " + n_coords[index][3][1] + " E");
                 features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot that is listed as nearby the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
-                console.log(features_list);
                 vectorSource.addFeature(features_list[features_list.length - 1]);
                 map.addLayer(vectorLayer);
 
