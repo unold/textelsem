@@ -310,9 +310,6 @@ $(document).ready(function() {
         map.addLayer(lineLayer);
         map.addLayer(vectorLayer);
 
-
-// =======================================================================================================================================================================
-
         $('.ui.accordion').accordion();
 
         $('#selectAll_Nearby').checkbox({
@@ -349,20 +346,22 @@ $(document).ready(function() {
 
             var prob = complete_list[id][1][index]["prob"];
 
-            features_list.push(new ol.Feature({
-                geometry: new ol.geom.Point(n_coords[index][1]),
-                type: 'Point',
-                name: n_coords[index][0],
-                id: new_id
-            }));
+            vectorLayer.getSource.addFeature([
+                new ol.Feature({
+                    geometry: new ol.geom.Point(n_coords[index][1]),
+                    type: 'Point',
+                    name: n_coords[index][0],
+                    class: "Resolved Toponym",
+                    prob: (prob.toFixed(2)*100) + "%",
+                    status: "Resolved",
+                    desc: n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.'
+                })
+            ]);
 
-            features_list[features_list.length - 1].setId(new_id);
-            features_list[features_list.length - 1].set('class','Resolved Toponym');
-            features_list[features_list.length - 1].set('prob', (prob.toFixed(2)*100) + "%");
-            features_list[features_list.length - 1].set('status', "Resolved");
-            features_list[features_list.length - 1].set('desc', n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.');
-            vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
-            // map.addLayer(vectorLayer);
+            vectorLayer.getSource().getFeatures()[0].setId(new_id);
+
+
+            // features_list[features_list.length - 1].setId(new_id);
 
             if(distance > 100)
             {
@@ -388,9 +387,9 @@ $(document).ready(function() {
 
             big_id = big_id.split("-");
             var new_id = big_id[0] + big_id[1];
+
             $('#popup').html("");
             vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
-            features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(new_id)), 1);
 
         });
 
@@ -403,46 +402,45 @@ $(document).ready(function() {
 
                 var point1 = ol.proj.transform([r_coords[index][1][0], r_coords[index][1][1]], "EPSG:4326", "EPSG:3857");
                 var point2 = ol.proj.transform([r_coords[index][5][0], r_coords[index][5][1]], "EPSG:4326", "EPSG:3857");
-                features_list.push([new ol.Feature({
-                    geometry: new ol.geom.Point(point1),
-                    type: 'Point',
-                    name: r_coords[index][0],
-                    id: first_id
-                }),
-                new ol.Feature({
-                    geometry: new ol.geom.Point(point2),
-                    name: r_coords[index][4],
-                    type: 'Point',
-                    id: sec_id
-                })]);
-                line_list.push(new ol.Feature({
-                    geometry: new ol.geom.LineString([point1, point2]),
-                    name: 'Distance',
-                    type: 'LineString',
-                    id: index
-                }));
+
+                vectorLayer.getSource().addFeatures([
+                    new ol.Feature({
+                        geometry: new ol.geom.Point(point1),
+                        type: 'Point',
+                        name: r_coords[index][0],
+                        distance: r_coords[index][8],
+                        status: "Resolved",
+                        country: r_coords[index][2],
+                        class: r_coords[index][3]
+                    }),
+                    new ol.Feature({
+                        geometry: new ol.geom.Point(point2),
+                        name: r_coords[index][4],
+                        type: 'Point',
+                        distance: r_coords[index][8],
+                        status: "Resolved",
+                        country: r_coords[index][6],
+                        class: r_coords[index][7]
+
+                    })
+                ]);
+
+                lineLayer.getSource().addFeature(
+                    new ol.Feature({
+                        geometry: new ol.geom.LineString([point1, point2]),
+                        name: 'Distance',
+                        type: 'LineString',
+                    })
+                )
+
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].setId(first_id);
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(sec_id);
+                lineLayer.getSource().getFeatures()[lineLayer.getSource().getFeatures().length - 1].setId(index);
 
 
-                line_list[line_list.length - 1].setId(index);
-                features_list[features_list.length - 1][0].set('distance', r_coords[index][8]);
-                features_list[features_list.length - 1][1].set('distance', r_coords[index][8]);
-                features_list[features_list.length - 1][0].setId(first_id);
-                features_list[features_list.length - 1][0].set('status', "Resolved");
-                features_list[features_list.length - 1][0].set('country',r_coords[index][2]);
-                features_list[features_list.length - 1][0].set('class',r_coords[index][3]);
-                features_list[features_list.length - 1][0].set('location',r_coords[index][1][0] + " N" + ", " + r_coords[index][1][1] + " E");
-                features_list[features_list.length - 1][0].set('desc', features_list[features_list.length - 1][0].get('name') + " is listed as nearby " + features_list[features_list.length - 1][1].get('name') + ".");
-                features_list[features_list.length - 1][1].setId(sec_id);
-                features_list[features_list.length - 1][1].set('status', "Resolved");
-                features_list[features_list.length - 1][1].set('country',r_coords[index][6]);
-                features_list[features_list.length - 1][1].set('class',r_coords[index][7]);
-                features_list[features_list.length - 1][1].set('location',r_coords[index][5]);
-                features_list[features_list.length - 1][1].set('desc', features_list[features_list.length - 1][1].get('name') + " is listed as nearby " + features_list[features_list.length - 1][0].get('name') + ".");
-                vectorLayer.getSource().addFeature(features_list[features_list.length - 1][0]);
-                vectorLayer.getSource().addFeature(features_list[features_list.length - 1][1]);
-                lineLayer.getSource().addFeature(line_list[line_list.length - 1]);
-                // map.addLayer(lineLayer);
-                // map.addLayer(vectorLayer);
+                // features_list[features_list.length - 1][0].set('desc', features_list[features_list.length - 1][0].get('name') + " is listed as nearby " + features_list[features_list.length - 1][1].get('name') + ".");
+                // features_list[features_list.length - 1][1].set('desc', features_list[features_list.length - 1][1].get('name') + " is listed as nearby " + features_list[features_list.length - 1][0].get('name') + ".");
+
 
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
 
@@ -453,19 +451,16 @@ $(document).ready(function() {
                 else {
                     map.getView().setZoom(11);
                 }
-
             },
 
             onUnchecked: function() {
 
                 index = $(this).val();
                 $('#popup').html("");
+
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'0'));
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'1'));
                 lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
-                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
-                line_list.splice(line_list.indexOf(lineLayer.getSource().getFeatureById(index)), 1);
-                // map.removeLayer(lineLayer);
             }
         });
 
@@ -474,47 +469,36 @@ $(document).ready(function() {
                 var wgs84Sphere = new ol.Sphere(6378137);
                 index = $(this).val();
 
-                circle_list.push(new ol.Feature({
-                    geometry: new ol.geom.Circle(u_coords[index][1], 40000),
-                    type: 'Circle',
-                    id: "circle" + index
-                }));
-                features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(u_coords[index][1]),
-                    type: 'Point',
-                    name: u_coords[index][3],
-                    id: index
-                }));
+                circleLayer.getSource().addFeature(
+                    new ol.Feature({
+                        geometry: new ol.geom.Circle(u_coords[index][1], 40000),
+                        type: 'Circle'
+                    })
+                );
+                vectorLayer.getSource().addFeature(
+                    new ol.Feature({
+                        geometry: new ol.geom.Point(u_coords[index][1]),
+                        type: 'Point',
+                        name: u_coords[index][3],
+                        status: "Unresolved",
+                        class: u_coords[index][0]
+                    })
+                );
 
-
-                features_list[features_list.length - 1].setId(index);
-                circle_list[circle_list.length - 1].setId("circle"+index);
-                features_list[features_list.length - 1].set('status', "Unresolved");
-                features_list[features_list.length - 1].set('class',u_coords[index][0]);
-                features_list[features_list.length - 1].set('location',u_coords[index][2][0] + " N, " + u_coords[index][2][1] + " E");
-                features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is an unresolved findspot.");
-
-                circleLayer.getSource().addFeature(circle_list[circle_list.length - 1]);
-                vectorLayer.getSource().addFeature(features_list[features_list.length - 1]);
-
-                // map.addLayer(circleLayer);
-                // map.addLayer(vectorLayer);
-
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
+                circleLayergetSource().getFeatures()[circleLayer.getSource().getFeatures().length - 1].setId("circle"+index);
+                // features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is an unresolved findspot.");
 
                 map.getView().setCenter(u_coords[index][1]);
                 map.getView().setZoom(10);
-
-
             },
 
             onUnchecked: function() {
                 index = $(this).val();
                 $('#popup').html("");
+
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
-                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
-                circle_list.splice(circle_list.indexOf(vectorLayer.getSource().getFeatureById("circle"+index)), 1);
-                // map.removeLayer(circleLayer);
             }
         });
 
@@ -522,22 +506,19 @@ $(document).ready(function() {
             onChecked: function() {
 
                 index = $(this).val();
-                features_list.push(new ol.Feature({
-                    geometry: new ol.geom.Point(n_coords[index][1]),
-                    type: 'Point',
-                    name: n_coords[index][0],
-                    id: index
+                vectorLayer.getSource().addFeature(
+                    new ol.Feature({
+                        geometry: new ol.geom.Point(n_coords[index][1]),
+                        type: 'Point',
+                        name: n_coords[index][0],
+                        status: "Resolved",
+                        class: n_coords[index][2],
+                        country: n_coords[index][4]
+                    })
+                );
 
-                }));
-
-                features_list[features_list.length - 1].setId(index);
-                features_list[features_list.length - 1].set('status', "Resolved");
-                features_list[features_list.length - 1].set('class',n_coords[index][2]);
-                features_list[features_list.length - 1].set('country',n_coords[index][4]);
-                features_list[features_list.length - 1].set('location', n_coords[index][3][0] + " N, " + n_coords[index][3][1] + " E");
-                features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot that is listed as nearby the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
-                vectorSource.addFeature(features_list[features_list.length - 1]);
-                // map.addLayer(vectorLayer);
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
+                // features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot that is listed as nearby the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
 
                 if($('#selectAll_Nearby').checkbox('is unchecked'))
                 {
@@ -611,9 +592,7 @@ $(document).ready(function() {
                         $('.dist').html("<div class='ui center statistic' data-content='Average Distance of resolved nearby findspots: 27.34 km'  data-position='left center'>"
                         + "<div class='value'>"+feature.get('distance').toFixed(2)+"</div>"
                         + "<div class='label'>Kilometers Away</div>"
-                        + "</div><div class='ui divider'><div>"
-
-                        );
+                        + "</div><div class='ui divider'><div>");
 
                         $('.ui.center.statistic').popup();
                     }
