@@ -246,10 +246,6 @@ $(document).ready(function() {
         source: new ol.source.OSM()
     });
 
-    var mapquest = new ol.layer.Tile({
-        source: new ol.source.MapQuest({layer: 'sat'})
-    });
-
     var map = new ol.Map({
         target: 'map',
         view: new ol.View({
@@ -258,14 +254,6 @@ $(document).ready(function() {
         }),
         layers: [osm]
     });
-
-
-    var vectorSource;
-    var lineSource;
-    var lineLayer;
-    var circleSource;
-    var circleLayer;
-    var vectorLayer;
 
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
@@ -303,14 +291,14 @@ $(document).ready(function() {
             })
         }
 
-        vectorLayer = new ol.layer.Vector({
+        var vectorLayer = new ol.layer.Vector({
             source: new ol.source.Vector(),
             style: function(feature) {
                 return styles[feature.get('type')]
             }
         });
 
-        lineLayer = new ol.layer.Vector({
+        var lineLayer = new ol.layer.Vector({
             source: new ol.source.Vector(),
             style: function(feature) {
                 return styles[feature.get('type')]
@@ -318,7 +306,7 @@ $(document).ready(function() {
         });
 
 
-        circleLayer = new ol.layer.Vector({
+        var circleLayer = new ol.layer.Vector({
             source: new ol.source.Vector(),
             style: function(feature) {
                 return styles[feature.get('type')]
@@ -349,8 +337,6 @@ $(document).ready(function() {
                 osm.setSource(new ol.source.OSM())
             }
         });
-
-
 
         $('.ui.selection.list>.item').click(function()
         {

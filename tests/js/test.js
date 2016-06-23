@@ -61,7 +61,6 @@ $(document).ready(function() {
                 },
                 success: function(data) {
 
-                    console.log(x, values[x]);
                     var row = data.results.bindings;
                     var angle;
                     var s_distances = [];
@@ -118,7 +117,6 @@ $(document).ready(function() {
                         }
                     };
 
-                    console.log(values[x]);
                     var colors = [];
                     var borders = [];
                     var labels = [];
@@ -186,9 +184,7 @@ $(document).ready(function() {
                 }
             });
         })(x)
-
     }
-
 
     function toDegrees (angle)
     {
@@ -211,7 +207,6 @@ $(document).ready(function() {
         var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lambda2-lambda1);
         var brng = toDegrees(Math.atan2(y, x)).toFixed(2);
         brng = brng + 360;
-        console.log(brng)
 
         return brng;
     }
