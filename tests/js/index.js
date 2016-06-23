@@ -74,6 +74,41 @@ $(document).ready(function() {
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
+                    var ctx = document.getElementById("myChart");
+
+                    var colors = [];
+                    var borders = [];
+                    var labels = [];
+
+                    for(var i in resolved_distances)
+                    {
+                        colors.push('rgba(255, 99, 132, 0.2)');
+                        borders.push('rgba(255, 99, 132, 1)');
+                        labels.push('No. ' + i);
+                    }
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Distances',
+                                data: resolved_distances,
+                                backgroundColor: colors,
+                                borderColor: borders,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
 
@@ -120,7 +155,6 @@ $(document).ready(function() {
         + "  ?country2 rdfs:label ?f2_country ."
         + " }";
     }
-
 
     // Query for all resolved toponyms that are listed as nearby
     var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
@@ -315,6 +349,8 @@ $(document).ready(function() {
                 osm.setSource(new ol.source.OSM())
             }
         });
+
+
 
         $('.ui.selection.list>.item').click(function()
         {
@@ -770,9 +806,13 @@ $(document).ready(function() {
               }
           }
 
-          resolved_distances.sort();
+          resolved_distances = resolved_distances.sort(function (a,b)
+          {
+              return a - b;
+          });
           console.log("calling draw map");
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
+
     }
 
     // Calculate probability of an unresolved findspot
