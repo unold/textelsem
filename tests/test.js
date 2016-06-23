@@ -4,9 +4,13 @@ $(document).ready(function() {
     var values = ["nearby",  "north", "south", "east", "west"];
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
 
-    $('.ui.button').on('click', function() {
-        $('.shape').shape('flip right');
-    });
+    // $('.ui.button').on('click', function() {
+    //     $('.shape').shape('flip right');
+    // });
+    //
+    // $('#2').on('click', function() {
+    //     $('#second').shape('flip right');
+    // });
 
     function query_func(condition)
     {
@@ -61,6 +65,7 @@ $(document).ready(function() {
                     var row = data.results.bindings;
                     var angle;
                     var s_distances = [];
+                    var angles = [];
 
                     for(var i in row)
                     {
@@ -81,11 +86,16 @@ $(document).ready(function() {
                         };
 
                         angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value))
+                        angles.push(angle);
                         s_distances.push(turf.distance(coordinate_1, coordinate_2, "kilometers"));
 
                     }
 
                     s_distances = s_distances.sort(function (a,b)
+                    {
+                        return a - b;
+                    });
+                    angles = angles.sort(function (a,b)
                     {
                         return a - b;
                     });
@@ -138,7 +148,36 @@ $(document).ready(function() {
                             scales: {
                                 yAxes: [{
                                     ticks: {
+                                        beginAtZero:true,
+                                        steps: 10,
+                                        stepValue: 20,
+                                        max: 250
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                    var ctx2 = document.getElementById(values[x] + "2");
+
+                    var myChart2 = new Chart(ctx2, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Angles (' + values[x] + ")",
+                                data: angles,
+                                backgroundColor: colors,
+                                borderColor: borders,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
                                         beginAtZero:true
+
                                     }
                                 }]
                             }
@@ -171,6 +210,8 @@ $(document).ready(function() {
         var y = Math.sin(lambda2-lambda1) * Math.cos(phi2);
         var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lambda2-lambda1);
         var brng = toDegrees(Math.atan2(y, x)).toFixed(2);
+        brng = brng + 360;
+        console.log(brng)
 
         return brng;
     }

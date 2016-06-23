@@ -1,4 +1,11 @@
-.ui.shape {
-    height: 70%;
-    width: 100%
+.dist {
+    float: left;
+    width: 50%;
+    height: 100%;
+}
+
+.angle {
+    float: right;
+    width: 50%;
+    height: 100%;
 }
