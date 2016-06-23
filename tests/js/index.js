@@ -284,31 +284,23 @@ $(document).ready(function() {
             })
         }
 
-        vectorSource = new ol.source.Vector({
-        });
-
         vectorLayer = new ol.layer.Vector({
-            source: vectorSource,
+            source: new ol.source.Vector(),
             style: function(feature) {
                 return styles[feature.get('type')]
             }
-        });
-
-        lineSource = new ol.source.Vector({
         });
 
         lineLayer = new ol.layer.Vector({
-            source: lineSource,
+            source: new ol.source.Vector(),
             style: function(feature) {
                 return styles[feature.get('type')]
             }
         });
 
-        circleSource = new ol.source.Vector({
-        });
 
         circleLayer = new ol.layer.Vector({
-            source: circleSource,
+            source: new ol.source.Vector(),
             style: function(feature) {
                 return styles[feature.get('type')]
             }
@@ -326,15 +318,6 @@ $(document).ready(function() {
                 $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
             }
         });
-
-        // $('#selectAll_Unresolved').checkbox({
-        //     onChecked: function() {
-        //         $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('check');
-        //     },
-        //     onUnchecked: function() {
-        //         $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
-        //     }
-        // });
 
         $('#sat_toggle').checkbox({
             onChecked: function() {
@@ -512,11 +495,9 @@ $(document).ready(function() {
                 map.addLayer(circleLayer);
                 map.addLayer(vectorLayer);
 
-                // if($('#selectAll_Unesolved').checkbox('is unchecked'))
-                // {
-                    map.getView().setCenter(u_coords[index][1]);
-                    map.getView().setZoom(10);
-                // }
+
+                map.getView().setCenter(u_coords[index][1]);
+                map.getView().setZoom(10);
 
 
             },
@@ -626,9 +607,7 @@ $(document).ready(function() {
                         + "<div class='value'>"+feature.get('distance').toFixed(2)+"</div>"
                         + "<div class='label'>Kilometers Away</div>"
                         + "</div><div class='ui divider'><div>"
-                        // + "<div class='ui message'>"
-                        // + "<div class='header'>Average Distance</div>"
-                        // + "<p>The average distance of resolved findspots listed as nearby is </p></div>"
+
                         );
 
                         $('.ui.center.statistic').popup();
@@ -669,9 +648,6 @@ $(document).ready(function() {
                 }
             });
 
-        map.addOverlay(popup);
-
-
     }
 
     function toDegrees (angle)
@@ -709,11 +685,6 @@ $(document).ready(function() {
         var complete = [];
 
 
-        var html = [];
-
-        // $('#toponym_dist_table>#table_details').html("");
-
-
           for(var i in row)
           {
               if (row[i].hasOwnProperty('top1'))
@@ -722,7 +693,6 @@ $(document).ready(function() {
                     var transformed_coords = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
                     findspot_coordinates.push([row[i].name.value, transformed_coords, regex_filter.exec(row[i].top1.value)[0], normal_coords1, row[i].country.value, regex_filter.exec(row[i].top2.value)[0]]);
 
-                  //   Add row to table
                     $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                     + "<td><a href ="+row[i].top1.value + ">" + regex_filter.exec(row[i].top1.value)[0] +"</a></td>"
                     +"<td><a href =" +row[i].top2.value + ">" + row[i].name.value + "</a></td>"
@@ -758,7 +728,6 @@ $(document).ready(function() {
                   resolved_distances.push(distance);
                   resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
 
-                //   Add row to table
                   $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
                   + "<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td>"
@@ -778,7 +747,6 @@ $(document).ready(function() {
                   findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
                   findspot_name1 = findspot_name1.replace(/\//, " ");
 
-                //   Add row to table
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
                   + "<td><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
@@ -836,41 +804,6 @@ $(document).ready(function() {
           }
 
           resolved_distances.sort();
-
-        //   var ctx = document.getElementById("myChart");
-          //
-        //   var colors = [];
-        //   var borders = [];
-        //   var labels = [];
-          //
-        //   for(var i in resolved_distances)
-        //   {
-        //       colors.push('rgba(255, 99, 132, 0.2)');
-        //       borders.push('rgba(255, 99, 132, 1)');
-        //       labels.push('No. ' + i);
-        //   }
-        //   var myChart = new Chart(ctx, {
-        //       type: 'bar',
-        //       data: {
-        //           labels: labels,
-        //           datasets: [{
-        //               label: 'Nearby Distances',
-        //               data: resolved_distances,
-        //               backgroundColor: colors,
-        //               borderColor: borders,
-        //               borderWidth: 1
-        //           }]
-        //       },
-        //       options: {
-        //           scales: {
-        //               yAxes: [{
-        //                   ticks: {
-        //                       beginAtZero:true
-        //                   }
-        //               }]
-        //           }
-        //       }
-        //   });
 
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
     }
