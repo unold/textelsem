@@ -486,7 +486,7 @@ $(document).ready(function() {
                 );
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
-                circleLayergetSource().getFeatures()[circleLayer.getSource().getFeatures().length - 1].setId("circle"+index);
+                circleLayer.getSource().getFeatures()[circleLayer.getSource().getFeatures().length - 1].setId("circle"+index);
                 // features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is an unresolved findspot.");
 
                 map.getView().setCenter(u_coords[index][1]);
