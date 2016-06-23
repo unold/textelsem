@@ -593,9 +593,6 @@ $(document).ready(function() {
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
 
-                    // Optional
-                    // map.getView().setCenter(coord);
-
                     $('#popup').html("<div class='ui card'>"
                     + "<div class='content'>"
                     + "<i class='right floated large link remove icon'></i>"
@@ -603,17 +600,19 @@ $(document).ready(function() {
                     + "<div class='meta'>"+feature.get('class')+"</div>"
                     + "<div class='description'><div class='dist'></div><div class='stats'></div></div>"
                     + "</div><div class='extra content'>"
-                    + "<div class='left floated radius'></div><div class='left floated country'></div><div class='right floated status' data-toggle='tooltip' data-placement='bottom'>"
+                    + "<div class='left floated radius'></div><div class='left floated country'></div><div class='right floated status' data-position='bottom left'>"
                     + "</div></div></div>");
 
                     if(feature.get('status') == "Unresolved")
                     {
                         $('.right.floated.status').html("Status: <i class='remove circle outline icon'></i>");
-                        $('.right.floated.status').attr('title', 'Unresolved');
+                        $('.right.floated.status').attr('data-content', 'Unresolved');
+                        $('.right.floated.status').popup();
                     }
                     else if(feature.get('status') == "Resolved") {
                         $('.right.floated.status').html("Status: <i class='check circle outline green icon'></i>");
-                        $('.right.floated.status').attr('title', 'Resolved');
+                        $('.right.floated.status').attr('data-content', 'Resolved');
+                        $('.right.floated.status').popup();
                     }
 
                     if(feature.U.hasOwnProperty('country'))
@@ -623,7 +622,7 @@ $(document).ready(function() {
 
                     if(feature.U.hasOwnProperty('distance'))
                     {
-                        $('.dist').html("<div class='ui center statistic'>"
+                        $('.dist').html("<div class='ui center statistic' data-content='Average Distance of resolved nearby findspots: 27.34 km'  data-position='left center'>"
                         + "<div class='value'>"+feature.get('distance').toFixed(2)+"</div>"
                         + "<div class='label'>Kilometers Away</div>"
                         + "</div><div class='ui divider'><div>"
@@ -631,6 +630,8 @@ $(document).ready(function() {
                         // + "<div class='header'>Average Distance</div>"
                         // + "<p>The average distance of resolved findspots listed as nearby is </p></div>"
                         );
+
+                        $('.ui.center.statistic').popup();
                     }
 
                     if(feature.U.hasOwnProperty('prob'))
