@@ -208,23 +208,6 @@ $(document).ready(function() {
         success: callback
     });
 
-
-
-    // var map = new ol.Map({
-    //     target: 'map',
-    //     layers: [
-    //         new ol.layer.Tile({
-    //             source: new ol.source.OSM()
-    //         }),
-    //         vectorLayer, lineLayer, circleLayer],
-    //     view: new ol.View({
-    //         center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
-    //         zoom: 7
-    //     })
-    // });
-
-    // Create Map ================================================================
-
     var osm = new ol.layer.Tile({
         source: new ol.source.OSM()
     });
@@ -252,6 +235,8 @@ $(document).ready(function() {
 
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
+
+        console.log("hey");
         var line_list = [];
         var features_list = [];
         var circle_list = [];
@@ -361,8 +346,6 @@ $(document).ready(function() {
             vectorLayer.getSource().getFeatures()[0].setId(new_id);
 
 
-            // features_list[features_list.length - 1].setId(new_id);
-
             if(distance > 100)
             {
                 map.getView().setZoom(7);
@@ -438,8 +421,11 @@ $(document).ready(function() {
                 lineLayer.getSource().getFeatures()[lineLayer.getSource().getFeatures().length - 1].setId(index);
 
 
-                // features_list[features_list.length - 1][0].set('desc', features_list[features_list.length - 1][0].get('name') + " is listed as nearby " + features_list[features_list.length - 1][1].get('name') + ".");
-                // features_list[features_list.length - 1][1].set('desc', features_list[features_list.length - 1][1].get('name') + " is listed as nearby " + features_list[features_list.length - 1][0].get('name') + ".");
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name')
+                + " is listed as nearby " + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + ".");
+
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
+                + " is listed as nearby " + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name') + ".");
 
 
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
@@ -487,7 +473,8 @@ $(document).ready(function() {
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
                 circleLayer.getSource().getFeatures()[circleLayer.getSource().getFeatures().length - 1].setId("circle"+index);
-                // features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is an unresolved findspot.");
+
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + " is an unresolved findspot.");
 
                 map.getView().setCenter(u_coords[index][1]);
                 map.getView().setZoom(10);
@@ -518,7 +505,9 @@ $(document).ready(function() {
                 );
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
-                // features_list[features_list.length - 1].set('desc', features_list[features_list.length - 1].get('name') + " is a resolved findspot that is listed as nearby the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
+
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
+                + " is a resolved findspot that is listed as nearby the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
 
                 if($('#selectAll_Nearby').checkbox('is unchecked'))
                 {
@@ -533,21 +522,16 @@ $(document).ready(function() {
                 $('#popup').html("");
                 index = $(this).val();
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
-                features_list.splice(features_list.indexOf(vectorLayer.getSource().getFeatureById(index)), 1);
             }
         });
 
-        var element = document.getElementById('popup');
-
         var popup = new ol.Overlay({
-          element: element,
+          element: document.getElementById('popup'),
           positioning: 'top-left',
           stopEvent: false
         });
 
-
         map.addOverlay(popup);
-
 
         map.on('click', function(evt) {
             var feature = map.forEachFeatureAtPixel(evt.pixel,
@@ -657,7 +641,6 @@ $(document).ready(function() {
 
         return brng;
     }
-
 
     function callback(data)
     {
@@ -788,7 +771,7 @@ $(document).ready(function() {
           }
 
           resolved_distances.sort();
-
+          console.log("calling draw map");
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
     }
 
