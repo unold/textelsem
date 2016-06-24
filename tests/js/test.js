@@ -47,6 +47,28 @@ $(document).ready(function() {
 
     }
 
+    var temp = [];
+
+    var value_lookup = {
+        "nearby": function() {
+            return "nearby";
+        },
+        "north": function() {
+            return "north";
+        },
+        "south": function() {
+            return "south";
+        },
+        "east": function() {
+            return "east";
+        },
+        "west": function() {
+            return "west";
+        }
+    };
+
+    var arr = {"nearby": [], "north": [], "south": [], "east": [], "west": []};
+
     for(var x in values)
     {
         (function(x)
@@ -63,8 +85,9 @@ $(document).ready(function() {
 
                     var row = data.results.bindings;
                     var angle;
-                    var s_distances = [];
+                    // var s_distances = [];
                     var angles = [];
+                    temp = [];
 
                     for(var i in row)
                     {
@@ -84,20 +107,37 @@ $(document).ready(function() {
                             }
                         };
 
-                        angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value))
-                        angles.push(angle);
-                        s_distances.push(turf.distance(coordinate_1, coordinate_2, "kilometers"));
+                        angle = parseFloat(angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value)))
+                        arr[value_lookup[values[x]]()].push({"dist": turf.distance(coordinate_1, coordinate_2, "kilometers"), "angle": angle});
 
                     }
 
-                    s_distances = s_distances.sort(function (a,b)
+                    var sorted_distances = [];
+                    var sorted_angles = [];
+
+                    arr[value_lookup[values[x]]()] = arr[value_lookup[values[x]]()].sort(function (a,b)
                     {
-                        return a - b;
+                        return a.dist - b.dist;
                     });
-                    angles = angles.sort(function (a,b)
+
+                    for(var i in arr[value_lookup[values[x]]()])
                     {
-                        return a - b;
+                        sorted_distances.push(arr[value_lookup[values[x]]()][i]["dist"])
+                    }
+
+                    arr[value_lookup[values[x]]()] = arr[value_lookup[values[x]]()].sort(function (a,b)
+                    {
+                        return a.angle - b.angle;
                     });
+
+                    for(var i in arr[value_lookup[values[x]]()])
+                    {
+                        sorted_angles.push(arr[value_lookup[values[x]]()][i]["angle"])
+                    }
+
+                    console.log(sorted_distances);
+                    console.log(sorted_angles);
+
 
                     var color_lookup = {
                         "nearby": function () {
@@ -121,7 +161,7 @@ $(document).ready(function() {
                     var borders = [];
                     var labels = [];
 
-                    for(var i in s_distances)
+                    for(var i in sorted_distances)
                     {
                         colors.push(color_lookup[values[x]]()[0]);
                         borders.push(color_lookup[values[x]]()[1]);
@@ -136,7 +176,7 @@ $(document).ready(function() {
                             labels: labels,
                             datasets: [{
                                 label: 'Distances (' + values[x] + ")",
-                                data: s_distances,
+                                data: sorted_distances,
                                 backgroundColor: colors,
                                 borderColor: borders,
                                 borderWidth: 1
@@ -164,7 +204,7 @@ $(document).ready(function() {
                             labels: labels,
                             datasets: [{
                                 label: 'Angles (' + values[x] + ")",
-                                data: angles,
+                                data: sorted_angles,
                                 backgroundColor: colors,
                                 borderColor: borders,
                                 borderWidth: 1
@@ -185,6 +225,145 @@ $(document).ready(function() {
             });
         })(x)
     }
+
+    // for(var x in values)
+    // {
+    //     (function(x)
+    //     {
+    //         $.ajax({
+    //             url: repo,
+    //             dataType: 'jsonp',
+    //             data: {
+    //                 queryLn: 'SPARQL',
+    //                 query: query_func(values[x]),
+    //                 Accept: 'application/json'
+    //             },
+    //             success: function(data) {
+    //
+    //                 var row = data.results.bindings;
+    //                 var angle;
+    //                 var s_distances = [];
+    //                 var angles = [];
+    //
+    //                 for(var i in row)
+    //                 {
+    //                     var coordinate_1 = {
+    //                         "type": "Feature",
+    //                         "geometry": {
+    //                             "type": "Point",
+    //                             "coordinates": [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]
+    //                         }
+    //                     };
+    //
+    //                     var coordinate_2 = {
+    //                         "type": "Feature",
+    //                         "geometry": {
+    //                             "type": "Point",
+    //                             "coordinates": [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]
+    //                         }
+    //                     };
+    //
+    //                     angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value))
+    //                     angles.push(angle);
+    //                     s_distances.push(turf.distance(coordinate_1, coordinate_2, "kilometers"));
+    //
+    //                 }
+    //
+    //                 s_distances = s_distances.sort(function (a,b)
+    //                 {
+    //                     return a - b;
+    //                 });
+    //                 angles = angles.sort(function (a,b)
+    //                 {
+    //                     return a - b;
+    //                 });
+    //
+    //                 var color_lookup = {
+    //                     "nearby": function () {
+    //                         return ['rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)']
+    //                     },
+    //                     "north": function () {
+    //                         return ['rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)']
+    //                     },
+    //                     "south": function () {
+    //                         return ['rgba(255, 206, 86, 0.2)', 'rgba(255, 206, 86, 1)']
+    //                     },
+    //                     "east": function () {
+    //                         return ['rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)']
+    //                     },
+    //                     "west": function () {
+    //                         return ['rgba(153, 102, 255, 0.2)', 'rgba(153, 102, 255, 1)']
+    //                     }
+    //                 };
+    //
+    //                 var colors = [];
+    //                 var borders = [];
+    //                 var labels = [];
+    //
+    //                 for(var i in s_distances)
+    //                 {
+    //                     colors.push(color_lookup[values[x]]()[0]);
+    //                     borders.push(color_lookup[values[x]]()[1]);
+    //                     labels.push('No. ' + i);
+    //                 }
+    //
+    //                 var ctx = document.getElementById(values[x]);
+    //
+    //                 var myChart = new Chart(ctx, {
+    //                     type: 'bar',
+    //                     data: {
+    //                         labels: labels,
+    //                         datasets: [{
+    //                             label: 'Distances (' + values[x] + ")",
+    //                             data: s_distances,
+    //                             backgroundColor: colors,
+    //                             borderColor: borders,
+    //                             borderWidth: 1
+    //                         }]
+    //                     },
+    //                     options: {
+    //                         scales: {
+    //                             yAxes: [{
+    //                                 ticks: {
+    //                                     beginAtZero:true,
+    //                                     steps: 10,
+    //                                     stepValue: 20,
+    //                                     max: 250
+    //                                 }
+    //                             }]
+    //                         }
+    //                     }
+    //                 });
+    //
+    //                 var ctx2 = document.getElementById(values[x] + "2");
+    //
+    //                 var myChart2 = new Chart(ctx2, {
+    //                     type: 'line',
+    //                     data: {
+    //                         labels: labels,
+    //                         datasets: [{
+    //                             label: 'Angles (' + values[x] + ")",
+    //                             data: angles,
+    //                             backgroundColor: colors,
+    //                             borderColor: borders,
+    //                             borderWidth: 1
+    //                         }]
+    //                     },
+    //                     options: {
+    //                         scales: {
+    //                             yAxes: [{
+    //                                 ticks: {
+    //                                     beginAtZero:true
+    //
+    //                                 }
+    //                             }]
+    //                         }
+    //                     }
+    //                 });
+    //             }
+    //         });
+    //     })(x)
+    // }
 
     function toDegrees (angle)
     {

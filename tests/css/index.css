@@ -2,6 +2,18 @@ h2 {
     padding: 15px;
 }
 
+.dist {
+    float: left;
+    width: 50%;
+    height: 100%;
+}
+
+.angle {
+    float: right;
+    width: 50%;
+    height: 100%;
+}
+
 #table_container {
     height: 100%;
     overflow: auto;
