@@ -150,88 +150,91 @@ $(document).ready(function() {
 
                     check_similarity(arr);
 
-                    // var color_lookup = {
-                    //     "nearby": function () {
-                    //         return ['rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)']
-                    //     },
-                    //     "north": function () {
-                    //         return ['rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)']
-                    //     },
-                    //     "south": function () {
-                    //         return ['rgba(255, 206, 86, 0.2)', 'rgba(255, 206, 86, 1)']
-                    //     },
-                    //     "east": function () {
-                    //         return ['rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)']
-                    //     },
-                    //     "west": function () {
-                    //         return ['rgba(153, 102, 255, 0.2)', 'rgba(153, 102, 255, 1)']
-                    //     }
-                    // };
-                    //
-                    // var colors = [];
-                    // var borders = [];
-                    // var labels = [];
-                    //
-                    // for(var i in sorted_distances)
-                    // {
-                    //     colors.push(color_lookup[values[x]]()[0]);
-                    //     borders.push(color_lookup[values[x]]()[1]);
-                    //     labels.push('No. ' + i);
-                    // }
-                    //
-                    // var ctx = document.getElementById(values[x]);
-                    //
-                    // var myChart = new Chart(ctx, {
-                    //     type: 'bar',
-                    //     data: {
-                    //         labels: labels,
-                    //         datasets: [{
-                    //             label: 'Distances (' + values[x] + ")",
-                    //             data: sorted_distances,
-                    //             backgroundColor: colors,
-                    //             borderColor: borders,
-                    //             borderWidth: 1
-                    //         }]
-                    //     },
-                    //     options: {
-                    //         scales: {
-                    //             yAxes: [{
-                    //                 ticks: {
-                    //                     beginAtZero:true,
-                    //                     steps: 10,
-                    //                     stepValue: 20,
-                    //                     max: 250
-                    //                 }
-                    //             }]
-                    //         }
-                    //     }
-                    // });
-                    //
-                    // var ctx2 = document.getElementById(values[x] + "2");
-                    //
-                    // var myChart2 = new Chart(ctx2, {
-                    //     type: 'line',
-                    //     data: {
-                    //         labels: labels,
-                    //         datasets: [{
-                    //             label: 'Angles (' + values[x] + ")",
-                    //             data: sorted_angles,
-                    //             backgroundColor: colors,
-                    //             borderColor: borders,
-                    //             borderWidth: 1
-                    //         }]
-                    //     },
-                    //     options: {
-                    //         scales: {
-                    //             yAxes: [{
-                    //                 ticks: {
-                    //                     beginAtZero:true
-                    //
-                    //                 }
-                    //             }]
-                    //         }
-                    //     }
-                    // });
+                    var color_lookup = {
+                        "all": function () {
+                            return ['rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)']
+                        },
+                        "nearby": function () {
+                            return ['rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)']
+                        },
+                        "north": function () {
+                            return ['rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)']
+                        },
+                        "south": function () {
+                            return ['rgba(255, 206, 86, 0.2)', 'rgba(255, 206, 86, 1)']
+                        },
+                        "east": function () {
+                            return ['rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)']
+                        },
+                        "west": function () {
+                            return ['rgba(153, 102, 255, 0.2)', 'rgba(153, 102, 255, 1)']
+                        }
+                    };
+
+                    var colors = [];
+                    var borders = [];
+                    var labels = [];
+
+                    for(var i in sorted_distances)
+                    {
+                        colors.push(color_lookup[values[x]]()[0]);
+                        borders.push(color_lookup[values[x]]()[1]);
+                        labels.push('No. ' + i);
+                    }
+
+                    var ctx = document.getElementById(values[x]);
+
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Distances (' + values[x] + ")",
+                                data: sorted_distances,
+                                backgroundColor: colors,
+                                borderColor: borders,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true,
+                                        steps: 10,
+                                        stepValue: 20,
+                                        max: 700
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                    var ctx2 = document.getElementById(values[x] + "2");
+
+                    var myChart2 = new Chart(ctx2, {
+                        type: 'bubble',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Angles (' + values[x] + ")",
+                                data: sorted_angles,
+                                backgroundColor: colors,
+                                borderColor: borders,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true
+
+                                    }
+                                }]
+                            }
+                        }
+                    });
                 }
             });
         })(x)
@@ -278,7 +281,7 @@ $(document).ready(function() {
                 return a;
             }
         });
-        // console.log("Distance Meaningfulness: " + name, new_arr.length/arr2.length);
+        console.log("Distance Meaningfulness: " + name, (new_arr.length/arr2.length));
     }
 
     function angle_similarity(name, arr1, arr2)
@@ -301,12 +304,11 @@ $(document).ready(function() {
             },
             "south": function() {
                 var new_arr = arr2.filter(function(a) {
-                    if(a > 270 && a < 90)
+                    if(a > 270 || a < 90)
                     {
                         return a;
                     }
                 });
-
                 return new_arr;
             },
             "east": function() {
@@ -331,7 +333,7 @@ $(document).ready(function() {
             }
         }
 
-        console.log("Angle Meaningfulness: " + name, arr1.length/names_list[name]().length)
+        console.log("Angle Meaningfulness: " + name, (arr1.length/names_list[name]().length)*100)
     }
 
     function toDegrees (angle)
