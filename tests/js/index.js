@@ -74,40 +74,40 @@ $(document).ready(function() {
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
-                    var ctx = document.getElementById("myChart");
-
-                    var colors = [];
-                    var borders = [];
-                    var labels = [];
-
-                    for(var i in resolved_distances)
-                    {
-                        colors.push('rgba(255, 99, 132, 0.2)');
-                        borders.push('rgba(255, 99, 132, 1)');
-                        labels.push('No. ' + i);
-                    }
-                    var myChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Distances',
-                                data: resolved_distances,
-                                backgroundColor: colors,
-                                borderColor: borders,
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                yAxes: [{
-                                    ticks: {
-                                        beginAtZero:true
-                                    }
-                                }]
-                            }
-                        }
-                    });
+                    // var ctx = document.getElementById("myChart");
+                    //
+                    // var colors = [];
+                    // var borders = [];
+                    // var labels = [];
+                    //
+                    // for(var i in resolved_distances)
+                    // {
+                    //     colors.push('rgba(255, 99, 132, 0.2)');
+                    //     borders.push('rgba(255, 99, 132, 1)');
+                    //     labels.push('No. ' + i);
+                    // }
+                    // var myChart = new Chart(ctx, {
+                    //     type: 'bar',
+                    //     data: {
+                    //         labels: labels,
+                    //         datasets: [{
+                    //             label: 'Distances',
+                    //             data: resolved_distances,
+                    //             backgroundColor: colors,
+                    //             borderColor: borders,
+                    //             borderWidth: 1
+                    //         }]
+                    //     },
+                    //     options: {
+                    //         scales: {
+                    //             yAxes: [{
+                    //                 ticks: {
+                    //                     beginAtZero:true
+                    //                 }
+                    //             }]
+                    //         }
+                    //     }
+                    // });
 
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
@@ -659,9 +659,9 @@ $(document).ready(function() {
 
         var y = Math.sin(lambda2-lambda1) * Math.cos(phi2);
         var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lambda2-lambda1);
-        var brng = toDegrees(Math.atan2(y, x)).toFixed(2);
+        var brng = parseFloat(toDegrees(Math.atan2(y, x)));
 
-        return brng;
+        return ((brng + 360) % 360).toFixed(2);
     }
 
     function callback(data)
