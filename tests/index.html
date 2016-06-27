@@ -45,7 +45,7 @@
                 <!-- <a class="active item" data-tab="resolved" id="r_tab">Resolved Toponyms</a> -->
                 <a class="item" data-tab="unresolved" id="u_tab">Unresolved Findspots</a>
                 <a class="item" data-tab="new" id="n_tab">Nearby Unresolved Toponym</a>
-                <a class="item" href="./test.html" id="graphs">Graphs</a>
+                <!-- <a class="item" href="./test.html" id="graphs">Graphs</a> -->
                 <a class="item" data-tab="settings" id="s_tab"><i class='settings icon'></i></a>
 
             </div>
@@ -134,7 +134,7 @@
                             <p class='settings_description'>Show radius of unresolved probability area</p>
                         </div>
                         <div class='field'>
-                            <div class="ui checkbox">
+                            <div class="ui checkbox" id="clear">
                                 <input type="checkbox">
                                 <label>Clear All</label>
                             </div>
@@ -153,6 +153,17 @@
                                 <label>Hide Zero Probability Points</label>
                             </div>
                             <p class='settings_description'>Only show points with a probability of greater than zero on the Unresolved Findspots tab</p>
+                        </div>
+
+                        <div class="ui small basic modal">
+                            <div class="header">Clear All</div>
+                            <div class="content">
+                                <p>Are you sure you want to clear all points from the map?</p>
+                            </div>
+                            <div class="actions">
+                                <div class="ui green inverted approve button">Yes</div>
+                                <div class="ui red inverted cancel button">No</div>
+                            </div>
                         </div>
                     </div>
                 </div>

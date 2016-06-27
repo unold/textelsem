@@ -66,8 +66,8 @@ h2 {
     color: red;
 }
 
-.ui.button {
-    float:right;
+.ui.small.modal {
+    height: 200px;
 }
 
 .popover{

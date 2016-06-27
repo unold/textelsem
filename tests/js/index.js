@@ -328,6 +328,29 @@ $(document).ready(function() {
             }
         });
 
+
+
+        $("#clear").checkbox({
+            onChecked: function() {
+
+                $(".ui.small.modal").modal('show');
+
+                $(".ui.small.modal").modal({
+                    onApprove: function() {
+
+                        $('#toponym_dist_table>#table_details').find(".ui.checkbox#row").checkbox('uncheck');
+                        $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
+                        $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
+                        // $('.remove').click();
+                        $("#clear").checkbox('set unchecked');
+                    }
+                })
+
+            }
+        });
+
+
+
         $('#sat_toggle').checkbox({
             onChecked: function() {
                 osm.setSource(new ol.source.MapQuest({layer: 'sat'}));
