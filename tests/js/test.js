@@ -143,6 +143,8 @@ $(document).ready(function() {
                         sorted_angles.push(arr[value_lookup[values[x]]()][i]["angle"])
                     }
 
+                    console.log(values[x], sorted_angles)
+
                     if(values[x] == "all")
                         all_arr = sorted_distances.slice();
 
@@ -279,17 +281,6 @@ $(document).ready(function() {
         console.log(name, new_arr.length/arr2.length);
     }
 
-    function angle_similartiy(name, arr1, arr2)
-    {
-        var new_arr = arr2.filter(function(a) {
-            if(a < arr1[arr1.length-1] && a > arr1[0])
-            {
-                return a;
-            }
-        });
-        console.log(name, new_arr.length/arr2.length);
-    }
-
     function toDegrees (angle)
     {
         return angle * (180 / Math.PI);
@@ -309,9 +300,9 @@ $(document).ready(function() {
 
         var y = Math.sin(lambda2-lambda1) * Math.cos(phi2);
         var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lambda2-lambda1);
-        var brng = toDegrees(Math.atan2(y, x)).toFixed(2);
-        brng = brng + 360;
+        var brng = parseFloat(toDegrees(Math.atan2(y, x)));
 
-        return brng;
+
+        return ((brng + 360) % 360).toFixed(2);
     }
 });
