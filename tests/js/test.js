@@ -264,7 +264,7 @@ $(document).ready(function() {
                 if(values[i] != "all")
                 {
                     similarity(value_lookup[values[i]](), dist, all_arr);
-                    similarity(value_lookup[values[i]](), angles, all_arr);
+                    angle_similarity(value_lookup[values[i]](), angles, all_arr);
                 }
             }
         }
@@ -278,7 +278,60 @@ $(document).ready(function() {
                 return a;
             }
         });
-        console.log(name, new_arr.length/arr2.length);
+        // console.log("Distance Meaningfulness: " + name, new_arr.length/arr2.length);
+    }
+
+    function angle_similarity(name, arr1, arr2)
+    {
+        var names_list = {
+            "nearby": function() {
+                var new_arr = arr2;
+
+                return new_arr;
+            },
+            "north": function() {
+                var new_arr = arr2.filter(function(a) {
+                    if(a < 270 && a > 90)
+                    {
+                        return a;
+                    }
+                });
+
+                return new_arr;
+            },
+            "south": function() {
+                var new_arr = arr2.filter(function(a) {
+                    if(a > 270 && a < 90)
+                    {
+                        return a;
+                    }
+                });
+
+                return new_arr;
+            },
+            "east": function() {
+                var new_arr = arr2.filter(function(a) {
+                    if(a > 180 && a < 360)
+                    {
+                        return a;
+                    }
+                });
+
+                return new_arr;
+            },
+            "west": function() {
+                var new_arr = arr2.filter(function(a) {
+                    if(a < 180 && a > 0)
+                    {
+                        return a;
+                    }
+                });
+
+                return new_arr;
+            }
+        }
+
+        console.log("Angle Meaningfulness: " + name, arr1.length/names_list[name]().length)
     }
 
     function toDegrees (angle)
