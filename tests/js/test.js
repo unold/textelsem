@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
 
-    var values = ["all","nearby",  "north", "south", "east", "west"];
+    var values = ["all","nearby",  "north", "south", "east", "west", "realm", "district", "upstream", "downstream"];
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
 
     // $('.ui.button').on('click', function() {
@@ -32,6 +32,18 @@ $(document).ready(function() {
             },
             "west": function() {
                 return "  ?t1 higeomes:isWestOf ?t2 .";
+            },
+            "realm": function() {
+                return "  ?t1 higeomes:isInRealmOf ?t2 .";
+            },
+            "district": function() {
+                return "  ?t1 higeomes:isInDistrictOf ?t2 .";
+            },
+            "upstream": function() {
+                return "  ?t1 higeomes:isUpstreamOf ?t2 .";
+            },
+            "downstream": function() {
+                return "  ?t1 higeomes:isDownstreamOf ?t2 .";
             }
         }
 
@@ -68,12 +80,24 @@ $(document).ready(function() {
         },
         "west": function() {
             return "west";
+        },
+        "realm": function() {
+            return "realm";
+        },
+        "district": function() {
+            return "district";
+        },
+        "upstream": function() {
+            return "upstream";
+        },
+        "downstream": function() {
+            return "downstream";
         }
     };
 
     var all_arr = [];
 
-    var arr = {"all": [], "nearby": [], "north": [], "south": [], "east": [], "west": []};
+    var arr = {"all": [], "nearby": [], "north": [], "south": [], "east": [], "west": [], "realm": [], "district": [], "upstream": [], "downstream": []};
 
     for(var x in values)
     {
@@ -143,98 +167,99 @@ $(document).ready(function() {
                         sorted_angles.push(arr[value_lookup[values[x]]()][i]["angle"])
                     }
 
-                    console.log(values[x], sorted_angles)
+                    console.log(values[x], sorted_angles);
+                    console.log(values[x], sorted_distances);
 
                     if(values[x] == "all")
                         all_arr = sorted_distances.slice();
 
                     check_similarity(arr);
 
-                    var color_lookup = {
-                        "all": function () {
-                            return ['rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)']
-                        },
-                        "nearby": function () {
-                            return ['rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)']
-                        },
-                        "north": function () {
-                            return ['rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)']
-                        },
-                        "south": function () {
-                            return ['rgba(255, 206, 86, 0.2)', 'rgba(255, 206, 86, 1)']
-                        },
-                        "east": function () {
-                            return ['rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)']
-                        },
-                        "west": function () {
-                            return ['rgba(153, 102, 255, 0.2)', 'rgba(153, 102, 255, 1)']
-                        }
-                    };
-
-                    var colors = [];
-                    var borders = [];
-                    var labels = [];
-
-                    for(var i in sorted_distances)
-                    {
-                        colors.push(color_lookup[values[x]]()[0]);
-                        borders.push(color_lookup[values[x]]()[1]);
-                        labels.push('No. ' + i);
-                    }
-
-                    var ctx = document.getElementById(values[x]);
-
-                    var myChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Distances (' + values[x] + ")",
-                                data: sorted_distances,
-                                backgroundColor: colors,
-                                borderColor: borders,
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                yAxes: [{
-                                    ticks: {
-                                        beginAtZero:true,
-                                        steps: 10,
-                                        stepValue: 20,
-                                        max: 700
-                                    }
-                                }]
-                            }
-                        }
-                    });
-
-                    var ctx2 = document.getElementById(values[x] + "2");
-
-                    var myChart2 = new Chart(ctx2, {
-                        type: 'bubble',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Angles (' + values[x] + ")",
-                                data: sorted_angles,
-                                backgroundColor: colors,
-                                borderColor: borders,
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                yAxes: [{
-                                    ticks: {
-                                        beginAtZero:true
-
-                                    }
-                                }]
-                            }
-                        }
-                    });
+                    // var color_lookup = {
+                    //     "all": function () {
+                    //         return ['rgba(255, 159, 64, 0.2)', 'rgba(255, 159, 64, 1)']
+                    //     },
+                    //     "nearby": function () {
+                    //         return ['rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)']
+                    //     },
+                    //     "north": function () {
+                    //         return ['rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)']
+                    //     },
+                    //     "south": function () {
+                    //         return ['rgba(255, 206, 86, 0.2)', 'rgba(255, 206, 86, 1)']
+                    //     },
+                    //     "east": function () {
+                    //         return ['rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)']
+                    //     },
+                    //     "west": function () {
+                    //         return ['rgba(153, 102, 255, 0.2)', 'rgba(153, 102, 255, 1)']
+                    //     }
+                    // };
+                    //
+                    // var colors = [];
+                    // var borders = [];
+                    // var labels = [];
+                    //
+                    // for(var i in sorted_distances)
+                    // {
+                    //     colors.push(color_lookup[values[x]]()[0]);
+                    //     borders.push(color_lookup[values[x]]()[1]);
+                    //     labels.push('No. ' + i);
+                    // }
+                    //
+                    // var ctx = document.getElementById(values[x]);
+                    //
+                    // var myChart = new Chart(ctx, {
+                    //     type: 'bar',
+                    //     data: {
+                    //         labels: labels,
+                    //         datasets: [{
+                    //             label: 'Distances (' + values[x] + ")",
+                    //             data: sorted_distances,
+                    //             backgroundColor: colors,
+                    //             borderColor: borders,
+                    //             borderWidth: 1
+                    //         }]
+                    //     },
+                    //     options: {
+                    //         scales: {
+                    //             yAxes: [{
+                    //                 ticks: {
+                    //                     beginAtZero:true,
+                    //                     steps: 10,
+                    //                     stepValue: 20,
+                    //                     max: 700
+                    //                 }
+                    //             }]
+                    //         }
+                    //     }
+                    // });
+                    //
+                    // var ctx2 = document.getElementById(values[x] + "2");
+                    //
+                    // var myChart2 = new Chart(ctx2, {
+                    //     type: 'bubble',
+                    //     data: {
+                    //         labels: labels,
+                    //         datasets: [{
+                    //             label: 'Angles (' + values[x] + ")",
+                    //             data: sorted_angles,
+                    //             backgroundColor: colors,
+                    //             borderColor: borders,
+                    //             borderWidth: 1
+                    //         }]
+                    //     },
+                    //     options: {
+                    //         scales: {
+                    //             yAxes: [{
+                    //                 ticks: {
+                    //                     beginAtZero:true
+                    //
+                    //                 }
+                    //             }]
+                    //         }
+                    //     }
+                    // });
                 }
             });
         })(x)
@@ -267,7 +292,7 @@ $(document).ready(function() {
                 if(values[i] != "all")
                 {
                     similarity(value_lookup[values[i]](), dist, all_arr);
-                    angle_similarity(value_lookup[values[i]](), angles, all_arr);
+                    // angle_similarity(value_lookup[values[i]](), angles, all_arr);
                 }
             }
         }
@@ -333,7 +358,7 @@ $(document).ready(function() {
             }
         }
 
-        console.log("Angle Meaningfulness: " + name, (arr1.length/names_list[name]().length)*100)
+        console.log("Angle Meaningfulness: " + name, names_list[name]().length/arr2.length)
     }
 
     function toDegrees (angle)
