@@ -13,9 +13,9 @@ $(document).ready(function() {
         }
     }
 
-    $(".ui.dropdown").dropdown({
+    $("#r_dropdown").dropdown({
         onChange: function() {
-            var value = $(".ui.dropdown").dropdown('get value');
+            var value = $("#r_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
             $.ajax({
                 url: repo,
@@ -67,47 +67,12 @@ $(document).ready(function() {
                         resolved_distances.push(distance);
                         resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
 
-                      //   Add row to table
+                        // Add row to table
                         $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                         + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
                         + "<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td>"
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
-
-                    // var ctx = document.getElementById("myChart");
-                    //
-                    // var colors = [];
-                    // var borders = [];
-                    // var labels = [];
-                    //
-                    // for(var i in resolved_distances)
-                    // {
-                    //     colors.push('rgba(255, 99, 132, 0.2)');
-                    //     borders.push('rgba(255, 99, 132, 1)');
-                    //     labels.push('No. ' + i);
-                    // }
-                    // var myChart = new Chart(ctx, {
-                    //     type: 'bar',
-                    //     data: {
-                    //         labels: labels,
-                    //         datasets: [{
-                    //             label: 'Distances',
-                    //             data: resolved_distances,
-                    //             backgroundColor: colors,
-                    //             borderColor: borders,
-                    //             borderWidth: 1
-                    //         }]
-                    //     },
-                    //     options: {
-                    //         scales: {
-                    //             yAxes: [{
-                    //                 ticks: {
-                    //                     beginAtZero:true
-                    //                 }
-                    //             }]
-                    //         }
-                    //     }
-                    // });
 
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
@@ -115,6 +80,146 @@ $(document).ready(function() {
             });
         }
     });
+
+    $("#n_dropdown").dropdown({
+        onChange: function() {
+
+            var value = $("#n_dropdown").dropdown('get value');
+            console.log(value);
+            var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
+            $.ajax({
+                url: repo,
+                dataType: 'jsonp',
+                data: {
+                    queryLn: 'SPARQL',
+                    query: query_func2(value),
+                    Accept: 'application/json'
+                },
+                success: function (data) {
+
+                    var row = data.results.bindings;
+
+                    var regex_filter = /(toponym)\D\d+/;
+                    var regex_filter2 = /(Findspot)\/\d+/;
+                    var units = "kilometers";
+                    var complete = [];
+
+                    $('#new_table>#table_details').html("");
+
+                    findspot_coordinates = [];
+
+                    for(var i in row)
+                    {
+
+                        if(row[i].hasOwnProperty("f3"))
+                        {
+                            $("#new_table").addClass("hidden");
+                            $("#new_table2").removeClass("hidden");
+                            var normal_coords1 = [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)];
+                            var transformed_coords = ol.proj.transform([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], "EPSG:4326", "EPSG:3857");
+                            var normal_coords2 = [parseFloat(row[i].t3_lon.value), parseFloat(row[i].t3_lat.value)];
+                            var transformed_coords2 = ol.proj.transform([parseFloat(row[i].t3_lon.value), parseFloat(row[i].t3_lat.value)], "EPSG:4326", "EPSG:3857");
+                            findspot_coordinates.push([regex_filter.exec(row[i].t1.value)[0], transformed_coords, row[i].f2_name.value, normal_coords1, row[i].f2_country.value, row[i].f3_name.value, row[i].f3_country.value, transformed_coords2, normal_coords2]);
+
+                            $('#new_table2>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                            + "<td><a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td>"
+                            +"<td><a href =" +row[i].f2.value + ">" + row[i].f2_name.value + "</a></td>"
+                            + "<td><a href =" +row[i].f3.value + ">" + row[i].f3_name.value + "</a></td></tr>");
+                        }
+
+                        else {
+                            // Calculate Distance
+
+                            $("#new_table2").addClass("hidden");
+                            $("#new_table").removeClass("hidden");
+
+                            // Add row to table
+                            var normal_coords1 = [parseFloat(row[i].f2_lon.value), parseFloat(row[i].f2_lat.value)];
+                            var transformed_coords = ol.proj.transform([parseFloat(row[i].f2_lon.value), parseFloat(row[i].f2_lat.value)], "EPSG:4326", "EPSG:3857");
+                            findspot_coordinates.push([row[i].name.value, transformed_coords, regex_filter.exec(row[i].t1.value)[0], normal_coords1, row[i].country.value, regex_filter.exec(row[i].t2.value)[0]]);
+
+                            $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                            + "<td><a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td>"
+                            +"<td><a href =" +row[i].t2.value + ">" + regex_filter.exec(row[i].t2.value)[0] + "</a></td>"
+                            + "<td><a href =" +row[i].f2.value + ">" + row[i].name.value + "</a></td></tr>");
+
+                        }
+                    }
+
+                    draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
+
+                }
+            });
+        }
+    });
+
+    function query_func2(condition)
+    {
+        var options = {
+            "nearby": function() {
+                return "  ?t1 higeomes:isNearOf ?t2 .";
+            },
+            "nearbynorth": function () {
+                return  "  ?t1 higeomes:isNearOf ?t2 .\n  ?t1 higeomes:isNorthOf ?t3 .\n";
+            },
+            "nearbysouth": function () {
+                return  "  ?t1 higeomes:isNearOf ?t2 .\n  ?t1 higeomes:isSouthOf ?t3 .\n";
+            },
+            "nearbyeast": function () {
+                return  "  ?t1 higeomes:isNearOf ?t2 .\n  ?t1 higeomes:isEastOf ?t3 .\n";
+            },
+            "nearbywest": function() {
+                return "  ?t1 higeomes:isNearOf ?t2 .\n  ?t1 higeomes:isWestOf ?t3 .\n";
+            }
+        }
+
+        if(condition.length > 6)
+        {
+            return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+            + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+            + "SELECT ?t1 ?t2 ?t3 ?f1 ?f2 ?f3 ?t2_lat ?t2_lon ?t3_lat ?t3_lon  ?f2_name ?f3_name ?f2_country ?f3_country\n"
+            + "WHERE { "
+            + options[condition]()
+            + "  ?t2 higeomes:hasFindspot ?f2 ."
+            + "  ?t3 higeomes:hasFindspot ?f3 ."
+            + "  FILTER NOT EXISTS"
+            + "  {"
+            + "    ?t1 higeomes:hasFindspot ?f1 ."
+            + "  }"
+            + "  ?f2 higeomes:lat ?t2_lat ."
+            + "  ?f2 higeomes:lng ?t2_lon ."
+            + "  ?f3 higeomes:lat ?t3_lat ."
+            + "  ?f3 higeomes:lng ?t3_lon ."
+            + "  ?f2 higeomes:name ?f2_name ."
+            + "  ?f3 higeomes:name ?f3_name ."
+            + "  ?f2 higeomes:country ?country2 ."
+            + "  ?country2 rdfs:label ?f2_country ."
+            + "  ?f3 higeomes:country ?country3 ."
+            + "  ?country3 rdfs:label ?f3_country ."
+            + " }";
+        }
+
+        else {
+            return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+            + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+            + "SELECT ?t1 ?t2 ?f2 ?f2_lon ?f2_lat ?name ?country\n"
+            + "WHERE {"
+            + "?t1 higeomes:isNearOf ?t2 ."
+            // + options[condition]()
+            + "?t2 higeomes:hasFindspot ?f2 ."
+            + "?f2 higeomes:country ?c ."
+            + "?c rdfs:label ?country ."
+            + "FILTER NOT EXISTS"
+            + "{"
+            +   "?t1 higeomes:hasFindspot ?f1 ."
+            + "}"
+            + "?f2 higeomes:lng ?f2_lon ."
+            + "?f2 higeomes:lat ?f2_lat ."
+            + "?f2 higeomes:name ?name ."
+            + "}";
+        }
+
+    }
 
     function query_func(condition)
     {
@@ -136,24 +241,25 @@ $(document).ready(function() {
             }
         }
 
-        return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-        + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-        + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon ?f1_name ?f2_name ?f1_country ?f2_country\n"
-        + "WHERE { "
-        + options[condition]()
-        + "  ?t1 higeomes:hasFindspot ?f1 ."
-        + "  ?t2 higeomes:hasFindspot ?f2 ."
-        + "  ?f1 higeomes:lat ?t1_lat ."
-        + "  ?f1 higeomes:lng ?t1_lon ."
-        + "  ?f2 higeomes:lat ?t2_lat ."
-        + "  ?f2 higeomes:lng ?t2_lon ."
-        + "  ?f1 higeomes:name ?f1_name ."
-        + "  ?f2 higeomes:name ?f2_name ."
-        + "  ?f1 higeomes:country ?country1 ."
-        + "  ?country1 rdfs:label ?f1_country ."
-        + "  ?f2 higeomes:country ?country2 ."
-        + "  ?country2 rdfs:label ?f2_country ."
-        + " }";
+            return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+            + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+            + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon ?f1_name ?f2_name ?f1_country ?f2_country\n"
+            + "WHERE { "
+            + options[condition]()
+            + "  ?t1 higeomes:hasFindspot ?f1 ."
+            + "  ?t2 higeomes:hasFindspot ?f2 ."
+            + "  ?f1 higeomes:lat ?t1_lat ."
+            + "  ?f1 higeomes:lng ?t1_lon ."
+            + "  ?f2 higeomes:lat ?t2_lat ."
+            + "  ?f2 higeomes:lng ?t2_lon ."
+            + "  ?f1 higeomes:name ?f1_name ."
+            + "  ?f2 higeomes:name ?f2_name ."
+            + "  ?f1 higeomes:country ?country1 ."
+            + "  ?country1 rdfs:label ?f1_country ."
+            + "  ?f2 higeomes:country ?country2 ."
+            + "  ?country2 rdfs:label ?f2_country ."
+            + " }";
+
     }
 
     // Query for all resolved toponyms that are listed as nearby
@@ -258,7 +364,6 @@ $(document).ready(function() {
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
 
-        console.log("hey");
         var line_list = [];
         var features_list = [];
         var circle_list = [];
@@ -333,15 +438,18 @@ $(document).ready(function() {
         $("#clear").checkbox({
             onChecked: function() {
 
+                var features = vectorLayer.getSource().getFeatures();
+
                 $(".ui.small.modal").modal('show');
 
                 $(".ui.small.modal").modal({
                     onApprove: function() {
-
-                        $('#toponym_dist_table>#table_details').find(".ui.checkbox#row").checkbox('uncheck');
-                        $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
+                        for(var i in features)
+                        {
+                            vectorLayer.getSource().removeFeature(features[i]);
+                        }
                         $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
-                        // $('.remove').click();
+
                         $("#clear").checkbox('set unchecked');
                     }
                 })
@@ -463,7 +571,6 @@ $(document).ready(function() {
 
                 var prep;
 
-                console.log($(".ui.dropdown").dropdown('get value'));
                 if($(".ui.dropdown").dropdown('get value') == "")
                 {
                     prep = "nearby ";
@@ -483,8 +590,8 @@ $(document).ready(function() {
                 + " is listed as " +  $(".ui.dropdown").dropdown('get value') + prep + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + ".");
 
 
-                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
-                + " is listed as " +  $(".ui.dropdown").dropdown('get value') + prep + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name') + ".");
+                // vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
+                // + " is listed as " +  $(".ui.dropdown").dropdown('get value') + prep + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name') + ".");
 
 
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));

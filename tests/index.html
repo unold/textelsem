@@ -29,9 +29,9 @@
         <div id="table_container">
             <div class="ui top attached tabular menu">
                 <a class="active item" data-tab="resolved" id="r_tab">
-                    <div class="ui dropdown"  data-tab="resolved" id="r_tab">
+                    <div class="ui floating dropdown"  data-tab="resolved" id="r_dropdown">
                         <input type="hidden" name="toponym_table">
-                        <div class="default text" data-value="nearby">Resolved Toponyms</div>
+                        <div class="text" data-value="nearby">Resolved Toponyms</div>
                         <i class="dropdown icon"></i>
                         <div class="menu">
                             <div class="active selected item" data-value="nearby" id="nearby">Nearby</div>
@@ -44,7 +44,20 @@
                 </a>
                 <!-- <a class="active item" data-tab="resolved" id="r_tab">Resolved Toponyms</a> -->
                 <a class="item" data-tab="unresolved" id="u_tab">Unresolved Findspots</a>
-                <a class="item" data-tab="new" id="n_tab">Nearby Unresolved Toponym</a>
+                <a class="item" data-tab="new" id="n_tab">
+                    <div class="ui floating dropdown"  data-tab="new" id="n_dropdown">
+                        <input type="hidden" name="table2">
+                        <div class="text" data-value="nearby">Unresolved Toponyms</div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="active selected item" data-value="nearby" id="nearby">Nearby</div>
+                            <div class="item" data-value="nearbysouth" id="nearbysouth">Nearby/isSouthOf</div>
+                            <div class="item" data-value="nearbynorth" id="nearbynorth">Nearby/isNorthOf</div>
+                            <div class="item" data-value="nearbyeast" id="nearbyeast">Nearby/isEastOf</div>
+                            <div class="item" data-value="nearbywest" id="nearbywest">Nearby/isWestOf</div>
+                        </div>
+                    </div>
+                </a>
                 <!-- <a class="item" href="./test.html" id="graphs">Graphs</a> -->
                 <a class="item" data-tab="settings" id="s_tab"><i class='settings icon'></i></a>
 
@@ -112,6 +125,24 @@
                         <tbody id="table_details">
                         </tbody>
                     </table>
+
+                    <table class="ui hidden celled table" id="new_table2">
+                        <thead>
+                            <tr>
+                                <th class="one wide">
+                                    <div class="ui fitted toggle checkbox" id='selectAll_Nearby'>
+                                        <input type='checkbox' >
+                                        <label></label>
+                                    </div>
+                                </th>
+                                <th>Unresolved Toponym</th>
+                                <th>Resolved Toponym 1</th>
+                                <th>Resolved Toponym 2</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_details">
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -155,14 +186,14 @@
                             <p class='settings_description'>Only show points with a probability of greater than zero on the Unresolved Findspots tab</p>
                         </div>
 
-                        <div class="ui small basic modal">
-                            <div class="header">Clear All</div>
+                        <div class="ui small modal">
+                            <div class="header">Header</div>
                             <div class="content">
                                 <p>Are you sure you want to clear all points from the map?</p>
                             </div>
                             <div class="actions">
-                                <div class="ui green inverted approve button">Yes</div>
-                                <div class="ui red inverted cancel button">No</div>
+                                <div class="ui approve button">Yes</div>
+                                <div class="ui cancel button">No</div>
                             </div>
                         </div>
                     </div>
