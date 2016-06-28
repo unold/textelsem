@@ -888,7 +888,7 @@ $(document).ready(function() {
 
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
-                  + "<td><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
+                  + "<td id='test"+ i + "'><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
                   + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
 
                   unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
@@ -936,17 +936,30 @@ $(document).ready(function() {
           for(var key in complete)
           {
               var obj = complete[key][1];
+              var count = 0;
               for(var i = 0; i < 8; i++)
               {
+                  if(obj[i].prob == 0)
+                  {
+                      count++
+                  }
                   $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
               }
+              if(count == 8)
+              {
+                  $("td#test"+ key).css({"background-color": "#C14242"})
+              }
+
+              console.log(count);
+
           }
 
           resolved_distances = resolved_distances.sort(function (a,b)
           {
               return a - b;
           });
-          console.log("calling draw map");
+
+
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
 
     }
