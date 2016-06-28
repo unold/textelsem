@@ -81,6 +81,8 @@ $(document).ready(function() {
         }
     });
 
+
+
     $("#n_dropdown").dropdown({
         onChange: function() {
 
@@ -153,7 +155,11 @@ $(document).ready(function() {
         }
     });
 
-    $("#p_dropdown").dropdown();
+    $("#p_dropdown").dropdown({
+        onChange: function() {
+            console.log($("#p_dropdown").dropdown('get value'))
+        }
+    });
 
     function query_func2(condition)
     {
@@ -787,7 +793,6 @@ $(document).ready(function() {
                     $('#popup').html("");
                 }
             });
-
     }
 
     function toDegrees (angle)
@@ -908,7 +913,6 @@ $(document).ready(function() {
 
               for(var j in findspot_coordinates)
               {
-
                   var resolved_findspot = {
                       "type": "Feature",
                       "geometry": {
@@ -932,7 +936,6 @@ $(document).ready(function() {
               }
           }
 
-
           for(var key in complete)
           {
               var obj = complete[key][1];
@@ -947,11 +950,8 @@ $(document).ready(function() {
               }
               if(count == 8)
               {
-                  $("td#test"+ key).css({"background-color": "#C14242"})
+                  $("td#test"+ key).addClass("negative");
               }
-
-              console.log(count);
-
           }
 
           resolved_distances = resolved_distances.sort(function (a,b)
@@ -959,9 +959,7 @@ $(document).ready(function() {
               return a - b;
           });
 
-
           draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
-
     }
 
     // Calculate probability of an unresolved findspot
