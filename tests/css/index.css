@@ -42,6 +42,9 @@ h2 {
     width: 100%;
 }
 
+.default.text {
+    font-weight: 100;
+}
 .checkbox input[type=checkbox] {
     margin-left: 0px;
 }

@@ -97,7 +97,20 @@
                                     </div>
                                 </th>
                                 <th>Unresolved Findspot</th>
-                                <th class="nine wide">Probability</th>
+                                <th class="nine wide">
+                                    <div class="ui multiple search selection fluid dropdown" id="p_dropdown">
+                                        <input type="hidden" name="prob">
+                                        <div class="default text">Select Property</div>
+                                        <i class="dropdown icon"></i>
+                                        <div class="menu">
+                                            <div class=" item" data-value="nearbyp" id="nearbyp">Nearby</div>
+                                            <div class="item" data-value="southp" id="southp">isSouthOf</div>
+                                            <div class="item" data-value="northp" id="northp">isNorthOf</div>
+                                            <div class="item" data-value="eastp" id="eastp">isEastOf</div>
+                                            <div class="item" data-value="westp" id="westp">isWestOf</div>
+                                        </div>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="table_details">

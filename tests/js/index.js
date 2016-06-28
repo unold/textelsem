@@ -153,6 +153,8 @@ $(document).ready(function() {
         }
     });
 
+    $("#p_dropdown").dropdown();
+
     function query_func2(condition)
     {
         var options = {
@@ -432,6 +434,8 @@ $(document).ready(function() {
                 $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
             }
         });
+
+
 
 
 
