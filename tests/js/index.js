@@ -488,7 +488,7 @@ $(document).ready(function() {
 
             var prob = complete_list[id][1][index]["prob"];
 
-            vectorLayer.getSource.addFeature([
+            vectorLayer.getSource().addFeatures([
                 new ol.Feature({
                     geometry: new ol.geom.Point(n_coords[index][1]),
                     type: 'Point',
@@ -500,7 +500,7 @@ $(document).ready(function() {
                 })
             ]);
 
-            vectorLayer.getSource().getFeatures()[0].setId(new_id);
+            vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(new_id);
 
 
             if(distance > 100)
@@ -529,6 +529,8 @@ $(document).ready(function() {
             var new_id = big_id[0] + big_id[1];
 
             $('#popup').html("");
+
+            console.log(vectorLayer.getSource().getFeatures());
             vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
 
         });
