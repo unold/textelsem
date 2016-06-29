@@ -13,8 +13,11 @@ $(document).ready(function() {
         }
     }
 
+    $(".tabular.menu .item").tab();
+
     $("#r_dropdown").dropdown({
         onChange: function() {
+
             var value = $("#r_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
             $.ajax({
@@ -80,8 +83,6 @@ $(document).ready(function() {
             });
         }
     });
-
-
 
     $("#n_dropdown").dropdown({
         onChange: function() {
@@ -157,9 +158,75 @@ $(document).ready(function() {
 
     $("#p_dropdown").dropdown({
         onChange: function() {
-            console.log($("#p_dropdown").dropdown('get value'))
+            console.log(query_func3($("#p_dropdown").dropdown('get value').split(",")));
+            $.ajax({
+                url: repo,
+                dataType: 'jsonp',
+                data: {
+                    queryLn: 'SPARQL',
+                    query: query_func3($("#p_dropdown").dropdown('get value').split(",")),
+                    Accept: 'application/json'
+                },
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function() {
+                    console.log(":(")
+                }
+            });
         }
     });
+
+    function addProperties(top, var1, num)
+    {
+        return "  ?"+top+" higeomes:hasFindspot ?"+var1+" .\n"
+                + "  ?"+var1+" higeomes:lat ?"+var1+"_lat .\n"
+                + "  ?"+var1+" higeomes:lng ?"+var1+"_lon .\n"
+                + "  ?"+var1+" higeomes:name ?"+var1+"_name .\n"
+                + "  ?"+var1+" higeomes:country ?country"+num+" .\n"
+                + "  ?country"+num+" rdfs:label ?"+var1+"_country .\n";
+    }
+
+    function query_func3(conditions)
+    {
+        var properties = "";
+        var variables = ["?t1"];
+        var options = {
+            "nearby": function() {
+                return "  ?t1 higeomes:isNearOf ";
+            },
+            "north": function () {
+                return "  ?t1 higeomes:isNorthOf ";
+            },
+            "south": function () {
+                return "  ?t1 higeomes:isSouthOf ";
+            },
+            "east": function () {
+                return "  ?t1 higeomes:isEastOf ";
+            },
+            "west": function() {
+                return "  ?t1 higeomes:isWestOf ";
+            }
+        };
+
+
+        for(var i in conditions)
+        {
+            variables.push("?t" + (parseFloat(i)+2), "?f" + (parseFloat(i)+2), "?f" + (parseFloat(i)+2) + "_lat", "?f" + (parseFloat(i)+2) + "_lon", "?f" + (parseFloat(i)+2) + "_name", "?f" + (parseFloat(i)+2) + "_country")
+            properties += options[conditions[i]]() + "?t" + (parseFloat(i)+2) + " . \n"
+            properties += addProperties("t" + (parseFloat(i)+2), "f" + (parseFloat(i)+2) , (parseFloat(i)+2));
+            // console.log(addProperties("t" + (parseFloat(i)+2), "f" + (parseFloat(i)+2) , (parseFloat(i)+2)));
+        }
+
+        // console.log(properties);
+        return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>\n"
+        + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+        + "SELECT " + variables.join(' ') + "\n"
+        + "WHERE { \n"
+        + properties
+        + " }";
+
+    }
 
     function query_func2(condition)
     {
@@ -247,7 +314,7 @@ $(document).ready(function() {
             "west": function() {
                 return "  ?t1 higeomes:isWestOf ?t2 .";
             }
-        }
+        };
 
             return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
             + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
@@ -440,10 +507,6 @@ $(document).ready(function() {
                 $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
             }
         });
-
-
-
-
 
         $("#clear").checkbox({
             onChecked: function() {
@@ -978,6 +1041,6 @@ $(document).ready(function() {
             return (2-1.0/reference.length)*(reference.length-index)/reference.length;
     }
 
-    $('.tabular.menu .item').tab();
+    // $('.tabular.menu .item').tab();
 
 });
