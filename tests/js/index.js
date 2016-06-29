@@ -242,32 +242,30 @@ $(document).ready(function() {
                          }
                      }
 
-                     for(var key in complete)
-                     {
-                         var obj = complete[key][1];
-                         consol.elog(obj);
-                         var count = 0;
-                         $('#probability'+ key).html("");
-                         if($("td#test"+ key).hasClass("negative"))
-                            $("td#test"+ key).removeClass("negative");
-
-                         for(var i = 0; i < obj.length; i++)
-                         {
-                             if(obj[i].prob == 0)
-                             {
-                                 count++
-                             }
-                             $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + "insert toponym here" + ": " + obj[i]["prob"].toFixed(2) + "</div>");
-                         }
-                         if(count == obj.length)
-                         {
-                             $("td#test"+ key).addClass("negative");
-                         }
-                     }
-
+                    //  for(var key in complete)
+                    //  {
+                    //      var obj = complete[key][1];
+                    //      var count = 0;
+                    //      $('#probability'+ key).html("");
+                     //
+                    //      if($("td#test"+ key).hasClass("negative"))
+                    //         $("td#test"+ key).removeClass("negative");
+                     //
+                    //      for(var i = 0; i < obj.length; i++)
+                    //      {
+                    //          if(obj[i].prob == 0)
+                    //          {
+                    //              count++
+                    //          }
+                    //          $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + "insert toponym here" + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                    //      }
+                    //      if(count == obj.length)
+                    //      {
+                    //          $("td#test"+ key).addClass("negative");
+                    //      }
+                    //  }
                     console.log(complete);
-
-
+                    draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 },
                 error: function() {
                     console.log(":(");
@@ -598,7 +596,7 @@ $(document).ready(function() {
         map.addLayer(lineLayer);
         map.addLayer(vectorLayer);
 
-        $('.ui.accordion').accordion();
+        // $('.ui.accordion').accordion();
 
         $('#selectAll_Nearby').checkbox({
             onChecked: function() {
@@ -794,8 +792,32 @@ $(document).ready(function() {
 
         $(".ui.checkbox#urow").checkbox({
             onChecked: function() {
+
                 var wgs84Sphere = new ol.Sphere(6378137);
                 index = $(this).val();
+
+                var obj = complete_list[index][1];
+
+                var count = 0;
+
+                $('#probability'+ index).html("");
+
+                if($("td#test"+ index).hasClass("negative"))
+                   $("td#test"+ index).removeClass("negative");
+                for(var i = 0; i < obj.length; i++)
+                {
+                    if(obj[i].prob == 0)
+                    {
+                        count++
+                    }
+                    $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + unresolved_coords[index][0] + " to be " + "insert toponym name here" + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                }
+                if(count == obj.length)
+                {
+                    $("td#test"+ index).addClass("negative");
+                }
+
+                $('.ui.accordion#'+ index).accordion('open', 0);
 
                 circleLayer.getSource().addFeature(
                     new ol.Feature({
@@ -825,6 +847,10 @@ $(document).ready(function() {
             onUnchecked: function() {
                 index = $(this).val();
                 $('#popup').html("");
+
+                $('.ui.accordion#'+ index).accordion('close', 0);
+                $('#probability'+ index).html("");
+                $("td#test"+ index).removeClass("negative");
 
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
@@ -1057,7 +1083,7 @@ $(document).ready(function() {
 
                   $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                   +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
-                  + "<td id='test"+ i + "'><div class='ui accordion'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
+                  + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
                   + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
 
                   unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
@@ -1099,24 +1125,24 @@ $(document).ready(function() {
                   obj[i].prob = probability(resolved_distances,obj[i]["dist"]);
               }
           }
-
-          for(var key in complete)
-          {
-              var obj = complete[key][1];
-              var count = 0;
-              for(var i = 0; i < 8; i++)
-              {
-                  if(obj[i].prob == 0)
-                  {
-                      count++
-                  }
-                  $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
-              }
-              if(count == 8)
-              {
-                  $("td#test"+ key).addClass("negative");
-              }
-          }
+          //
+        //   for(var key in complete)
+        //   {
+        //       var obj = complete[key][1];
+        //       var count = 0;
+        //       for(var i = 0; i < 8; i++)
+        //       {
+        //           if(obj[i].prob == 0)
+        //           {
+        //               count++
+        //           }
+        //           $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+        //       }
+        //       if(count == 8)
+        //       {
+        //           $("td#test"+ key).addClass("negative");
+        //       }
+        //   }
 
           resolved_distances = resolved_distances.sort(function (a,b)
           {
