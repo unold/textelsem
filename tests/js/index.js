@@ -202,14 +202,7 @@ $(document).ready(function() {
                         }
                     };
 
-                    // for(var key in complete)
-                    // {
-                    //     var obj = complete[key][1];
-                    //     for(var i = 0; i < 8; i++)
-                    //     {
-                    //         obj[i].prob = probability(resolved_distances,obj[i]["dist"]);
-                    //     }
-                    // }
+
                     //
                     // for(var key in complete)
                     // {
@@ -233,7 +226,7 @@ $(document).ready(function() {
                             "type": "Feature",
                             "geometry": {
                                 "type": "Point",
-                                "coordinates": [parseFloat(unresolved_coords[y][1][0]), parseFloat(unresolved_coords[y][1][1])]
+                                "coordinates": unresolved_coords[y][2]
                             }
                         };
 
@@ -255,7 +248,20 @@ $(document).ready(function() {
                         complete.push([{"uFindspot_location": unresolved_coords[y][1]}, temp_array]);
                         temp_array = [];
                      }
-                //
+
+                     for(var key in complete)
+                     {
+                         var obj = complete[key][1];
+                         for(var i = 0; i < obj.length; i++)
+                         {
+                             obj[i].prob = probability(resolved_distances,obj[i]["dist"]);
+                            //  if(obj[i]["prob"] != 0)
+                            //  {
+                            //      console.log(obj[i]["prob"]);
+                            //  }
+                         }
+                     }
+
                     console.log(complete);
 
 
