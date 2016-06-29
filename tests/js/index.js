@@ -806,13 +806,17 @@ $(document).ready(function() {
                    $("td#test"+ index).removeClass("negative");
                 for(var i = 0; i < obj.length; i++)
                 {
-                    if(obj[i].prob == 0)
+                    if(obj[i].prob != 0)
                     {
                         count++
                     }
                     $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + unresolved_coords[index][0] + " to be " + "insert toponym name here" + ": " + obj[i]["prob"].toFixed(2) + "</div>");
                 }
-                if(count == obj.length)
+                if(count > 0)
+                {
+                    $("td#test"+ index).addClass("positive");
+                }
+                else if(count == 0)
                 {
                     $("td#test"+ index).addClass("negative");
                 }
@@ -850,6 +854,7 @@ $(document).ready(function() {
 
                 $('.ui.accordion#'+ index).accordion('close', 0);
                 $('#probability'+ index).html("");
+                $("td#test"+ index).removeClass("positive");
                 $("td#test"+ index).removeClass("negative");
 
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
