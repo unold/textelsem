@@ -202,22 +202,6 @@ $(document).ready(function() {
                         }
                     };
 
-
-                    //
-                    // for(var key in complete)
-                    // {
-                    //     var obj = complete[key][1];
-                    //     var count = 0;
-                    //     for(var i = 0; i < 8; i++)
-                    //     {
-                    //         if(obj[i].prob == 0)
-                    //         {
-                    //             count++
-                    //         }
-                    //         $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
-                    //     }
-                    // }
-
                     var temp_array = [];
                     console.log(unresolved_coords.length);
                     for(var y in unresolved_coords)
@@ -255,10 +239,29 @@ $(document).ready(function() {
                          for(var i = 0; i < obj.length; i++)
                          {
                              obj[i].prob = probability(resolved_distances,obj[i]["dist"]);
-                            //  if(obj[i]["prob"] != 0)
-                            //  {
-                            //      console.log(obj[i]["prob"]);
-                            //  }
+                         }
+                     }
+
+                     for(var key in complete)
+                     {
+                         var obj = complete[key][1];
+                         consol.elog(obj);
+                         var count = 0;
+                         $('#probability'+ key).html("");
+                         if($("td#test"+ key).hasClass("negative"))
+                            $("td#test"+ key).removeClass("negative");
+
+                         for(var i = 0; i < obj.length; i++)
+                         {
+                             if(obj[i].prob == 0)
+                             {
+                                 count++
+                             }
+                             $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + "insert toponym here" + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                         }
+                         if(count == obj.length)
+                         {
+                             $("td#test"+ key).addClass("negative");
                          }
                      }
 
