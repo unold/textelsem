@@ -175,13 +175,9 @@ $(document).ready(function() {
                         return a.match(/f\d$/);
                     });
 
-                    // var coordinate_1 = {
-                    //     "type": "Feature",
-                    //     "geometry": {
-                    //         "type": "Point",
-                    //         "coordinates": unresolved
-                    //     }
-                    // };
+                    var complete = [];
+
+                    console.log(data);
 
                     var list = {
                         "f2": function()
@@ -205,25 +201,62 @@ $(document).ready(function() {
                             return [row[x].f6_lon.value, row[x].f6_lat.value, row[x].f6_name.value, row[x].f6_country.value];
                         }
                     };
-                    var coordinates = [];
 
-                    for(var x in row)
+                    // for(var key in complete)
+                    // {
+                    //     var obj = complete[key][1];
+                    //     for(var i = 0; i < 8; i++)
+                    //     {
+                    //         obj[i].prob = probability(resolved_distances,obj[i]["dist"]);
+                    //     }
+                    // }
+                    //
+                    // for(var key in complete)
+                    // {
+                    //     var obj = complete[key][1];
+                    //     var count = 0;
+                    //     for(var i = 0; i < 8; i++)
+                    //     {
+                    //         if(obj[i].prob == 0)
+                    //         {
+                    //             count++
+                    //         }
+                    //         $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                    //     }
+                    // }
+
+                    var temp_array = [];
+                    console.log(unresolved_coords.length);
+                    for(var y in unresolved_coords)
                     {
-                        for(var i in headings)
-                        {
-                            var variable = headings[i];
-                            var coordinate_2 = {
-                                "type": "Feature",
-                                "geometry": {
-                                    "type": "Point",
-                                    "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
-                                }
-                            };
-                            coordinates.push(coordinate_2);
-                        }
-                    }
+                        var unresolved_findspot = {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [parseFloat(unresolved_coords[y][1][0]), parseFloat(unresolved_coords[y][1][1])]
+                            }
+                        };
 
-                    console.log(coordinates);
+                        for(var x in row)
+                        {
+                            for(var i in headings)
+                            {
+                                var variable = headings[i];
+                                var coordinate_2 = {
+                                    "type": "Feature",
+                                    "geometry": {
+                                        "type": "Point",
+                                        "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
+                                    }
+                                };
+                                temp_array.push({"dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers")});
+                            }
+                        }
+                        complete.push([{"uFindspot_location": unresolved_coords[y][1]}, temp_array]);
+                        temp_array = [];
+                     }
+                //
+                    console.log(complete);
 
 
                 },
@@ -280,6 +313,9 @@ $(document).ready(function() {
         + "SELECT " + variables.join(' ') + "\n"
         + "WHERE { \n"
         + properties
+        + "FILTER NOT EXISTS {\n"
+        + " ?t1 higeomes:hasFindspot ?f1 .\n"
+        + "}\n"
         + " }";
 
     }
