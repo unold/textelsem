@@ -168,10 +168,67 @@ $(document).ready(function() {
                     Accept: 'application/json'
                 },
                 success: function (data) {
-                    console.log(data);
+
+                    var row = data.results.bindings;
+                    var headings = data.head.vars;
+                    headings = headings.filter(function(a) {
+                        return a.match(/f\d$/);
+                    });
+
+                    // var coordinate_1 = {
+                    //     "type": "Feature",
+                    //     "geometry": {
+                    //         "type": "Point",
+                    //         "coordinates": unresolved
+                    //     }
+                    // };
+
+                    var list = {
+                        "f2": function()
+                        {
+                            return [row[x].f2_lon.value, row[x].f2_lat.value, row[x].f2_name.value, row[x].f2_country.value];
+                        },
+                        "f3": function()
+                        {
+                            return [row[x].f3_lon.value, row[x].f3_lat.value, row[x].f3_name.value, row[x].f3_country.value];
+                        },
+                        "f4": function()
+                        {
+                            return [row[x].f4_lon.value, row[x].f4_lat.value, row[x].f4_name.value, row[x].f4_country.value];
+                        },
+                        "f5": function()
+                        {
+                            return [row[x].f5_lon.value, row[x].f5_lat.value, row[x].f5_name.value, row[x].f5_country.value];
+                        },
+                        "f6": function()
+                        {
+                            return [row[x].f6_lon.value, row[x].f6_lat.value, row[x].f6_name.value, row[x].f6_country.value];
+                        }
+                    };
+                    var coordinates = [];
+
+                    for(var x in row)
+                    {
+                        for(var i in headings)
+                        {
+                            var variable = headings[i];
+                            var coordinate_2 = {
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
+                                }
+                            };
+                            coordinates.push(coordinate_2);
+                        }
+                    }
+
+                    console.log(coordinates);
+
+
                 },
                 error: function() {
-                    console.log(":(")
+                    console.log(":(");
                 }
             });
         }
@@ -218,7 +275,6 @@ $(document).ready(function() {
             // console.log(addProperties("t" + (parseFloat(i)+2), "f" + (parseFloat(i)+2) , (parseFloat(i)+2)));
         }
 
-        // console.log(properties);
         return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>\n"
         + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
         + "SELECT " + variables.join(' ') + "\n"
@@ -1040,7 +1096,5 @@ $(document).ready(function() {
         else
             return (2-1.0/reference.length)*(reference.length-index)/reference.length;
     }
-
-    // $('.tabular.menu .item').tab();
 
 });
