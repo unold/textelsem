@@ -203,16 +203,6 @@ $(document).ready(function() {
 
                     console.log(row.length);
 
-                    // for(var i in row)
-                    // {
-                    //     for(var j in headings)
-                    //     {
-                    //         var normal_point = [parseFloat(list[headings[j]](i)[0]), parseFloat(list[headings[j]](i)[1])] ;
-                    //         var transformed_point = ol.proj.transform([parseFloat(list[headings[j]](i)[0]), parseFloat(list[headings[j]](i)[1])], 'EPSG:3857', 'EPSG:4326');
-                    //
-                    //     }
-                    // }
-
                     var temp_array = [];
                     for(var y in unresolved_coords)
                     {
@@ -260,12 +250,12 @@ $(document).ready(function() {
 
     function addProperties(top, var1, num)
     {
-        return "  ?"+top+" higeomes:hasFindspot ?"+var1+" .\n"
-                + "  ?"+var1+" higeomes:lat ?"+var1+"_lat .\n"
-                + "  ?"+var1+" higeomes:lng ?"+var1+"_lon .\n"
-                + "  ?"+var1+" higeomes:name ?"+var1+"_name .\n"
-                + "  ?"+var1+" higeomes:country ?country"+num+" .\n"
-                + "  ?country"+num+" rdfs:label ?"+var1+"_country .\n";
+        return "  ?"+top+" higeomes:hasFindspot ?"+ var1 +" .\n"
+                + "  ?"+ var1 +" higeomes:lat ?"+ var1 +"_lat .\n"
+                + "  ?"+ var1 +" higeomes:lng ?"+ var1 +"_lon .\n"
+                + "  ?"+ var1 +" higeomes:name ?"+ var1 +"_name .\n"
+                + "  ?"+ var1 +" higeomes:country ?country"+num+" .\n"
+                + "  ?country"+ num +" rdfs:label ?"+ var1 +"_country .\n";
     }
 
     function query_func3(conditions)
