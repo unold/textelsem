@@ -724,29 +724,26 @@ $(document).ready(function() {
                     })
                 )
 
-                var prep;
+                var values = {
+                    "nearby": "nearby ",
+                    "north": "north of ",
+                    "south": "south of ",
+                    "east": "east of ",
+                    "west": "west of "
+                };
 
-                if($(".ui.dropdown").dropdown('get value') == "")
-                {
-                    prep = "nearby ";
-                }
-                else if($(".ui.dropdown").dropdown('get value') == "nearby") {
-                    prep = " ";
-                }
-                else {
-                    prep = " of ";
-                }
+                console.log($("#r_dropdown").dropdown('get value'));
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].setId(first_id);
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(sec_id);
                 lineLayer.getSource().getFeatures()[lineLayer.getSource().getFeatures().length - 1].setId(index);
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name')
-                + " is listed as " +  $(".ui.dropdown").dropdown('get value') + prep + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + ".");
+                + " is listed as " +  values[$("#r_dropdown").dropdown('get value')] + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + ".");
 
 
-                // vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
-                // + " is listed as " +  $(".ui.dropdown").dropdown('get value') + prep + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name') + ".");
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name')
+                + " is listed as " +  values[$("#r_dropdown").dropdown('get value')] + "this toponym, "+ vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + ".");
 
 
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));

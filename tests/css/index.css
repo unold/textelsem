@@ -36,10 +36,18 @@ h2 {
     padding-right: 13px;
 }
 
+i.icon {
+    margin: 0px;
+}
+
 #toponym_dist_table {
     overflow:auto;
     float: left;
     width: 100%;
+}
+
+.ui.selection.list>.item {
+    padding-right: 5px;
 }
 
 .long.arrow.right {
