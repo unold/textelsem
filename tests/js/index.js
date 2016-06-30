@@ -171,6 +171,7 @@ $(document).ready(function() {
 
                     var row = data.results.bindings;
                     var headings = data.head.vars;
+                    var regex_filter = /(toponym)\D\d+/;
                     headings = headings.filter(function(a) {
                         return a.match(/f\d$/);
                     });
@@ -226,7 +227,7 @@ $(document).ready(function() {
                                         "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
                                     }
                                 };
-                                temp_array.push({"dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers")});
+                                temp_array.push({"dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(row[i].t1.value)[0]});
                             }
                         }
                         complete.push([{"uFindspot_location": unresolved_coords[y][1]}, temp_array]);
@@ -777,7 +778,7 @@ $(document).ready(function() {
                 index = $(this).val();
 
 
-
+                console.log(complete_list);
                 var obj = complete_list[index][1];
 
                 var count = 0;
@@ -792,7 +793,7 @@ $(document).ready(function() {
                     {
                         count++
                     }
-                    $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + unresolved_coords[index][0] + " to be " + "insert toponym name here" + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                    $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + unresolved_coords[index][0] + " to be " + obj[i]["top-name"] + ": " + obj[i]["prob"].toFixed(2) + "</div>");
                 }
                 if(count > 0)
                 {
@@ -859,10 +860,18 @@ $(document).ready(function() {
                     })
                 );
 
+                var values = {
+                    "nearby": "nearby",
+                    "nearbywest": "nearby and west of",
+                    "nearbyeast": "nearby and east of",
+                    "nearbysouth": "nearby and south of",
+                    "nearbynorth": "nearby and north of"
+                }
+
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
-                + " is a resolved findspot that is listed as nearby the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
+                + " is a resolved findspot that is listed as " + values[$('#n_dropdown').dropdown('get value')] + " the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
 
                 if($('#selectAll_Nearby').checkbox('is unchecked'))
                 {
@@ -1128,7 +1137,7 @@ $(document).ready(function() {
                           "coordinates": findspot_coordinates[j][3]
                       }
                   };
-                  temp_array.push({"dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "nearby_top_name": findspot_coordinates[j][2]});
+                  temp_array.push({"dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][2]});
               }
 
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
