@@ -107,6 +107,7 @@ $(document).ready(function() {
                     var units = "kilometers";
                     var complete = [];
 
+                    $('#new_table2>#table_details').html("");
                     $('#new_table>#table_details').html("");
 
                     findspot_coordinates = [];
