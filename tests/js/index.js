@@ -487,19 +487,19 @@ $(document).ready(function() {
     // Query for all unresolved findspots
     query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
     + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?top1 ?find2 ?f2_lon ?f2_lat ?top2 ?name ?country\n"
+    + "SELECT ?top1 ?find1 ?f1_lon ?f1_lat ?top2 ?name ?country\n"
     + "WHERE {"
     + "?top1 higeomes:isNearOf ?top2 ."
-    + "?top2 higeomes:hasFindspot ?find2 ."
-    + "?find2 higeomes:country ?c ."
+    + "?top1 higeomes:hasFindspot ?find1 ."
+    + "?find1 higeomes:country ?c ."
     + "?c rdfs:label ?country ."
     + "FILTER NOT EXISTS"
     + "{"
-    +   "?top1 higeomes:hasFindspot ?find1 ."
+    +   "?top2 higeomes:hasFindspot ?find2 ."
     + "}"
-    + "?find2 higeomes:lng ?f2_lon ."
-    + "?find2 higeomes:lat ?f2_lat ."
-    + "?find2 higeomes:name ?name ."
+    + "?find1 higeomes:lng ?f1_lon ."
+    + "?find1 higeomes:lat ?f1_lat ."
+    + "?find1 higeomes:name ?name ."
     + "}";
 
     $.ajax({
@@ -1059,14 +1059,14 @@ $(document).ready(function() {
           {
               if (row[i].hasOwnProperty('top1'))
               {
-                    var normal_coords1 = [parseFloat(row[i].f2_lon.value), parseFloat(row[i].f2_lat.value)];
-                    var transformed_coords = ol.proj.transform([parseFloat(row[i].f2_lon.value), parseFloat(row[i].f2_lat.value)], "EPSG:4326", "EPSG:3857");
+                    var normal_coords1 = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
+                    var transformed_coords = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
                     findspot_coordinates.push([row[i].name.value, transformed_coords, regex_filter.exec(row[i].top1.value)[0], normal_coords1, row[i].country.value, regex_filter.exec(row[i].top2.value)[0]]);
 
                     $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                     + "<td><a href ="+row[i].top1.value + ">" + regex_filter.exec(row[i].top1.value)[0] +"</a></td>"
-                    +"<td><a href =" +row[i].top2.value + ">" + regex_filter.exec(row[i].top2.value)[0] + "</a></td>"
-                    + "<td><a href =" +row[i].find2.value + ">" + row[i].name.value + "</a></td></tr>");
+                    +"<td><a href =" +row[i].top2.value + ">" + row[i].name.value + "</a></td>"
+                    + "<td><a href =" +row[i].find1.value + ">" + regex_filter.exec(row[i].top2.value)[0] + "</a></td></tr>");
               }
 
               else if(row[i].hasOwnProperty('t1'))
