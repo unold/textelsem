@@ -177,45 +177,38 @@ $(document).ready(function() {
 
                     var complete = [];
 
-                    // var list = {
-                    //     "f2": function(x)
-                    //     {
-                    //         var normal_point = [parseFloat(f2_lon.value), parseFloat(f2_lat.value)] ;
-                    //         var transformed_point = ol.proj.transform([parseFloat(f2_lon.value), parseFloat(f2_lat.value)], 'EPSG:3857', 'EPSG:4326');
-                    //         return [row[x].f2_name.value, normal_point, transformed_point, row[x].f2_country.value];
-                    //     },
-                    //     "f3": function(x)
-                    //     {
-                    //         var normal_point = [parseFloat(f3_lon.value), parseFloat(f3_lat.value)] ;
-                    //         var transformed_point = ol.proj.transform([parseFloat(f3_lon.value), parseFloat(f3_lat.value)], 'EPSG:3857', 'EPSG:4326');
-                    //         return [row[x].f3_name.value, normal_point, transformed_point, row[x].f3_country.value];
-                    //     },
-                    //     "f4": function(x)
-                    //     {
-                    //         var normal_point = [parseFloat(f4_lon.value), parseFloat(f4_lat.value)] ;
-                    //         var transformed_point = ol.proj.transform([parseFloat(f4_lon.value), parseFloat(f4_lat.value)], 'EPSG:3857', 'EPSG:4326');
-                    //         return [row[x].f4_name.value, normal_point, transformed_point, row[x].f4_country.value];
-                    //     },
-                    //     "f5": function(x)
-                    //     {
-                    //         var normal_point = [parseFloat(f5_lon.value), parseFloat(f5_lat.value)] ;
-                    //         var transformed_point = ol.proj.transform([parseFloat(f5_lon.value), parseFloat(f5_lat.value)], 'EPSG:3857', 'EPSG:4326');
-                    //         return [row[x].f5_name.value, normal_point, transformed_point, row[x].f5_country.value];
-                    //     },
-                    //     "f6": function(x)
-                    //     {
-                    //         var normal_point = [parseFloat(f6_lon.value), parseFloat(f6_lat.value)] ;
-                    //         var transformed_point = ol.proj.transform([parseFloat(f6_lon.value), parseFloat(f6_lat.value)], 'EPSG:3857', 'EPSG:4326');
-                    //         return [row[x].f6_name.value, normal_point, transformed_point, row[x].f6_country.value];
-                    //     }
-                    // };
-                    //
+                    var list = {
+                        "f2": function()
+                        {
+                            console.log();
+                            return [row[x].f2_lon.value, row[x].f2_lat.value, row[x].f2_name.value, row[x].f2_country.value];
+                        },
+                        "f3": function()
+                        {
+                            return [row[x].f3_lon.value, row[x].f3_lat.value, row[x].f3_name.value, row[x].f3_country.value];
+                        },
+                        "f4": function()
+                        {
+                            return [row[x].f4_lon.value, row[x].f4_lat.value, row[x].f4_name.value, row[x].f4_country.value];
+                        },
+                        "f5": function()
+                        {
+                            return [row[x].f5_lon.value, row[x].f5_lat.value, row[x].f5_name.value, row[x].f5_country.value];
+                        },
+                        "f6": function()
+                        {
+                            return [row[x].f6_lon.value, row[x].f6_lat.value, row[x].f6_name.value, row[x].f6_country.value];
+                        }
+                    };
+
+                    console.log(row.length);
+
                     // for(var i in row)
                     // {
                     //     for(var j in headings)
                     //     {
-                    //         var normal_point = [parseFloat(list[headings[j]]()[0]), parseFloat(list[headings[j]]()[1])] ;
-                    //         var transformed_point = ol.proj.transform([parseFloat(list[headings[j]]()[0]), parseFloat(list[headings[j]]()[1])], 'EPSG:3857', 'EPSG:4326');
+                    //         var normal_point = [parseFloat(list[headings[j]](i)[0]), parseFloat(list[headings[j]](i)[1])] ;
+                    //         var transformed_point = ol.proj.transform([parseFloat(list[headings[j]](i)[0]), parseFloat(list[headings[j]](i)[1])], 'EPSG:3857', 'EPSG:4326');
                     //
                     //     }
                     // }
@@ -1154,10 +1147,11 @@ $(document).ready(function() {
 
           for(var key in complete)
           {
+            //   console.log(complete[key]);
               var obj = complete[key][1];
-              for(var i = 0; i < 8; i++)
+              for(var i = 0; i < obj.length; i++)
               {
-                  obj[i].prob = probability(resolved_distances,obj[i]["dist"]);
+                  obj[i].prob = probability(resolved_distances, obj[i]["dist"]);
               }
           }
           //
