@@ -68,7 +68,7 @@ $(document).ready(function() {
                         var euro_angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value)).replace(/\./g, ',');
 
                         resolved_distances.push(distance);
-                        resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
+                         resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
 
                         // Add row to table
                         $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
@@ -407,23 +407,23 @@ $(document).ready(function() {
             }
         };
 
-            return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-            + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+            return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>\n"
+            + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
             + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon ?f1_name ?f2_name ?f1_country ?f2_country\n"
-            + "WHERE { "
+            + "WHERE {\n "
             + options[condition]()
-            + "  ?t1 higeomes:hasFindspot ?f1 ."
-            + "  ?t2 higeomes:hasFindspot ?f2 ."
-            + "  ?f1 higeomes:lat ?t1_lat ."
-            + "  ?f1 higeomes:lng ?t1_lon ."
-            + "  ?f2 higeomes:lat ?t2_lat ."
-            + "  ?f2 higeomes:lng ?t2_lon ."
-            + "  ?f1 higeomes:name ?f1_name ."
-            + "  ?f2 higeomes:name ?f2_name ."
-            + "  ?f1 higeomes:country ?country1 ."
-            + "  ?country1 rdfs:label ?f1_country ."
-            + "  ?f2 higeomes:country ?country2 ."
-            + "  ?country2 rdfs:label ?f2_country ."
+            + "  ?t1 higeomes:hasFindspot ?f1 .\n"
+            + "  ?t2 higeomes:hasFindspot ?f2 .\n"
+            + "  ?f1 higeomes:lat ?t1_lat .\n"
+            + "  ?f1 higeomes:lng ?t1_lon .\n"
+            + "  ?f2 higeomes:lat ?t2_lat .\n"
+            + "  ?f2 higeomes:lng ?t2_lon .\n"
+            + "  ?f1 higeomes:name ?f1_name .\n"
+            + "  ?f2 higeomes:name ?f2_name .\n"
+            + "  ?f1 higeomes:country ?country1 .\n"
+            + "  ?country1 rdfs:label ?f1_country .\n"
+            + "  ?f2 higeomes:country ?country2 .\n"
+            + "  ?country2 rdfs:label ?f2_country .\n"
             + " }";
 
     }
@@ -714,6 +714,12 @@ $(document).ready(function() {
                         status: "Resolved",
                         country: r_coords[index][2],
                         class: r_coords[index][3]
+                        // pop: r_coords[index][10],
+                        // env: r_coords[index][11],
+                        // admin: r_coords[index][12],
+                        // size: r_coords[index][13],
+                        // kind: r_coords[index][14],
+                        // role: r_coords[index][15]
                     }),
                     new ol.Feature({
                         geometry: new ol.geom.Point(point2),
@@ -788,8 +794,11 @@ $(document).ready(function() {
                 var wgs84Sphere = new ol.Sphere(6378137);
                 index = $(this).val();
 
+
+
                 var obj = complete_list[index][1];
 
+                console.log(obj[0]["prob"].toFixed(2));
                 var count = 0;
 
                 $('#probability'+ index).html("");
@@ -929,7 +938,7 @@ $(document).ready(function() {
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
-                    + "<div class='description'><div id='pop'>Population:</div><div id='admin'>Administration:</div></div>"
+                    + "<div class='description'><div id='pop'>Population: </div><div id='admin'>Administration:</div></div>"
                     + "</div><div class='ui bottom basic attached button'>"
                     + "<i class='long arrow left icon'></i>Back</div>"
                     + "</div></div></div></div>");
@@ -946,6 +955,12 @@ $(document).ready(function() {
                         $('.right.floated.status').attr('data-content', 'Resolved');
                         $('.right.floated.status').popup();
                     }
+
+                    // if(feature.U.hasOwnProperty('pop'))
+                    // {
+                    //     console.log(feature.get("pop"));
+                    //     $("#pop").append(feature.get('pop'))
+                    // }
 
                     if(feature.U.hasOwnProperty('country'))
                     {
@@ -983,10 +998,9 @@ $(document).ready(function() {
                     }
 
                     $('.right.floated.large.link.remove.icon').click(function() {
-                        console.log("sup")
                         $('#popup').html("");
                     });
-                    //
+
                     $('.ui.bottom.basic.attached.button').click(function() {
                         $(".ui.shape").shape({
                             duration: "1ms"
