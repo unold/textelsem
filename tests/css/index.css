@@ -42,6 +42,10 @@ h2 {
     width: 100%;
 }
 
+.long.arrow.right {
+    margin-right: : 15px;
+}
+
 .default.text {
     font-weight: 100;
 }

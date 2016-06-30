@@ -178,33 +178,50 @@ $(document).ready(function() {
 
                     var complete = [];
 
-                    console.log(data);
-
-                    var list = {
-                        "f2": function()
-                        {
-                            return [row[x].f2_lon.value, row[x].f2_lat.value, row[x].f2_name.value, row[x].f2_country.value];
-                        },
-                        "f3": function()
-                        {
-                            return [row[x].f3_lon.value, row[x].f3_lat.value, row[x].f3_name.value, row[x].f3_country.value];
-                        },
-                        "f4": function()
-                        {
-                            return [row[x].f4_lon.value, row[x].f4_lat.value, row[x].f4_name.value, row[x].f4_country.value];
-                        },
-                        "f5": function()
-                        {
-                            return [row[x].f5_lon.value, row[x].f5_lat.value, row[x].f5_name.value, row[x].f5_country.value];
-                        },
-                        "f6": function()
-                        {
-                            return [row[x].f6_lon.value, row[x].f6_lat.value, row[x].f6_name.value, row[x].f6_country.value];
-                        }
-                    };
+                    // var list = {
+                    //     "f2": function(x)
+                    //     {
+                    //         var normal_point = [parseFloat(f2_lon.value), parseFloat(f2_lat.value)] ;
+                    //         var transformed_point = ol.proj.transform([parseFloat(f2_lon.value), parseFloat(f2_lat.value)], 'EPSG:3857', 'EPSG:4326');
+                    //         return [row[x].f2_name.value, normal_point, transformed_point, row[x].f2_country.value];
+                    //     },
+                    //     "f3": function(x)
+                    //     {
+                    //         var normal_point = [parseFloat(f3_lon.value), parseFloat(f3_lat.value)] ;
+                    //         var transformed_point = ol.proj.transform([parseFloat(f3_lon.value), parseFloat(f3_lat.value)], 'EPSG:3857', 'EPSG:4326');
+                    //         return [row[x].f3_name.value, normal_point, transformed_point, row[x].f3_country.value];
+                    //     },
+                    //     "f4": function(x)
+                    //     {
+                    //         var normal_point = [parseFloat(f4_lon.value), parseFloat(f4_lat.value)] ;
+                    //         var transformed_point = ol.proj.transform([parseFloat(f4_lon.value), parseFloat(f4_lat.value)], 'EPSG:3857', 'EPSG:4326');
+                    //         return [row[x].f4_name.value, normal_point, transformed_point, row[x].f4_country.value];
+                    //     },
+                    //     "f5": function(x)
+                    //     {
+                    //         var normal_point = [parseFloat(f5_lon.value), parseFloat(f5_lat.value)] ;
+                    //         var transformed_point = ol.proj.transform([parseFloat(f5_lon.value), parseFloat(f5_lat.value)], 'EPSG:3857', 'EPSG:4326');
+                    //         return [row[x].f5_name.value, normal_point, transformed_point, row[x].f5_country.value];
+                    //     },
+                    //     "f6": function(x)
+                    //     {
+                    //         var normal_point = [parseFloat(f6_lon.value), parseFloat(f6_lat.value)] ;
+                    //         var transformed_point = ol.proj.transform([parseFloat(f6_lon.value), parseFloat(f6_lat.value)], 'EPSG:3857', 'EPSG:4326');
+                    //         return [row[x].f6_name.value, normal_point, transformed_point, row[x].f6_country.value];
+                    //     }
+                    // };
+                    //
+                    // for(var i in row)
+                    // {
+                    //     for(var j in headings)
+                    //     {
+                    //         var normal_point = [parseFloat(list[headings[j]]()[0]), parseFloat(list[headings[j]]()[1])] ;
+                    //         var transformed_point = ol.proj.transform([parseFloat(list[headings[j]]()[0]), parseFloat(list[headings[j]]()[1])], 'EPSG:3857', 'EPSG:4326');
+                    //
+                    //     }
+                    // }
 
                     var temp_array = [];
-                    console.log(unresolved_coords.length);
                     for(var y in unresolved_coords)
                     {
                         var unresolved_findspot = {
@@ -243,33 +260,7 @@ $(document).ready(function() {
                          }
                      }
 
-                    //  for(var key in complete)
-                    //  {
-                    //      var obj = complete[key][1];
-                    //      var count = 0;
-                    //      $('#probability'+ key).html("");
-                     //
-                    //      if($("td#test"+ key).hasClass("negative"))
-                    //         $("td#test"+ key).removeClass("negative");
-                     //
-                    //      for(var i = 0; i < obj.length; i++)
-                    //      {
-                    //          if(obj[i].prob == 0)
-                    //          {
-                    //              count++
-                    //          }
-                    //          $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + "insert toponym here" + ": " + obj[i]["prob"].toFixed(2) + "</div>");
-                    //      }
-                    //      if(count == obj.length)
-                    //      {
-                    //          $("td#test"+ key).addClass("negative");
-                    //      }
-                    //  }
-                    console.log(complete);
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
-                },
-                error: function() {
-                    console.log(":(");
                 }
             });
         }
@@ -907,6 +898,8 @@ $(document).ready(function() {
 
         map.addOverlay(popup);
 
+
+
         map.on('click', function(evt) {
             var feature = map.forEachFeatureAtPixel(evt.pixel,
                 function(feature, layer) {
@@ -918,7 +911,8 @@ $(document).ready(function() {
                     var coord = geometry.getCoordinates();
                     popup.setPosition(coord);
 
-                    $('#popup').html("<div class='ui card'>"
+                    $('#popup').html("<div class='ui shape'><div class='sides'>"
+                    + "<div class='side active'><div class='ui card'>"
                     + "<div class='content'>"
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
@@ -926,7 +920,20 @@ $(document).ready(function() {
                     + "<div class='description'><div class='dist'></div><div class='stats'></div></div>"
                     + "</div><div class='extra content'>"
                     + "<div class='left floated radius'></div><div class='left floated country'></div><div class='right floated status' data-position='bottom left'>"
-                    + "</div></div></div>");
+                    + "</div></div>"
+                    + "<div class='ui bottom basic attached button'>"
+                    + "Flip Over for more information<i class='long arrow right icon'></i></div></div></div>"
+                    + "<div class='side'>"
+                    + "<div class='ui card'>"
+                    + "<div class='content'>"
+                    + "<i class='right floated large link remove icon'></i>"
+                    + "<div class='header'>"+feature.get('name')+"</div>"
+                    + "<div class='meta'>"+feature.get('class')+"</div>"
+                    + "<div class='description'><div id='pop'>Population:</div><div id='admin'>Administration:</div></div>"
+                    + "</div><div class='ui bottom basic attached button'>"
+                    + "<i class='long arrow left icon'></i>Back</div>"
+                    + "</div></div></div></div>");
+
 
                     if(feature.get('status') == "Unresolved")
                     {
@@ -975,21 +982,31 @@ $(document).ready(function() {
                         }
                     }
 
+                    $('.right.floated.large.link.remove.icon').click(function() {
+                        console.log("sup")
+                        $('#popup').html("");
+                    });
+                    //
+                    $('.ui.bottom.basic.attached.button').click(function() {
+                        $(".ui.shape").shape({
+                            duration: "1ms"
+                        });
+                        $(".ui.shape").shape('flip right');
+                    });
+
                     if(feature.get('status') == 'Unresolved')
                         $('.left.floated.radius').html('Shown Radius: 40km');
 
                     $('.description').append(feature.get('desc'));
 
-
-                    $('.ui.remove.icon').click(function() {
-                        $('#popup').html("");
-                    });
-
-                } else {
-                    $('#popup').html("");
                 }
+                // else {
+                //     $('#popup').html("");
+                // }
             });
     }
+
+
 
     function toDegrees (angle)
     {
