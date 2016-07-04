@@ -242,8 +242,10 @@ $(document).ready(function() {
         }
     });
 
+
     $("#p_dropdown").dropdown({
         onChange: function() {
+
             console.log(query_func3($("#p_dropdown").dropdown('get value').split(",")));
             $.ajax({
                 url: repo,
@@ -254,7 +256,6 @@ $(document).ready(function() {
                     Accept: 'application/json'
                 },
                 success: function (data) {
-
 
                     var names = $("#p_dropdown").dropdown('get value').split(",");
                     var row = data.results.bindings;
@@ -862,6 +863,19 @@ $(document).ready(function() {
                         class: u_coords[index][0]
                     })
                 );
+
+                $.fn.extend({
+                    //switchClass parameter is to replicate toggleClass functionality.
+                    toggleClassDelay: function (className, delay, switchClass)
+                    {
+                        this.toggleClass(className, switchClass);
+
+                        setTimeout($.proxy(function ()
+                        {
+                            this.toggleClass(className, switchClass);
+                        }, this), delay);
+                    }
+                });
 
                 $('.ui.selection.list>.item').click(function()
                 {
