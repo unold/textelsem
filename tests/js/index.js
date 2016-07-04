@@ -6,6 +6,7 @@ $(document).ready(function() {
     var resolved_coords = [];
     var unresolved_coords = [];
     var findspot_coordinates = [];
+    var complete = [];
 
     if (typeof(Number.prototype.toRad) === "undefined") {
         Number.prototype.toRad = function() {
@@ -35,7 +36,7 @@ $(document).ready(function() {
                     var regex_filter = /(toponym)\D\d+/;
                     var regex_filter2 = /(Findspot)\/\d+/;
                     var units = "kilometers";
-                    var complete = [];
+                    // var complete = [];
 
                     $('#toponym_dist_table>#table_details').html("");
                     resolved_coords = [];
@@ -105,7 +106,7 @@ $(document).ready(function() {
                     var regex_filter = /(toponym)\D\d+/;
                     var regex_filter2 = /(Findspot)\/\d+/;
                     var units = "kilometers";
-                    var complete = [];
+                    // var complete = [];
 
                     $('#new_table>#table_details').html("");
 
@@ -1040,7 +1041,7 @@ $(document).ready(function() {
         var regex_filter = /(toponym)\D\d+/;
         var regex_filter2 = /(Findspot)\/\d+/;
         var units = "kilometers";
-        var complete = [];
+        // var complete = [];
 
 
           for(var i in row)
