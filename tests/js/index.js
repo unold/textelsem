@@ -314,7 +314,7 @@ $(document).ready(function() {
                                 };
 
                                 var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
-                                temp_array.push({"property": $("#p_dropdown").dropdown('get value').split(",")[i], "angle": angle, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(row[i].t1.value)[0]});
+                                temp_array.push({"mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": $("#p_dropdown").dropdown('get value').split(",")[i], "angle": angle, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(row[i].t1.value)[0]});
                             }
 
                             // for(var j in $("#p_dropdown").dropdown('get value').split(","))
@@ -712,10 +712,6 @@ $(document).ready(function() {
             }
         });
 
-        $('.ui.selection.list>.item').click(function() {
-            console.log("hi");
-        });
-
 
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
@@ -865,6 +861,70 @@ $(document).ready(function() {
                     })
                 );
 
+                $('.ui.selection.list>.item').click(function()
+                {
+                    $(this).css({'font-weight': 'bold', 'color': 'black'});
+                    var big_id = $(this).attr('id');
+                    console.log("hi");
+
+                    big_id = big_id.split("-");
+
+                    var new_id = big_id[0] + big_id[1];
+                    var id = big_id[0];
+                    var index = big_id[1];
+
+                    var distance = complete_list[id][1][index]["dist"];
+
+                    var prob = complete_list[id][1][index]["prob"];
+
+                    vectorLayer.getSource().addFeatures([
+                        new ol.Feature({
+                            geometry: new ol.geom.Point(n_coords[index][1]),
+                            type: 'Point',
+                            name: n_coords[index][0],
+                            class: "Resolved Toponym",
+                            prob: (prob.toFixed(2)*100) + "%",
+                            status: "Resolved",
+                            desc: n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.'
+                        })
+                    ]);
+
+                    vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(new_id);
+
+                    console.log(vectorLayer.getSource().getFeatures())
+
+                    if(distance > 100)
+                    {
+                        map.getView().setZoom(7);
+                        map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+                    }
+                    else if(distance > 50 && distance < 100)
+                    {
+                        map.getView().setZoom(8);
+                        map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+                    }
+                    else {
+                        map.getView().setZoom(9);
+                        map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+                    }
+
+                });
+
+                $('.remove').click(function()
+                {
+                    var big_id = $(this).attr('id');
+                    $('div#'+ big_id.toString() +'.item').css({'font-weight': 'normal', 'color': 'rgba(0,0,0,.4)'});
+
+                    big_id = big_id.split("-");
+                    var new_id = big_id[0] + big_id[1];
+
+                    $('#popup').html("");
+
+                    console.log(vectorLayer.getSource().getFeatures());
+                    vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
+
+                });
+
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
                 circleLayer.getSource().getFeatures()[circleLayer.getSource().getFeatures().length - 1].setId("circle"+index);
 
@@ -888,68 +948,6 @@ $(document).ready(function() {
             }
         });
 
-        $('.ui.selection.list>.item').click(function()
-        {
-            $(this).css({'font-weight': 'bold', 'color': 'black'});
-            var big_id = $(this).attr('id');
-            console.log("hi");
-
-            big_id = big_id.split("-");
-
-            var new_id = big_id[0] + big_id[1];
-            var id = big_id[0];
-            var index = big_id[1];
-
-            var distance = complete_list[id][1][index]["dist"];
-
-            var prob = complete_list[id][1][index]["prob"];
-
-            vectorLayer.getSource().addFeatures([
-                new ol.Feature({
-                    geometry: new ol.geom.Point(n_coords[index][1]),
-                    type: 'Point',
-                    name: n_coords[index][0],
-                    class: "Resolved Toponym",
-                    prob: (prob.toFixed(2)*100) + "%",
-                    status: "Resolved",
-                    desc: n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.'
-                })
-            ]);
-
-            vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(new_id);
-
-
-            if(distance > 100)
-            {
-                map.getView().setZoom(7);
-                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-            }
-            else if(distance > 50 && distance < 100)
-            {
-                map.getView().setZoom(8);
-                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-            }
-            else {
-                map.getView().setZoom(9);
-                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-            }
-
-        });
-
-        $('.remove').click(function()
-        {
-            var big_id = $(this).attr('id');
-            $('div#'+ big_id.toString() +'.item').css({'font-weight': 'normal', 'color': 'rgba(0,0,0,.4)'});
-
-            big_id = big_id.split("-");
-            var new_id = big_id[0] + big_id[1];
-
-            $('#popup').html("");
-
-            console.log(vectorLayer.getSource().getFeatures());
-            vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
-
-        });
 
         $(".ui.checkbox#nrow").checkbox({
             onChecked: function() {
