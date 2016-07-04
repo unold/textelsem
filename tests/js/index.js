@@ -255,6 +255,8 @@ $(document).ready(function() {
                 },
                 success: function (data) {
 
+
+                    var names = $("#p_dropdown").dropdown('get value').split(",");
                     var row = data.results.bindings;
                     var headings = data.head.vars;
                     var regex_filter = /(toponym)\D\d+/;
@@ -314,7 +316,7 @@ $(document).ready(function() {
                                 };
 
                                 var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
-                                temp_array.push({"mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": $("#p_dropdown").dropdown('get value').split(",")[i], "angle": angle, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(row[i].t1.value)[0]});
+                                temp_array.push({"mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i], "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(row[i].t1.value)[0]});
                             }
 
                             // for(var j in $("#p_dropdown").dropdown('get value').split(","))
@@ -879,13 +881,13 @@ $(document).ready(function() {
 
                     vectorLayer.getSource().addFeatures([
                         new ol.Feature({
-                            geometry: new ol.geom.Point(n_coords[index][1]),
+                            geometry: new ol.geom.Point(ol.proj.transform(complete_list[id][1][index]["coordinates"], "EPSG:4326", "EPSG:3857")),
                             type: 'Point',
-                            name: n_coords[index][0],
+                            name: complete_list[id][1][index]["top-name"],
                             class: "Resolved Toponym",
                             prob: (prob.toFixed(2)*100) + "%",
                             status: "Resolved",
-                            desc: n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.'
+                            desc: complete_list[id][1][index]["top-name"] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[index][3] + '.'
                         })
                     ]);
 
