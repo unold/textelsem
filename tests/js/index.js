@@ -122,7 +122,6 @@ $(document).ready(function() {
                     var regex_filter = /(toponym)\D\d+/;
                     var regex_filter2 = /(Findspot)\/\d+/;
                     var units = "kilometers";
-                    // var complete = [];
 
                     $('#toponym_dist_table>#table_details').html("");
                     resolved_coords = [];
@@ -268,7 +267,6 @@ $(document).ready(function() {
                     var list = {
                         "f2": function()
                         {
-                            console.log();
                             return [row[x].f2_lon.value, row[x].f2_lat.value, row[x].f2_name.value, row[x].f2_country.value];
                         },
                         "f3": function()
@@ -314,13 +312,24 @@ $(document).ready(function() {
                                         "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
                                     }
                                 };
-                                temp_array.push({"dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(row[i].t1.value)[0]});
+
+                                var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
+                                temp_array.push({"property": $("#p_dropdown").dropdown('get value').split(",")[i], "angle": angle, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(row[i].t1.value)[0]});
                             }
+
+                            // for(var j in $("#p_dropdown").dropdown('get value').split(","))
+                            // {
+                            //     var angles = temp_array.filter(function(a, b) {
+                            //         if(a.property = $("#p_dropdown").dropdown('get value').split(",")[j])
+                            //     })
+                            // }
+
                         }
                         complete.push([{"uFindspot_location": unresolved_coords[y][1]}, temp_array]);
                         temp_array = [];
                      }
 
+                     console.log(complete);
                      for(var key in complete)
                      {
                          var obj = complete[key][1];
@@ -803,7 +812,7 @@ $(document).ready(function() {
 
                 var wgs84Sphere = new ol.Sphere(6378137);
                 index = $(this).val();
-
+                var angles = [];
 
                 console.log(complete_list);
                 var obj = complete_list[index][1];
@@ -814,14 +823,21 @@ $(document).ready(function() {
 
                 if($("td#test"+ index).hasClass("negative"))
                    $("td#test"+ index).removeClass("negative");
+
                 for(var i = 0; i < obj.length; i++)
                 {
                     if(obj[i].prob != 0)
                     {
                         count++
                     }
+                    // var angle = parseFloat(angleFromCoordinate(u_coords[index][2][1], u_coords[index][2][0], obj[i]["coordinates"][0], obj[i]["coordinates"][1]));
+                    // angles.push(angle);
+                    // obj[i].angle = angle;
+
                     $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + unresolved_coords[index][0] + " to be " + obj[i]["top-name"] + ": " + obj[i]["prob"].toFixed(2) + "</div>");
                 }
+
+                console.log(angles);
                 if(count > 0)
                 {
                     $("td#test"+ index).addClass("positive");
@@ -968,8 +984,6 @@ $(document).ready(function() {
                     map.getView().setCenter(n_coords[index][1]);
                     map.getView().setZoom(10);
                 }
-
-
             },
 
             onUnchecked: function() {
@@ -1100,8 +1114,6 @@ $(document).ready(function() {
             });
     }
 
-
-
     function toDegrees (angle)
     {
         return angle * (180 / Math.PI);
@@ -1174,7 +1186,8 @@ $(document).ready(function() {
                   var euro_distance = distance.toFixed(2).replace(/\./g, ',');
                   var point_1 = ol.proj.fromLonLat([parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]);
                   var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
-                  var euro_angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value)).replace(/\./g, ',');
+                  var angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value));
+                  var euro_angle = angle.replace(/\./g, ',');
 
                   resolved_distances.push(distance);
                   resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
@@ -1236,31 +1249,12 @@ $(document).ready(function() {
 
           for(var key in complete)
           {
-            //   console.log(complete[key]);
               var obj = complete[key][1];
               for(var i = 0; i < obj.length; i++)
               {
                   obj[i].prob = probability(resolved_distances, obj[i]["dist"]);
               }
           }
-          //
-        //   for(var key in complete)
-        //   {
-        //       var obj = complete[key][1];
-        //       var count = 0;
-        //       for(var i = 0; i < 8; i++)
-        //       {
-        //           if(obj[i].prob == 0)
-        //           {
-        //               count++
-        //           }
-        //           $('#probability'+ key).append("<i id='"+key+"-"+i+"' class='remove link icon'></i><div class='item' id='"+key+"-"+i+"'>Probability for " + unresolved_coords[key][0] + " to be " + regex_filter.exec(obj[i]["nearby_top_name"])[0].toString() + ": " + obj[i]["prob"].toFixed(2) + "</div>");
-        //       }
-        //       if(count == 8)
-        //       {
-        //           $("td#test"+ key).addClass("negative");
-        //       }
-        //   }
 
           resolved_distances = resolved_distances.sort(function (a,b)
           {
@@ -1286,39 +1280,23 @@ $(document).ready(function() {
             return (2-1.0/reference.length)*(reference.length-index)/reference.length;
     }
 
-    function check_similarity(val)
+    function check_similarity()
     {
-        if(val["all"].length == 0)
-        {
-            return;
-        }
-        else {
-            for(var i in values)
-            {
-                var dist = [];
-                var angles = [];
+        var dist = [];
+        var angles = [];
 
-                arr[value_lookup[values[i]]()] = arr[value_lookup[values[i]]()].sort(function (a,b)
-                {
-                    return a.dist - b.dist;
-                });
+        // for(var x in arr[value_lookup[values[i]]()])
+        // {
+        //     dist.push(arr[value_lookup[values[i]]()][x]["dist"]);
+        //     angles.push(arr[value_lookup[values[i]]()][x]["angle"]);
+        // }
 
-                for(var x in arr[value_lookup[values[i]]()])
-                {
-                    dist.push(arr[value_lookup[values[i]]()][x]["dist"]);
-                    angles.push(arr[value_lookup[values[i]]()][x]["angle"]);
-                }
+        similarity(value_lookup[values[i]](), dist, arr);
+        angle_similarity(value_lookup[values[i]](), angles, arr);
 
-                if(values[i] != "all")
-                {
-                    similarity(value_lookup[values[i]](), dist, all_arr);
-                    // angle_similarity(value_lookup[values[i]](), angles, all_arr);
-                }
-            }
-        }
     }
 
-    function similarity(name, arr1, arr2)
+    function similarity(arr1, arr2)
     {
         var new_arr = arr2.filter(function(a) {
             if(a < arr1[arr1.length-1] && a > arr1[0])
@@ -1331,7 +1309,7 @@ $(document).ready(function() {
         // console.log("Distance Meaningfulness: " + name, (new_arr.length/arr2.length));
     }
 
-    function angle_similarity(name, arr1, arr2)
+    function angle_similarity(arr1, arr2)
     {
         var names_list = {
             "nearby": function() {
