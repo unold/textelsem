@@ -617,67 +617,10 @@ $(document).ready(function() {
             }
         });
 
-        $('.ui.selection.list>.item').click(function()
-        {
-            $(this).css({'font-weight': 'bold', 'color': 'black'});
-            var big_id = $(this).attr('id');
-
-            big_id = big_id.split("-");
-
-            var new_id = big_id[0] + big_id[1];
-            var id = big_id[0];
-            var index = big_id[1];
-
-            var distance = complete_list[id][1][index]["dist"];
-
-            var prob = complete_list[id][1][index]["prob"];
-
-            vectorLayer.getSource().addFeatures([
-                new ol.Feature({
-                    geometry: new ol.geom.Point(n_coords[index][1]),
-                    type: 'Point',
-                    name: n_coords[index][0],
-                    class: "Resolved Toponym",
-                    prob: (prob.toFixed(2)*100) + "%",
-                    status: "Resolved",
-                    desc: n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.'
-                })
-            ]);
-
-            vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(new_id);
-
-
-            if(distance > 100)
-            {
-                map.getView().setZoom(7);
-                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-            }
-            else if(distance > 50 && distance < 100)
-            {
-                map.getView().setZoom(8);
-                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-            }
-            else {
-                map.getView().setZoom(9);
-                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-            }
-
+        $('.ui.selection.list>.item').click(function() {
+            console.log("hi");
         });
 
-        $('.remove').click(function()
-        {
-            var big_id = $(this).attr('id');
-            $('div#'+ big_id.toString() +'.item').css({'font-weight': 'normal', 'color': 'rgba(0,0,0,.4)'});
-
-            big_id = big_id.split("-");
-            var new_id = big_id[0] + big_id[1];
-
-            $('#popup').html("");
-
-            console.log(vectorLayer.getSource().getFeatures());
-            vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
-
-        });
 
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
@@ -841,6 +784,69 @@ $(document).ready(function() {
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
             }
+        });
+
+        $('.ui.selection.list>.item').click(function()
+        {
+            $(this).css({'font-weight': 'bold', 'color': 'black'});
+            var big_id = $(this).attr('id');
+            console.log("hi");
+
+            big_id = big_id.split("-");
+
+            var new_id = big_id[0] + big_id[1];
+            var id = big_id[0];
+            var index = big_id[1];
+
+            var distance = complete_list[id][1][index]["dist"];
+
+            var prob = complete_list[id][1][index]["prob"];
+
+            vectorLayer.getSource().addFeatures([
+                new ol.Feature({
+                    geometry: new ol.geom.Point(n_coords[index][1]),
+                    type: 'Point',
+                    name: n_coords[index][0],
+                    class: "Resolved Toponym",
+                    prob: (prob.toFixed(2)*100) + "%",
+                    status: "Resolved",
+                    desc: n_coords[index][0] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ', which is listed as nearby to ' + n_coords[index][2] + '.'
+                })
+            ]);
+
+            vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(new_id);
+
+
+            if(distance > 100)
+            {
+                map.getView().setZoom(7);
+                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+            }
+            else if(distance > 50 && distance < 100)
+            {
+                map.getView().setZoom(8);
+                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+            }
+            else {
+                map.getView().setZoom(9);
+                map.getView().setCenter(ol.proj.transform(complete_list[id][1][index]["mid"]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+            }
+
+        });
+
+        $('.remove').click(function()
+        {
+            var big_id = $(this).attr('id');
+            $('div#'+ big_id.toString() +'.item').css({'font-weight': 'normal', 'color': 'rgba(0,0,0,.4)'});
+
+            big_id = big_id.split("-");
+            var new_id = big_id[0] + big_id[1];
+
+            $('#popup').html("");
+
+            console.log(vectorLayer.getSource().getFeatures());
+            vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
+
         });
 
         $(".ui.checkbox#nrow").checkbox({
@@ -1192,6 +1198,105 @@ $(document).ready(function() {
             return (2-1.0/reference.length)*index/reference.length;
         else
             return (2-1.0/reference.length)*(reference.length-index)/reference.length;
+    }
+
+    function check_similarity(val)
+    {
+        if(val["all"].length == 0)
+        {
+            return;
+        }
+        else {
+            for(var i in values)
+            {
+                var dist = [];
+                var angles = [];
+
+                arr[value_lookup[values[i]]()] = arr[value_lookup[values[i]]()].sort(function (a,b)
+                {
+                    return a.dist - b.dist;
+                });
+
+                for(var x in arr[value_lookup[values[i]]()])
+                {
+                    dist.push(arr[value_lookup[values[i]]()][x]["dist"]);
+                    angles.push(arr[value_lookup[values[i]]()][x]["angle"]);
+                }
+
+                if(values[i] != "all")
+                {
+                    similarity(value_lookup[values[i]](), dist, all_arr);
+                    // angle_similarity(value_lookup[values[i]](), angles, all_arr);
+                }
+            }
+        }
+    }
+
+    function similarity(name, arr1, arr2)
+    {
+        var new_arr = arr2.filter(function(a) {
+            if(a < arr1[arr1.length-1] && a > arr1[0])
+            {
+                return a;
+            }
+        });
+
+        return new_arr.length/arr2.length;
+        // console.log("Distance Meaningfulness: " + name, (new_arr.length/arr2.length));
+    }
+
+    function angle_similarity(name, arr1, arr2)
+    {
+        var names_list = {
+            "nearby": function() {
+                var new_arr = arr2;
+
+                return new_arr;
+            },
+            "north": function() {
+                var new_arr = arr2.filter(function(a) {
+                    if(a < 270 && a > 90)
+                    {
+                        return a;
+                    }
+                });
+
+                return new_arr;
+            },
+            "south": function() {
+                var new_arr = arr2.filter(function(a) {
+                    if(a > 270 || a < 90)
+                    {
+                        return a;
+                    }
+                });
+                return new_arr;
+            },
+            "east": function() {
+                var new_arr = arr2.filter(function(a) {
+                    if(a > 180 && a < 360)
+                    {
+                        return a;
+                    }
+                });
+
+                return new_arr;
+            },
+            "west": function() {
+                var new_arr = arr2.filter(function(a) {
+                    if(a < 180 && a > 0)
+                    {
+                        return a;
+                    }
+                });
+
+                return new_arr;
+            }
+        }
+
+        return names_list[name]().length/arr2.length;
+
+        console.log("Angle Meaningfulness: " + name, names_list[name]().length/arr2.length)
     }
 
 });
