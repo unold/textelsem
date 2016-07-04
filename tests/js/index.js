@@ -7,12 +7,98 @@ $(document).ready(function() {
     var unresolved_coords = [];
     var findspot_coordinates = [];
     var complete = [];
+    var arr = [];
+
 
     if (typeof(Number.prototype.toRad) === "undefined") {
         Number.prototype.toRad = function() {
             return this * Math.PI / 180;
         }
     }
+
+    var query_all = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+    + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon\n"
+    + "WHERE { "
+    + "  ?t1 higeomes:hasFindspot ?f1 ."
+    + "  ?t2 higeomes:hasFindspot ?f2 ."
+    + "  ?f1 higeomes:lat ?t1_lat ."
+    + "  ?f1 higeomes:lng ?t1_lon ."
+    + "  ?f2 higeomes:lat ?t2_lat ."
+    + "  ?f2 higeomes:lng ?t2_lon ."
+    + " }";
+
+    $.ajax({
+        url: repo,dataType: 'jsonp',
+        data: {
+            queryLn: 'SPARQL',
+            query: query_all,
+            Accept: 'application/json'
+        },
+        success: function(data) {
+            var row = data.results.bindings;
+            var angle;
+            var angles = [];
+            temp = [];
+
+
+
+
+            for(var i in row)
+            {
+                var coordinate_1 = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]
+                    }
+                };
+
+                var coordinate_2 = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]
+                    }
+                };
+
+                angle = parseFloat(angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value)))
+                arr.push({"dist": turf.distance(coordinate_1, coordinate_2, "kilometers"), "angle": angle});
+
+            }
+
+            var sorted_distances = [];
+            var sorted_angles = [];
+
+            arr = arr.sort(function (a,b)
+            {
+                return a.dist - b.dist;
+            });
+
+            // console.log(arr[value_lookup[values[x]]()][i]["dist"]);
+
+            for(var i in arr)
+            {
+                sorted_distances.push(arr[i]["dist"])
+            }
+
+
+            arr = arr.sort(function (a,b)
+            {
+                return a.angle - b.angle;
+            });
+
+            for(var i in arr)
+            {
+                sorted_angles.push(arr[i]["angle"])
+            }
+
+            // console.log(values[x], sorted_angles);
+            // console.log(values[x], sorted_distances);
+
+            // check_similarity(arr);
+        }
+    });
 
     $(".tabular.menu .item").tab();
 
