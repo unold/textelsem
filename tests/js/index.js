@@ -335,20 +335,35 @@ $(document).ready(function() {
                         temp_array = [];
                      }
 
+                     console.log(names);
+
                      for(var x in complete)
                      {
                          var obj = complete[x][1];
-                         var new_dist = [];
 
-                         for(var i = 0; i < obj.length; i++)
+
+                         for(var key in names)
                          {
-                            new_dist.push(obj[i]["dist"]);
-                         }
-                         new_dist = new_dist.sort(function (a, b) {
-                            return a-b;
-                         });
+                             var new_dist = [];
+                             console.log(names[key]);
+                             var new_list = obj.filter(function(a) {
+                                if(a["property"].includes(names[key]))
+                                return a;
+                             });
 
-                         complete[x].dist_meaningfulness = similarity(new_dist, full);
+                             console.log(new_list);
+
+                             for(var i in new_list)
+                             {
+                                new_dist.push(new_list[i]["dist"]);
+                             }
+                             new_dist = new_dist.sort(function (a, b) {
+                                return a-b;
+                             });
+
+                             var myVar = "dist_meaningfulness_"+names[key];
+                             complete[x][myVar] = similarity(new_dist, full);
+                         }
 
                      }
 
@@ -1302,22 +1317,6 @@ $(document).ready(function() {
             return (2-1.0/reference.length)*index/reference.length;
         else
             return (2-1.0/reference.length)*(reference.length-index)/reference.length;
-    }
-
-    function check_similarity()
-    {
-        var dist = [];
-        var angles = [];
-
-        // for(var x in arr[value_lookup[values[i]]()])
-        // {
-        //     dist.push(arr[value_lookup[values[i]]()][x]["dist"]);
-        //     angles.push(arr[value_lookup[values[i]]()][x]["angle"]);
-        // }
-
-        similarity(value_lookup[values[i]](), dist, arr);
-        angle_similarity(value_lookup[values[i]](), angles, arr);
-
     }
 
     function similarity(arr1, arr2)
