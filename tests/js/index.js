@@ -268,28 +268,30 @@ $(document).ready(function() {
                         return a.match(/f\d$/);
                     });
 
+                    // var resolved_distances
+
                     var complete = [];
 
                     var list = {
                         "f2": function()
                         {
-                            return [row[x].f2_lon.value, row[x].f2_lat.value, row[x].f2_name.value, row[x].f2_country.value];
+                            return [row[x].f2_lon.value, row[x].f2_lat.value, row[x].f2_name.value, row[x].f2_country.value, row[x].t2.value];
                         },
                         "f3": function()
                         {
-                            return [row[x].f3_lon.value, row[x].f3_lat.value, row[x].f3_name.value, row[x].f3_country.value];
+                            return [row[x].f3_lon.value, row[x].f3_lat.value, row[x].f3_name.value, row[x].f3_country.value, row[x].t3.value];
                         },
                         "f4": function()
                         {
-                            return [row[x].f4_lon.value, row[x].f4_lat.value, row[x].f4_name.value, row[x].f4_country.value];
+                            return [row[x].f4_lon.value, row[x].f4_lat.value, row[x].f4_name.value, row[x].f4_country.value, row[x].t4.value];
                         },
                         "f5": function()
                         {
-                            return [row[x].f5_lon.value, row[x].f5_lat.value, row[x].f5_name.value, row[x].f5_country.value];
+                            return [row[x].f5_lon.value, row[x].f5_lat.value, row[x].f5_name.value, row[x].f5_country.value, row[x].t5.value];
                         },
                         "f6": function()
                         {
-                            return [row[x].f6_lon.value, row[x].f6_lat.value, row[x].f6_name.value, row[x].f6_country.value];
+                            return [row[x].f6_lon.value, row[x].f6_lat.value, row[x].f6_name.value, row[x].f6_country.value, row[x].t6.value];
                         }
                     };
 
@@ -318,9 +320,9 @@ $(document).ready(function() {
                                         "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
                                     }
                                 };
-
+                                // console.log(list[variable]()[4]);
                                 var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
-                                temp_array.push({"mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i], "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(row[i].t1.value)[0]});
+                                temp_array.push({"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i], "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
                             }
 
                             // for(var j in $("#p_dropdown").dropdown('get value').split(","))
@@ -331,7 +333,7 @@ $(document).ready(function() {
                             // }
 
                         }
-                        complete.push([{"uFindspot_location": unresolved_coords[y][1]}, temp_array]);
+                        complete.push([{"uFindspot_location": unresolved_coords[y][1], "uFindspot_name": unresolved_coords[y][3]}, temp_array]);
                         temp_array = [];
                      }
 
@@ -839,7 +841,6 @@ $(document).ready(function() {
                     $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + u_coords[index][3] + " to be " + obj[i]["top-name"] + ": " + obj[i]["prob"].toFixed(2) + "</div>");
                 }
 
-                console.log(angles);
                 if(count > 0)
                 {
                     $("td#test"+ index).addClass("positive");
@@ -887,11 +888,12 @@ $(document).ready(function() {
                         new ol.Feature({
                             geometry: new ol.geom.Point(ol.proj.transform(complete_list[id][1][index]["coordinates"], "EPSG:4326", "EPSG:3857")),
                             type: 'Point',
-                            name: complete_list[id][1][index]["top-name"],
-                            class: "Resolved Toponym",
+                            name: complete_list[id][1][index]["findspot_name"],
+                            class: complete_list[id][1][index]["top-name"],
                             prob: (prob.toFixed(2)*100) + "%",
                             status: "Resolved",
-                            desc: complete_list[id][1][index]["top-name"] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3]
+                            desc: complete_list[id][1][index]["findspot_name"] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ", which is listed as " + complete_list[id][1][index]["property"] + " to the unresolved toponym " + complete_list[id][1][index]["top-name"],
+                            country: complete_list[id][1][index]["country"]
                         })
                     ]);
 
@@ -1020,7 +1022,7 @@ $(document).ready(function() {
 
                     $('#popup').html("<div class='ui shape'><div class='sides'>"
                     + "<div class='side active'><div class='ui card'>"
-                    + "<div class='content'>"
+                    + "<div class='content' id='front'>"
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
@@ -1031,8 +1033,8 @@ $(document).ready(function() {
                     + "<div class='ui bottom basic attached button'>"
                     + "Flip Over for more information<i class='long arrow right icon'></i></div></div></div>"
                     + "<div class='side'>"
-                    + "<div class='ui card'>"
-                    + "<div class='content'>"
+                    + "<div class='ui card' id='backside'>"
+                    + "<div class='content' id='back'>"
                     + "<i class='right floated large link remove icon'></i>"
                     + "<div class='header'>"+feature.get('name')+"</div>"
                     + "<div class='meta'>"+feature.get('class')+"</div>"
@@ -1109,7 +1111,7 @@ $(document).ready(function() {
                     if(feature.get('status') == 'Unresolved')
                         $('.left.floated.radius').html('Shown Radius: 40km');
 
-                    $('.description').append(feature.get('desc'));
+                    $('#front>.description').append(feature.get('desc'));
 
                 }
                 // else {
@@ -1164,6 +1166,7 @@ $(document).ready(function() {
                     + "<td><a href ="+row[i].top1.value + ">" + regex_filter.exec(row[i].top1.value)[0] +"</a></td>"
                     +"<td><a href =" +row[i].top2.value + ">" + regex_filter.exec(row[i].top2.value)[0] + "</a></td>"
                     + "<td><a href =" +row[i].find2.value + ">" + row[i].name.value + "</a></td></tr>");
+
               }
 
               else if(row[i].hasOwnProperty('t1'))
@@ -1224,6 +1227,9 @@ $(document).ready(function() {
               }
           }
 
+          console.log("Findspot Coordinates", findspot_coordinates);
+
+
           for(var i in unresolved_coords)
           {
               var unresolved_findspot = {
@@ -1244,7 +1250,7 @@ $(document).ready(function() {
                           "coordinates": findspot_coordinates[j][3]
                       }
                   };
-                  temp_array.push({"coordinates": findspot_coordinates[j][3], "dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][2]});
+                  temp_array.push({"findspot_name": findspot_coordinates[j][0], "country": findspot_coordinates[j][4], "coordinates": findspot_coordinates[j][3], "dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][2]});
               }
 
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
