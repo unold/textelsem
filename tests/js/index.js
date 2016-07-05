@@ -247,6 +247,9 @@ $(document).ready(function() {
         onChange: function() {
 
             console.log(query_func3($("#p_dropdown").dropdown('get value').split(",")));
+
+            // for(var i in vectorLayer.getSource().getFeatures())
+            //     vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatures()[i]);
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
@@ -833,7 +836,7 @@ $(document).ready(function() {
                     // angles.push(angle);
                     // obj[i].angle = angle;
 
-                    $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + unresolved_coords[index][0] + " to be " + obj[i]["top-name"] + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                    $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + u_coords[index][3] + " to be " + obj[i]["top-name"] + ": " + obj[i]["prob"].toFixed(2) + "</div>");
                 }
 
                 console.log(angles);
@@ -864,19 +867,6 @@ $(document).ready(function() {
                     })
                 );
 
-                $.fn.extend({
-                    //switchClass parameter is to replicate toggleClass functionality.
-                    toggleClassDelay: function (className, delay, switchClass)
-                    {
-                        this.toggleClass(className, switchClass);
-
-                        setTimeout($.proxy(function ()
-                        {
-                            this.toggleClass(className, switchClass);
-                        }, this), delay);
-                    }
-                });
-
                 $('.ui.selection.list>.item').click(function()
                 {
                     $(this).css({'font-weight': 'bold', 'color': 'black'});
@@ -901,7 +891,7 @@ $(document).ready(function() {
                             class: "Resolved Toponym",
                             prob: (prob.toFixed(2)*100) + "%",
                             status: "Resolved",
-                            desc: complete_list[id][1][index]["top-name"] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[index][3] + '.'
+                            desc: complete_list[id][1][index]["top-name"] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3]
                         })
                     ]);
 
@@ -1254,7 +1244,7 @@ $(document).ready(function() {
                           "coordinates": findspot_coordinates[j][3]
                       }
                   };
-                  temp_array.push({"dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][2]});
+                  temp_array.push({"coordinates": findspot_coordinates[j][3],"dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][2]});
               }
 
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
