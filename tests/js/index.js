@@ -335,46 +335,31 @@ $(document).ready(function() {
                         temp_array = [];
                      }
 
-                     console.log(complete)
+                     for(var x in complete)
+                     {
+                         var obj = complete[x][1];
+                         var new_dist = [];
 
-                    //  for(var x in complete)
-                    //  {
-                    //      var obj = complete[x][1];
-                    //      for(var i in names)
-                    //      {
-                    //          var distances = obj.filter(function(a)
-                    //          {
-                    //              if(a["property"].includes(names[i]))
-                    //              {
-                    //                  return a.dist;
-                    //              }
-                    //          });
-                     //
-                    //         //  console.log("Distances", distances)
-                     //
-                    //          var new_dist = [];
-                    //          for(var j in distances)
-                    //          {
-                    //              new_dist.push(distances[j].dist);
-                     //
-                    //          }
-                     //
-                    //          new_dist = new_dist.sort(function (a, b) {
-                    //             return a-b;
-                    //          });
-                     //
-                     //
-                    //          console.log(names[i], similarity(new_dist, full));
-                    //      }
-                    //  }
+                         for(var i = 0; i < obj.length; i++)
+                         {
+                            new_dist.push(obj[i]["dist"]);
+                         }
+                         new_dist = new_dist.sort(function (a, b) {
+                            return a-b;
+                         });
 
-                    //  console.log(complete);
+                         complete[x].dist_meaningfulness = similarity(new_dist, full);
+
+                     }
+
+                     console.log(complete);
+
                      for(var key in complete)
                      {
                          var obj = complete[key][1];
                          for(var i = 0; i < obj.length; i++)
                          {
-                             obj[i].prob = probability(resolved_distances,obj[i]["dist"]);
+                             obj[i].prob = complete[x]["dist_meaningfulness"] * probability(resolved_distances,obj[i]["dist"]);
                          }
                      }
 
