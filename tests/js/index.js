@@ -174,7 +174,6 @@ $(document).ready(function() {
         onChange: function() {
 
             var value = $("#n_dropdown").dropdown('get value');
-            console.log(value);
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
             $.ajax({
                 url: repo,
@@ -246,8 +245,6 @@ $(document).ready(function() {
     $("#p_dropdown").dropdown({
         onChange: function() {
 
-            console.log(query_func3($("#p_dropdown").dropdown('get value').split(",")));
-
             // for(var i in vectorLayer.getSource().getFeatures())
             //     vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatures()[i]);
             $.ajax({
@@ -295,7 +292,7 @@ $(document).ready(function() {
                         }
                     };
 
-                    console.log(row.length);
+                    // console.log(row.length);
 
                     var temp_array = [];
                     for(var y in unresolved_coords)
@@ -313,6 +310,7 @@ $(document).ready(function() {
                             for(var i in headings)
                             {
                                 var variable = headings[i];
+                                var prep = "";
                                 var coordinate_2 = {
                                     "type": "Feature",
                                     "geometry": {
@@ -321,16 +319,11 @@ $(document).ready(function() {
                                     }
                                 };
                                 // console.log(list[variable]()[4]);
+                                if(names[i] != "nearby")
+                                    prep = "of";
                                 var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
-                                temp_array.push({"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i], "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
+                                temp_array.push({"uTop_name": regex_filter.exec(row[x].t1.value)[0],"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i] + prep, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
                             }
-
-                            // for(var j in $("#p_dropdown").dropdown('get value').split(","))
-                            // {
-                            //     var angles = temp_array.filter(function(a, b) {
-                            //         if(a.property = $("#p_dropdown").dropdown('get value').split(",")[j])
-                            //     })
-                            // }
 
                         }
                         complete.push([{"uFindspot_location": unresolved_coords[y][1], "uFindspot_name": unresolved_coords[y][3]}, temp_array]);
@@ -775,7 +768,6 @@ $(document).ready(function() {
                     "west": "west of "
                 };
 
-                console.log($("#r_dropdown").dropdown('get value'));
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].setId(first_id);
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(sec_id);
@@ -838,7 +830,7 @@ $(document).ready(function() {
                     // angles.push(angle);
                     // obj[i].angle = angle;
 
-                    $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + u_coords[index][3] + " to be " + obj[i]["top-name"] + ": " + obj[i]["prob"].toFixed(2) + "</div>");
+                    $('#probability'+ index).append("<i id='"+index+"-"+i+"' class='remove link icon'></i><div class='item' id='"+index+"-"+i+"'>Probability for " + u_coords[index][3] + " to be " + obj[i]["uTop_name"] + ": " + obj[i]["prob"].toFixed(2) + "</div>");
                 }
 
                 if(count > 0)
@@ -872,7 +864,6 @@ $(document).ready(function() {
                 {
                     $(this).css({'font-weight': 'bold', 'color': 'black'});
                     var big_id = $(this).attr('id');
-                    console.log("hi");
 
                     big_id = big_id.split("-");
 
@@ -892,14 +883,13 @@ $(document).ready(function() {
                             class: complete_list[id][1][index]["top-name"],
                             prob: (prob.toFixed(2)*100) + "%",
                             status: "Resolved",
-                            desc: complete_list[id][1][index]["findspot_name"] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ", which is listed as " + complete_list[id][1][index]["property"] + " to the unresolved toponym " + complete_list[id][1][index]["top-name"],
+                            desc: complete_list[id][1][index]["findspot_name"] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ", which is listed as " + complete_list[id][1][index]["property"] + " the unresolved toponym " + complete_list[id][1][index]["uTop_name"],
                             country: complete_list[id][1][index]["country"]
                         })
                     ]);
 
                     vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(new_id);
 
-                    console.log(vectorLayer.getSource().getFeatures())
 
                     if(distance > 100)
                     {
@@ -928,7 +918,6 @@ $(document).ready(function() {
 
                     $('#popup').html("");
 
-                    console.log(vectorLayer.getSource().getFeatures());
                     vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
 
                 });
@@ -1241,8 +1230,6 @@ $(document).ready(function() {
               };
               var temp_array = [];
 
-              console.log(findspot_coordinates.length);
-
               for(var j in findspot_coordinates)
               {
                   var resolved_findspot = {
@@ -1252,13 +1239,13 @@ $(document).ready(function() {
                           "coordinates": findspot_coordinates[j][3]
                       }
                   };
-                  temp_array.push({"findspot_name": findspot_coordinates[j][0], "country": findspot_coordinates[j][4], "coordinates": findspot_coordinates[j][3], "dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][2]});
+                  temp_array.push({"uTop_name": findspot_coordinates[j][2], "findspot_name": findspot_coordinates[j][0], "country": findspot_coordinates[j][4], "coordinates": findspot_coordinates[j][3], "dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][5]});
               }
 
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
           }
 
-          console.log(complete);
+        //   console.log(complete);
 
           for(var key in complete)
           {
