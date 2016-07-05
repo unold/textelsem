@@ -320,7 +320,7 @@ $(document).ready(function() {
                                 };
                                 // console.log(list[variable]()[4]);
                                 if(names[i] != "nearby")
-                                    prep = "of";
+                                    prep = " of ";
                                 var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
                                 temp_array.push({"uTop_name": regex_filter.exec(row[x].t1.value)[0],"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i] + prep, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
                             }
@@ -1239,7 +1239,7 @@ $(document).ready(function() {
                           "coordinates": findspot_coordinates[j][3]
                       }
                   };
-                  temp_array.push({"uTop_name": findspot_coordinates[j][2], "findspot_name": findspot_coordinates[j][0], "country": findspot_coordinates[j][4], "coordinates": findspot_coordinates[j][3], "dist": turf.distance(unresolved_findspot, resolved_findspot, units), "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][5]});
+                  temp_array.push({"uTop_name": findspot_coordinates[j][2], "findspot_name": findspot_coordinates[j][0], "country": findspot_coordinates[j][4], "coordinates": findspot_coordinates[j][3], "dist": turf.distance(unresolved_findspot, resolved_findspot, units), "property": "nearby", "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][5]});
               }
 
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
