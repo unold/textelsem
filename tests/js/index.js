@@ -1241,6 +1241,8 @@ $(document).ready(function() {
               };
               var temp_array = [];
 
+              console.log(findspot_coordinates.length);
+
               for(var j in findspot_coordinates)
               {
                   var resolved_findspot = {
@@ -1254,8 +1256,9 @@ $(document).ready(function() {
               }
 
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
-              temp_array = [];
           }
+
+          console.log(complete);
 
           for(var key in complete)
           {
