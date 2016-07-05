@@ -7,7 +7,8 @@ $(document).ready(function() {
     var unresolved_coords = [];
     var findspot_coordinates = [];
     var complete = [];
-    var arr = [];
+    var full = [];
+
 
 
     if (typeof(Number.prototype.toRad) === "undefined") {
@@ -29,7 +30,8 @@ $(document).ready(function() {
     + " }";
 
     $.ajax({
-        url: repo,dataType: 'jsonp',
+        url: repo,
+        dataType: 'jsonp',
         data: {
             queryLn: 'SPARQL',
             query: query_all,
@@ -40,8 +42,7 @@ $(document).ready(function() {
             var angle;
             var angles = [];
             temp = [];
-
-
+            var arr = [];
 
 
             for(var i in row)
@@ -93,9 +94,13 @@ $(document).ready(function() {
                 sorted_angles.push(arr[i]["angle"])
             }
 
+            full.dist = sorted_distances;
+            full.angles = sorted_angles;
+
+            console.log(full);
+
             // console.log(values[x], sorted_angles);
             // console.log(values[x], sorted_distances);
-
             // check_similarity(arr);
         }
     });
@@ -322,7 +327,7 @@ $(document).ready(function() {
                                 if(names[i] != "nearby")
                                     prep = " of ";
                                 var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
-                                temp_array.push({"uTop_name": regex_filter.exec(row[x].t1.value)[0],"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i] + prep, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
+                                temp_array.push({"angle": angle, "uTop_name": regex_filter.exec(row[x].t1.value)[0],"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i] + prep, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
                             }
 
                         }
@@ -330,7 +335,40 @@ $(document).ready(function() {
                         temp_array = [];
                      }
 
-                     console.log(complete);
+                     console.log(complete)
+
+                    //  for(var x in complete)
+                    //  {
+                    //      var obj = complete[x][1];
+                    //      for(var i in names)
+                    //      {
+                    //          var distances = obj.filter(function(a)
+                    //          {
+                    //              if(a["property"].includes(names[i]))
+                    //              {
+                    //                  return a.dist;
+                    //              }
+                    //          });
+                     //
+                    //         //  console.log("Distances", distances)
+                     //
+                    //          var new_dist = [];
+                    //          for(var j in distances)
+                    //          {
+                    //              new_dist.push(distances[j].dist);
+                     //
+                    //          }
+                     //
+                    //          new_dist = new_dist.sort(function (a, b) {
+                    //             return a-b;
+                    //          });
+                     //
+                     //
+                    //          console.log(names[i], similarity(new_dist, full));
+                    //      }
+                    //  }
+
+                    //  console.log(complete);
                      for(var key in complete)
                      {
                          var obj = complete[key][1];
@@ -345,6 +383,7 @@ $(document).ready(function() {
             });
         }
     });
+
 
     function addProperties(top, var1, num)
     {
@@ -1298,6 +1337,9 @@ $(document).ready(function() {
 
     function similarity(arr1, arr2)
     {
+        // console.log("first array", arr1);
+        // console.log("second array", arr2);
+        arr2 = arr2["dist"];
         var new_arr = arr2.filter(function(a) {
             if(a < arr1[arr1.length-1] && a > arr1[0])
             {
@@ -1305,7 +1347,7 @@ $(document).ready(function() {
             }
         });
 
-        return new_arr.length/arr2.length;
+        return 1-(new_arr.length/arr2.length);
         // console.log("Distance Meaningfulness: " + name, (new_arr.length/arr2.length));
     }
 
