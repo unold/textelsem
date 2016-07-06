@@ -70,7 +70,17 @@
                     <div class="ui inverted dimmer" id="first_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
                     </div>
-                    <table class="ui celled table" id="toponym_dist_table">
+                    <div class="ui icon info message">
+                        <i class="close icon"></i>
+                        <i class="checkmark icon"></i>
+                        <div class="content">
+                            <div class="header">
+                                Welcome!
+                            </div>
+                            <p>To begin, please click an option in the dropdown below.</p>
+                        </div>
+                    </div>
+                    <table class="ui hidden celled table" id="toponym_dist_table">
                         <thead>
                             <tr>
                                 <th class="one wide">
@@ -108,7 +118,7 @@
                                 <th>Unresolved Findspot</th>
                                 <th class="nine wide">
                                     <div class="ui multiple search selection fluid dropdown" id="p_dropdown">
-                                        <input type="hidden" name="prob" value="nearby">
+                                        <input type="hidden" name="prob">
                                         <div class="default text">Select Property</div>
                                         <i class="dropdown icon"></i>
                                         <div class="menu">

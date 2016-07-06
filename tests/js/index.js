@@ -99,13 +99,8 @@ $(document).ready(function() {
 
     $(".tabular.menu .item").tab();
 
-    $('.item#r_tab').tab({
-        history: true,
-        onFirstLoad: function() {
-
-            $("#r_dropdown").dropdown('set value', 'nearby');
-            $("#r_dropdown").dropdown('set text', 'Nearby');
-        }
+    $('.message .close').on('click', function() {
+        $(this).closest('.message').transition('fade');
     });
 
     $("#r_dropdown").dropdown({
@@ -170,6 +165,10 @@ $(document).ready(function() {
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
+                    $('#toponym_dist_table').removeClass('hidden');
+                    $('.ui.message').addClass('hidden');
+
+                    $('#r_dropdown').dropdown('hide');
                     $('#first_tab_dimmer').removeClass('active');
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
@@ -257,6 +256,13 @@ $(document).ready(function() {
 
                 }
             });
+        }
+    });
+
+    $('.item#u_tab').tab({
+        onFirstLoad: function() {
+            $("#p_dropdown").dropdown('set value', 'nearby');
+            $("#p_dropdown").dropdown('set selected', 'nearby');
         }
     });
 
@@ -606,7 +612,34 @@ $(document).ready(function() {
             query: query,
             Accept: 'application/json'
         },
-        success: callback
+        success: function(data) {
+            var row = data.results.bindings;
+
+            var regex_filter = /(toponym)\D\d+/;
+            var regex_filter2 = /(Findspot)\/\d+/;
+            var units = "kilometers";
+
+            for(var i in row)
+            {
+                var findspot_name;
+                var findspot_name1;
+                var findspot_loc;
+
+                var normal_coords = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
+                findspot_loc = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
+                findspot_name = row[i].f1.value;
+
+                findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
+                findspot_name1 = findspot_name1.replace(/\//, " ");
+
+                $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
+                + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
+                + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
+
+                unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
+            }
+        }
     });
 
     var osm = new ol.layer.Tile({
@@ -683,8 +716,6 @@ $(document).ready(function() {
         map.addLayer(lineLayer);
         map.addLayer(vectorLayer);
 
-        // $('.ui.accordion').accordion();
-
         $('#selectAll_Nearby').checkbox({
             onChecked: function() {
                 $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('check');
@@ -747,12 +778,6 @@ $(document).ready(function() {
                         status: "Resolved",
                         country: r_coords[index][2],
                         class: r_coords[index][3]
-                        // pop: r_coords[index][10],
-                        // env: r_coords[index][11],
-                        // admin: r_coords[index][12],
-                        // size: r_coords[index][13],
-                        // kind: r_coords[index][14],
-                        // role: r_coords[index][15]
                     }),
                     new ol.Feature({
                         geometry: new ol.geom.Point(point2),
@@ -1163,132 +1188,6 @@ $(document).ready(function() {
         var brng = parseFloat(toDegrees(Math.atan2(y, x)));
 
         return ((brng + 360) % 360).toFixed(2);
-    }
-
-    function callback(data)
-    {
-        var row = data.results.bindings;
-
-        var regex_filter = /(toponym)\D\d+/;
-        var regex_filter2 = /(Findspot)\/\d+/;
-        var units = "kilometers";
-        // var complete = [];
-
-
-          for(var i in row)
-          {
-              if (row[i].hasOwnProperty('top1'))
-              {
-                    var normal_coords1 = [parseFloat(row[i].f2_lon.value), parseFloat(row[i].f2_lat.value)];
-                    var transformed_coords = ol.proj.transform([parseFloat(row[i].f2_lon.value), parseFloat(row[i].f2_lat.value)], "EPSG:4326", "EPSG:3857");
-                    findspot_coordinates.push([row[i].name.value, transformed_coords, regex_filter.exec(row[i].top1.value)[0], normal_coords1, row[i].country.value, regex_filter.exec(row[i].top2.value)[0]]);
-
-                    $('#new_table>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                    + "<td><a href ="+row[i].top1.value + ">" + regex_filter.exec(row[i].top1.value)[0] +"</a></td>"
-                    +"<td><a href =" +row[i].top2.value + ">" + regex_filter.exec(row[i].top2.value)[0] + "</a></td>"
-                    + "<td><a href =" +row[i].find2.value + ">" + row[i].name.value + "</a></td></tr>");
-
-              }
-
-              else if(row[i].hasOwnProperty('t1'))
-              {
-                  // Calculate Distance
-                  var coordinate_1 = {
-                      "type": "Feature",
-                      "geometry": {
-                          "type": "Point",
-                          "coordinates": [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]
-                      }
-                  };
-
-                  var coordinate_2 = {
-                      "type": "Feature",
-                      "geometry": {
-                          "type": "Point",
-                          "coordinates": [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]
-                      }
-                  };
-
-                  var distance = turf.distance(coordinate_1, coordinate_2, units);
-                  var center = turf.midpoint(coordinate_1, coordinate_2);
-                  var euro_distance = distance.toFixed(2).replace(/\./g, ',');
-                  var point_1 = ol.proj.fromLonLat([parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]);
-                  var point_2 = ol.proj.fromLonLat([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]);
-                  var angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value));
-                  var euro_angle = angle.replace(/\./g, ',');
-
-                  resolved_distances.push(distance);
-                  resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
-
-                  $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                  + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
-                  + "<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td>"
-                  + "<td>"+ euro_angle +"&deg</td></tr>");
-
-              }
-              else
-              {
-                  var findspot_name;
-                  var findspot_name1;
-                  var findspot_loc;
-
-                  var normal_coords = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
-                  findspot_loc = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
-                  findspot_name = row[i].f1.value;
-
-                  findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
-                  findspot_name1 = findspot_name1.replace(/\//, " ");
-
-                  $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                  +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
-                  + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
-                  + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
-
-                  unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
-              }
-          }
-
-          for(var i in unresolved_coords)
-          {
-              var unresolved_findspot = {
-                  "type": "Feature",
-                  "geometry": {
-                      "type": "Point",
-                      "coordinates": unresolved_coords[i][2]
-                  }
-              };
-              var temp_array = [];
-
-              for(var j in findspot_coordinates)
-              {
-                  var resolved_findspot = {
-                      "type": "Feature",
-                      "geometry": {
-                          "type": "Point",
-                          "coordinates": findspot_coordinates[j][3]
-                      }
-                  };
-                  temp_array.push({"uTop_name": findspot_coordinates[j][2], "findspot_name": findspot_coordinates[j][0], "country": findspot_coordinates[j][4], "coordinates": findspot_coordinates[j][3], "dist": turf.distance(unresolved_findspot, resolved_findspot, units), "property": "nearby", "mid": turf.midpoint(unresolved_findspot, resolved_findspot), "top-name": findspot_coordinates[j][5]});
-              }
-
-              complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
-          }
-
-          for(var key in complete)
-          {
-              var obj = complete[key][1];
-              for(var i = 0; i < obj.length; i++)
-              {
-                  obj[i].prob = probability(resolved_distances, obj[i]["dist"]);
-              }
-          }
-
-          resolved_distances = resolved_distances.sort(function (a,b)
-          {
-              return a - b;
-          });
-
-          draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
     }
 
     // Calculate probability of an unresolved findspot
