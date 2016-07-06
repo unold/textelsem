@@ -236,7 +236,7 @@ $(document).ready(function() {
                             var transformed_coords = ol.proj.transform([parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], "EPSG:4326", "EPSG:3857");
                             var normal_coords2 = [parseFloat(row[i].t3_lon.value), parseFloat(row[i].t3_lat.value)];
                             var transformed_coords2 = ol.proj.transform([parseFloat(row[i].t3_lon.value), parseFloat(row[i].t3_lat.value)], "EPSG:4326", "EPSG:3857");
-                            findspot_coordinates.push([regex_filter.exec(row[i].t1.value)[0], transformed_coords, row[i].f2_name.value, normal_coords1, row[i].f2_country.value, row[i].f3_name.value, row[i].f3_country.value, transformed_coords2, normal_coords2]);
+                            findspot_coordinates.push([row[i].f2_name.value, transformed_coords, regex_filter.exec(row[i].t1.value)[0], normal_coords1, row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], row[i].f3_name.value, transformed_coords2, normal_coords2, row[i].f3_country.value, regex_filter.exec(row[i].t2.value)[0]]);
 
                             $('#new_table2>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                             + "<td><a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td>"
@@ -264,6 +264,7 @@ $(document).ready(function() {
                     }
 
                     $('#third_tab_dimmer').removeClass('active');
+                    $('#n_dropdown').dropdown('hide');
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
 
                 }
@@ -978,42 +979,68 @@ $(document).ready(function() {
         $(".ui.checkbox#nrow").checkbox({
             onChecked: function() {
 
+                // findspot_coordinates.push(row[i].f2_name.value, transformed_coords, [regex_filter.exec(row[i].t1.value)[0], normal_coords1, row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], row[i].f3_name.value, transformed_coords2, normal_coords2, row[i].f3_country.value, regex_filter.exec(row[i].t2.value)[0]]);
                 index = $(this).val();
+
+                var values = {
+                    "nearby": ["nearby"],
+                    "nearbywest": ["nearby", "west of"],
+                    "nearbyeast": ["nearby", "east of"],
+                    "nearbysouth": ["nearby", "south of"],
+                    "nearbynorth": ["nearby", "north of"]
+                }
+
                 vectorLayer.getSource().addFeature(
                     new ol.Feature({
                         geometry: new ol.geom.Point(n_coords[index][1]),
                         type: 'Point',
                         name: n_coords[index][0],
                         status: "Resolved",
-                        class: n_coords[index][2],
+                        class: n_coords[index][5],
                         country: n_coords[index][4]
                     })
                 );
 
-                var values = {
-                    "nearby": "nearby",
-                    "nearbywest": "nearby and west of",
-                    "nearbyeast": "nearby and east of",
-                    "nearbysouth": "nearby and south of",
-                    "nearbynorth": "nearby and north of"
-                }
+                console.log(n_coords);
 
-                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
+                vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index+'1');
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
-                + " is a resolved findspot that is listed as " + values[$('#n_dropdown').dropdown('get value')] + " the unresolved toponym, \"" + n_coords[index][5].replace('-', ' ') + "\".");
+                + " is a resolved findspot that is listed as " + values[$('#n_dropdown').dropdown('get value')][0] + " the unresolved toponym, \"" + n_coords[index][2].replace('-', ' ') + "\".");
 
-                if($('#selectAll_Nearby').checkbox('is unchecked'))
+                if(n_coords.length == 11)
                 {
-                    map.getView().setCenter(n_coords[index][1]);
-                    map.getView().setZoom(10);
+                    vectorLayer.getSource().addFeature(
+                        new ol.Feature({
+                            geometry: new ol.geom.Point(n_coords[index][7]),
+                            type: 'Point',
+                            name: n_coords[index][6],
+                            status: "Resolved",
+                            class: n_coords[index][10],
+                            country: n_coords[index][9]
+                        })
+                    );
+
+                    vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index+'2');
+
+                    vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
+                    + " is a resolved findspot that is listed as " + values[$('#n_dropdown').dropdown('get value')][1] + " the unresolved toponym, \"" + n_coords[index][2].replace('-', ' ') + "\".");
+
                 }
+
+                // if($('#selectAll_Nearby').checkbox('is unchecked'))
+                // {
+                //     map.getView().setCenter(n_coords[index][1]);
+                //     map.getView().setZoom(10);
+                // }
             },
 
             onUnchecked: function() {
                 $('#popup').html("");
                 index = $(this).val();
-                vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
+                vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'1'));
+                if(vectorLayer.getSource().getFeatureById(index+'2'))
+                    vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'2'));
             }
         });
 
