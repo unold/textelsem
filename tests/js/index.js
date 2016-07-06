@@ -428,7 +428,7 @@ $(document).ready(function() {
         {
             conditions = conditions.split(',');
         }
-        else {
+        else if(!(conditions.constructor === Array)) {
             conditions = [conditions]
         }
         var properties = "";
@@ -880,7 +880,6 @@ $(document).ready(function() {
                 circleLayer.getSource().getFeatures()[circleLayer.getSource().getFeatures().length - 1].setId("circle"+index);
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + " is an unresolved findspot.");
-
                 map.getView().setCenter(u_coords[index][1]);
                 map.getView().setZoom(10);
             },
@@ -896,7 +895,7 @@ $(document).ready(function() {
 
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
-                vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(':regex(id,\d+-\d+)'))
+                // vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(':regex(id,\d+)'))
             }
         });
 
