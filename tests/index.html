@@ -14,6 +14,7 @@
 
         <!-- Javascript Sources -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.address/1.6/jquery.address.min.js"></script>
         <script src="http://openlayers.org/en/v3.16.0/build/ol.js"></script>
         <script src ="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -29,9 +30,9 @@
     <body>
         <div id="table_container">
             <div class="ui top attached tabular menu">
-                <a class="active item" data-tab="resolved" id="r_tab">
+                <a class="item" data-tab="resolved" id="r_tab">
                     <div class="ui floating dropdown"  data-tab="resolved" id="r_dropdown">
-                        <input type="hidden" name="toponym_table" value="nearby">
+                        <input type="hidden" name="toponym_table">
                         <div class="text" data-value="nearby">Resolved Toponyms</div>
                         <i class="dropdown icon"></i>
                         <div class="menu">
@@ -47,7 +48,7 @@
                 <a class="item" data-tab="unresolved" id="u_tab">Unresolved Findspots</a>
                 <a class="item" data-tab="new" id="n_tab">
                     <div class="ui floating dropdown"  data-tab="new" id="n_dropdown">
-                        <input type="hidden" name="table2" value="nearby">
+                        <input type="hidden" name="table2">
                         <div class="text" data-value="nearby">Unresolved Toponyms</div>
                         <i class="dropdown icon"></i>
                         <div class="menu">

@@ -107,13 +107,26 @@ $(document).ready(function() {
 
     $(".tabular.menu .item").tab();
 
+
+    // $('a.item#r_tab')[0].click();
+
+    $('.item#r_tab').tab({
+        history: true,
+        onFirstLoad: function() {
+
+            console.log('hi');
+            $("#r_dropdown").dropdown('set value', 'nearby');
+            $("#r_dropdown").dropdown('set text', 'Nearby');
+        }
+    });
+
     $("#r_dropdown").dropdown({
         onChange: function() {
 
             var value = $("#r_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
             $.ajax({
-                url: repo,
+                 url: repo,
                 dataType: 'jsonp',
                 data: {
                     queryLn: 'SPARQL',
@@ -175,6 +188,13 @@ $(document).ready(function() {
         }
     });
 
+
+    $('.item#n_tab').tab({
+        onFirstLoad: function() {
+            $("#n_dropdown").dropdown('set value', 'nearby');
+            $("#n_dropdown").dropdown('set text', 'Nearby');
+        }
+    });
     $("#n_dropdown").dropdown({
         onChange: function() {
 
@@ -246,12 +266,11 @@ $(document).ready(function() {
         }
     });
 
-
     $("#p_dropdown").dropdown({
         onChange: function() {
 
-            // for(var i in vectorLayer.getSource().getFeatures())
-            //     vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatures()[i]);
+            console.log(query_func3($("#p_dropdown").dropdown('get value').split(",")));
+
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
@@ -260,6 +279,7 @@ $(document).ready(function() {
                     query: query_func3($("#p_dropdown").dropdown('get value').split(",")),
                     Accept: 'application/json'
                 },
+                error: console.log(':('),
                 success: function (data) {
 
                     var names = $("#p_dropdown").dropdown('get value').split(",");
@@ -269,8 +289,6 @@ $(document).ready(function() {
                     headings = headings.filter(function(a) {
                         return a.match(/f\d$/);
                     });
-
-                    // var resolved_distances
 
                     var complete = [];
 
@@ -335,23 +353,17 @@ $(document).ready(function() {
                         temp_array = [];
                      }
 
-                     console.log(names);
-
                      for(var x in complete)
                      {
                          var obj = complete[x][1];
 
-
                          for(var key in names)
                          {
                              var new_dist = [];
-                             console.log(names[key]);
                              var new_list = obj.filter(function(a) {
                                 if(a["property"].includes(names[key]))
                                 return a;
                              });
-
-                             console.log(new_list);
 
                              for(var i in new_list)
                              {
@@ -548,35 +560,35 @@ $(document).ready(function() {
     }
 
     // Query for all resolved toponyms that are listed as nearby
-    var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon ?f1_name ?f2_name ?f1_country ?f2_country\n"
-    + "WHERE { "
-    + "  ?t1 higeomes:isNearOf ?t2 ."
-    + "  ?t1 higeomes:hasFindspot ?f1 ."
-    + "  ?t2 higeomes:hasFindspot ?f2 ."
-    + "  ?f1 higeomes:lat ?t1_lat ."
-    + "  ?f1 higeomes:lng ?t1_lon ."
-    + "  ?f2 higeomes:lat ?t2_lat ."
-    + "  ?f2 higeomes:lng ?t2_lon ."
-    + "  ?f1 higeomes:name ?f1_name ."
-    + "  ?f2 higeomes:name ?f2_name ."
-    + "  ?f1 higeomes:country ?country1 ."
-    + "  ?country1 rdfs:label ?f1_country ."
-    + "  ?f2 higeomes:country ?country2 ."
-    + "  ?country2 rdfs:label ?f2_country ."
-    + " }";
-
-    $.ajax({
-        url: repo,
-        dataType: 'jsonp',
-        data: {
-            queryLn: 'SPARQL',
-            query: query,
-            Accept: 'application/json'
-        },
-        success: callback
-    });
+    // var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+    // + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+    // + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon ?f1_name ?f2_name ?f1_country ?f2_country\n"
+    // + "WHERE { "
+    // + "  ?t1 higeomes:isNearOf ?t2 ."
+    // + "  ?t1 higeomes:hasFindspot ?f1 ."
+    // + "  ?t2 higeomes:hasFindspot ?f2 ."
+    // + "  ?f1 higeomes:lat ?t1_lat ."
+    // + "  ?f1 higeomes:lng ?t1_lon ."
+    // + "  ?f2 higeomes:lat ?t2_lat ."
+    // + "  ?f2 higeomes:lng ?t2_lon ."
+    // + "  ?f1 higeomes:name ?f1_name ."
+    // + "  ?f2 higeomes:name ?f2_name ."
+    // + "  ?f1 higeomes:country ?country1 ."
+    // + "  ?country1 rdfs:label ?f1_country ."
+    // + "  ?f2 higeomes:country ?country2 ."
+    // + "  ?country2 rdfs:label ?f2_country ."
+    // + " }";
+    //
+    // $.ajax({
+    //     url: repo,
+    //     dataType: 'jsonp',
+    //     data: {
+    //         queryLn: 'SPARQL',
+    //         query: query,
+    //         Accept: 'application/json'
+    //     },
+    //     success: callback
+    // });
 
     // Query for all unresolved findspots
     query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
@@ -591,35 +603,6 @@ $(document).ready(function() {
     + "?f1 higeomes:name ?name ."
     + "?f1 higeomes:lng ?f1_lon ."
     + "?f1 higeomes:lat ?f1_lat ."
-    + "}";
-
-    $.ajax({
-        url: repo,
-        dataType: 'jsonp',
-        data: {
-            queryLn: 'SPARQL',
-            query: query,
-            Accept: 'application/json'
-        },
-        success: callback
-    });
-
-    // Query for all unresolved findspots
-    query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?top1 ?find2 ?f2_lon ?f2_lat ?top2 ?name ?country\n"
-    + "WHERE {"
-    + "?top1 higeomes:isNearOf ?top2 ."
-    + "?top2 higeomes:hasFindspot ?find2 ."
-    + "?find2 higeomes:country ?c ."
-    + "?c rdfs:label ?country ."
-    + "FILTER NOT EXISTS"
-    + "{"
-    + "?top1 higeomes:hasFindspot ?find1 ."
-    + "}"
-    + "?find2 higeomes:lng ?f2_lon ."
-    + "?find2 higeomes:lat ?f2_lat ."
-    + "?find2 higeomes:name ?name ."
     + "}";
 
     $.ajax({
