@@ -67,6 +67,9 @@
 
             <div class="ui bottom attached active tab segment" data-tab="resolved" id="r_table">
                 <div id="inner">
+                    <div class="ui inverted dimmer" id="first_tab_dimmer">
+                        <div class="ui large text loader">Just a moment...</div>
+                    </div>
                     <table class="ui celled table" id="toponym_dist_table">
                         <thead>
                             <tr>
@@ -89,7 +92,7 @@
             </div>
             <div class="ui bottom attached tab segment" data-tab="unresolved" id="u_table">
                 <div id="inner">
-                    <div class="ui inverted dimmer">
+                    <div class="ui inverted dimmer" id="second_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
                     </div>
                     <table class="ui loading celled table" id="unresolved_table">
@@ -127,6 +130,9 @@
 
             <div class="ui bottom attached tab segment" data-tab="new" id="n_table">
                 <div id="inner">
+                    <div class="ui inverted dimmer" id="third_tab_dimmer">
+                        <div class="ui large text loader">Just a moment...</div>
+                    </div>
                     <table class="ui celled table" id="new_table">
                         <thead>
                             <tr>

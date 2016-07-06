@@ -123,6 +123,7 @@ $(document).ready(function() {
     $("#r_dropdown").dropdown({
         onChange: function() {
 
+            $('#first_tab_dimmer').addClass('active');
             var value = $("#r_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
             $.ajax({
@@ -181,6 +182,7 @@ $(document).ready(function() {
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
+                    $('#first_tab_dimmer').removeClass('active');
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
 
@@ -197,6 +199,8 @@ $(document).ready(function() {
     });
     $("#n_dropdown").dropdown({
         onChange: function() {
+
+            $('#third_tab_dimmer').addClass('active');
 
             var value = $("#n_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
@@ -259,6 +263,7 @@ $(document).ready(function() {
                         }
                     }
 
+                    $('#third_tab_dimmer').removeClass('active');
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
 
                 }
@@ -269,7 +274,7 @@ $(document).ready(function() {
     $("#p_dropdown").dropdown({
         onChange: function() {
 
-            $('.ui.inverted.dimmer').addClass('active');
+            $('#second_tab_dimmer').addClass('active');
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
@@ -278,7 +283,6 @@ $(document).ready(function() {
                     query: query_func3($("#p_dropdown").dropdown('get value').split(",")),
                     Accept: 'application/json'
                 },
-                error: console.log(':('),
                 success: function (data) {
 
                     var names = $("#p_dropdown").dropdown('get value').split(",");
@@ -392,7 +396,7 @@ $(document).ready(function() {
 
                      }
                      $('#p_dropdown').dropdown('hide');
-                     $('.ui.inverted.dimmer').removeClass('active');
+                     $('#second_tab_dimmer').removeClass('active');
 
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
