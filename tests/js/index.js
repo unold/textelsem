@@ -391,7 +391,7 @@ $(document).ready(function() {
                         }
 
                      }
-
+                     $('#p_dropdown').dropdown('hide');
                      $('.ui.inverted.dimmer').removeClass('active');
 
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
