@@ -96,25 +96,15 @@ $(document).ready(function() {
 
             full.dist = sorted_distances;
             full.angles = sorted_angles;
-
-            console.log(full);
-
-            // console.log(values[x], sorted_angles);
-            // console.log(values[x], sorted_distances);
-            // check_similarity(arr);
         }
     });
 
     $(".tabular.menu .item").tab();
 
-
-    // $('a.item#r_tab')[0].click();
-
     $('.item#r_tab').tab({
         history: true,
         onFirstLoad: function() {
 
-            console.log('hi');
             $("#r_dropdown").dropdown('set value', 'nearby');
             $("#r_dropdown").dropdown('set text', 'Nearby');
         }
@@ -840,7 +830,6 @@ $(document).ready(function() {
                 index = $(this).val();
                 var angles = [];
 
-                console.log(complete_list);
                 var obj = complete_list[index][1];
 
                 var count = 0;
@@ -1001,7 +990,6 @@ $(document).ready(function() {
                     })
                 );
 
-                console.log(n_coords);
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index+'1');
 
@@ -1271,9 +1259,6 @@ $(document).ready(function() {
                   unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
               }
           }
-
-          console.log("Findspot Coordinates", findspot_coordinates);
-
 
           for(var i in unresolved_coords)
           {
