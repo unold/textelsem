@@ -269,8 +269,7 @@ $(document).ready(function() {
     $("#p_dropdown").dropdown({
         onChange: function() {
 
-            console.log(query_func3($("#p_dropdown").dropdown('get value').split(",")));
-
+            $('.ui.inverted.dimmer').addClass('active');
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
@@ -379,16 +378,21 @@ $(document).ready(function() {
 
                      }
 
-                     console.log(complete);
-
                      for(var key in complete)
                      {
                          var obj = complete[key][1];
                          for(var i = 0; i < obj.length; i++)
                          {
-                             obj[i].prob = complete[x]["dist_meaningfulness"] * probability(resolved_distances,obj[i]["dist"]);
-                         }
+                             for(var x in names)
+                             {
+                                 if(obj[i]["property"].includes(names[x]))
+                                    obj[i].prob = complete[key]["dist_meaningfulness_"+names[x]] * probability(resolved_distances,obj[i]["dist"]);
+                            }
+                        }
+
                      }
+
+                     $('.ui.inverted.dimmer').removeClass('active');
 
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
@@ -719,7 +723,6 @@ $(document).ready(function() {
                         $("#clear").checkbox('set unchecked');
                     }
                 })
-
             }
         });
 
