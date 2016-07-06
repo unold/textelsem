@@ -76,8 +76,6 @@ $(document).ready(function() {
                 return a.dist - b.dist;
             });
 
-            // console.log(arr[value_lookup[values[x]]()][i]["dist"]);
-
             for(var i in arr)
             {
                 sorted_distances.push(arr[i]["dist"])
@@ -309,8 +307,6 @@ $(document).ready(function() {
                         }
                     };
 
-                    // console.log(row.length);
-
                     var temp_array = [];
                     for(var y in unresolved_coords)
                     {
@@ -335,7 +331,6 @@ $(document).ready(function() {
                                         "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
                                     }
                                 };
-                                // console.log(list[variable]()[4]);
                                 if(names[i] != "nearby")
                                     prep = " of ";
                                 var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
@@ -434,7 +429,6 @@ $(document).ready(function() {
             variables.push("?t" + (parseFloat(i)+2), "?f" + (parseFloat(i)+2), "?f" + (parseFloat(i)+2) + "_lat", "?f" + (parseFloat(i)+2) + "_lon", "?f" + (parseFloat(i)+2) + "_name", "?f" + (parseFloat(i)+2) + "_country")
             properties += options[conditions[i]]() + "?t" + (parseFloat(i)+2) + " . \n"
             properties += addProperties("t" + (parseFloat(i)+2), "f" + (parseFloat(i)+2) , (parseFloat(i)+2));
-            // console.log(addProperties("t" + (parseFloat(i)+2), "f" + (parseFloat(i)+2) , (parseFloat(i)+2)));
         }
 
         return "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>\n"
@@ -1089,12 +1083,6 @@ $(document).ready(function() {
                         $('.right.floated.status').popup();
                     }
 
-                    // if(feature.U.hasOwnProperty('pop'))
-                    // {
-                    //     console.log(feature.get("pop"));
-                    //     $("#pop").append(feature.get('pop'))
-                    // }
-
                     if(feature.U.hasOwnProperty('country'))
                     {
                         $('.country').html("Country: " + feature.get('country') + " <i class='"+ feature.get('country').toString().toLowerCase() + " flag'></i>")
@@ -1138,7 +1126,7 @@ $(document).ready(function() {
                         $(".ui.shape").shape({
                             duration: "1ms"
                         });
-                        $(".ui.shape").shape('flip right');
+                        $(".ui.shape").shape('flip over');
                     });
 
                     if(feature.get('status') == 'Unresolved')
@@ -1286,8 +1274,6 @@ $(document).ready(function() {
               complete.push([{"uFindspot_location": unresolved_coords[i][1]}, temp_array]);
           }
 
-        //   console.log(complete);
-
           for(var key in complete)
           {
               var obj = complete[key][1];
@@ -1323,8 +1309,6 @@ $(document).ready(function() {
 
     function similarity(arr1, arr2)
     {
-        // console.log("first array", arr1);
-        // console.log("second array", arr2);
         arr2 = arr2["dist"];
         var new_arr = arr2.filter(function(a) {
             if(a < arr1[arr1.length-1] && a > arr1[0])
@@ -1334,7 +1318,6 @@ $(document).ready(function() {
         });
 
         return 1-(new_arr.length/arr2.length);
-        // console.log("Distance Meaningfulness: " + name, (new_arr.length/arr2.length));
     }
 
     function angle_similarity(arr1, arr2)
@@ -1387,8 +1370,6 @@ $(document).ready(function() {
         }
 
         return names_list[name]().length/arr2.length;
-
-        console.log("Angle Meaningfulness: " + name, names_list[name]().length/arr2.length)
     }
 
 });
