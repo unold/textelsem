@@ -106,7 +106,7 @@ $(document).ready(function() {
             var value = $("#r_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
             $.ajax({
-                 url: repo,
+                url: repo,
                 dataType: 'jsonp',
                 data: {
                     queryLn: 'SPARQL',
@@ -152,7 +152,7 @@ $(document).ready(function() {
                         var euro_angle = angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value)).replace(/\./g, ',');
 
                         resolved_distances.push(distance);
-                         resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
+                        resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, regex_filter.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], distance, center]);
 
                         // Add row to table
                         $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
@@ -289,6 +289,8 @@ $(document).ready(function() {
 
                      }
 
+                     console.log(complete);
+
                      for(var key in complete)
                      {
                          var obj = complete[key][1];
@@ -345,19 +347,36 @@ $(document).ready(function() {
 
                     findspot_coordinates = [];
 
-                    console.log(data);
-
                     for(var i in row)
                     {
                         if(row[i].hasOwnProperty("f3"))
                         {
+
+
                             $("#new_table").addClass("hidden");
                             $("#new_table2").removeClass("hidden");
                             var normal_coords1 = [parseFloat(row[i].f2_lon.value), parseFloat(row[i].f2_lat.value)];
                             var transformed_coords = ol.proj.transform([parseFloat(row[i].f2_lon.value), parseFloat(row[i].f2_lat.value)], "EPSG:4326", "EPSG:3857");
                             var normal_coords2 = [parseFloat(row[i].f3_lon.value), parseFloat(row[i].f3_lat.value)];
                             var transformed_coords2 = ol.proj.transform([parseFloat(row[i].f3_lon.value), parseFloat(row[i].f3_lat.value)], "EPSG:4326", "EPSG:3857");
-                            findspot_coordinates.push([row[i].f2_name.value, transformed_coords, regex_filter.exec(row[i].t1.value)[0], normal_coords1, row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], row[i].f3_name.value, transformed_coords2, normal_coords2, row[i].f3_country.value, regex_filter.exec(row[i].t2.value)[0]]);
+
+                            var coordinate1 = {
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": normal_coords1
+                                }
+                            };
+
+                            var coordinate2 = {
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": normal_coords2
+                                }
+                            };
+
+                            findspot_coordinates.push([row[i].f2_name.value, transformed_coords, regex_filter.exec(row[i].t1.value)[0], normal_coords1, row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], row[i].f3_name.value, transformed_coords2, normal_coords2, row[i].f3_country.value, regex_filter.exec(row[i].t2.value)[0], turf.midpoint(coordinate1, coordinate2)]);
 
                             $('#new_table2>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                             + "<td><a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td>"
@@ -405,7 +424,6 @@ $(document).ready(function() {
 
     function query_func3(conditions)
     {
-        console.log(conditions);
         if(conditions.includes(','))
         {
             conditions = conditions.split(',');
@@ -432,7 +450,6 @@ $(document).ready(function() {
                 return "  ?t1 higeomes:isWestOf ";
             }
         };
-
 
         for(var i in conditions)
         {
@@ -879,6 +896,7 @@ $(document).ready(function() {
 
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
+                vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(':regex(id,\d+-\d+)'))
             }
         });
 
@@ -886,7 +904,6 @@ $(document).ready(function() {
         $(".ui.checkbox#nrow").checkbox({
             onChecked: function() {
 
-                // findspot_coordinates.push(row[i].f2_name.value, transformed_coords, [regex_filter.exec(row[i].t1.value)[0], normal_coords1, row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], row[i].f3_name.value, transformed_coords2, normal_coords2, row[i].f3_country.value, regex_filter.exec(row[i].t2.value)[0]]);
                 index = $(this).val();
 
                 var values = {
@@ -907,7 +924,6 @@ $(document).ready(function() {
                         country: n_coords[index][4]
                     })
                 );
-
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index+'1');
 
@@ -932,13 +948,22 @@ $(document).ready(function() {
                     vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
                     + " is a resolved findspot that is listed as " + values[$('#n_dropdown').dropdown('get value')][1] + " the unresolved toponym, \"" + n_coords[index][2].replace('-', ' ') + "\".");
 
+
                 }
 
-                // if($('#selectAll_Nearby').checkbox('is unchecked'))
-                // {
-                //     map.getView().setCenter(n_coords[index][1]);
-                //     map.getView().setZoom(10);
-                // }
+
+                if($('#selectAll_Nearby').checkbox('is unchecked'))
+                {
+                    if(n_coords[index].length < 7)
+                    {
+                        map.getView().setCenter(n_coords[index][1]);
+                        map.getView().setZoom(10);
+                    }
+                    else {
+                        map.getView().setCenter(ol.proj.transform(n_coords[index][11]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+                        map.getView().setZoom(8);
+                    }
+                }
             },
 
             onUnchecked: function() {
@@ -1164,8 +1189,6 @@ $(document).ready(function() {
                 return new_arr;
             }
         }
-
         return names_list[name]().length/arr2.length;
     }
-
 });
