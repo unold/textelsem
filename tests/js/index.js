@@ -215,8 +215,7 @@ $(document).ready(function() {
     //Query for all resolved findspots listed as nearby
     $("#r_dropdown").dropdown({
         onChange: function() {
-            vectorLayer.getSource().clear();
-            lineLayer.getSource().clear();
+
             $('#first_tab_dimmer').addClass('active');
             var value = $("#r_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
@@ -276,12 +275,15 @@ $(document).ready(function() {
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
+                    console.log($('#toponym_dist_table>#table_details').find(".ui.checkbox#row"));
+
+                    $('#toponym_dist_table>#table_details').find(".ui.checkbox#row").checkbox('uncheck');
+
                     $('#r_dropdown').dropdown('hide');
                     $('#first_tab_dimmer').removeClass('active');
 
                     draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
-
             });
         }
     });
@@ -429,8 +431,6 @@ $(document).ready(function() {
     //Query for all unresolved findspots that are connected to resolved findspots with the nearby property and one additional property.
     $("#n_dropdown").dropdown({
         onChange: function() {
-
-            vectorLayer.getSource().clear();
             $('#third_tab_dimmer').addClass('active');
             var value = $("#n_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
@@ -460,7 +460,6 @@ $(document).ready(function() {
                     {
                         if(row[i].hasOwnProperty("f3"))
                         {
-
 
                             $("#new_table").addClass("hidden");
                             $("#new_table2").removeClass("hidden");
@@ -509,6 +508,15 @@ $(document).ready(function() {
                             + "<td><a href =" +row[i].f2.value + ">" + row[i].f2_name.value + "</a></td></tr>");
 
                         }
+                    }
+
+                    if($("#new_table").hasClass('hidden'))
+                    {
+                        console.log('new table 2')
+                        $('#new_table2>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
+                    }
+                    else {
+                        $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
                     }
 
                     $('#third_tab_dimmer').removeClass('active');
@@ -902,7 +910,6 @@ $(document).ready(function() {
 
                     vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
                     + " is a resolved findspot that is listed as " + values[$('#n_dropdown').dropdown('get value')][1] + " the unresolved toponym, \"" + n_coords[index][2].replace('-', ' ') + "\".");
-
 
                 }
 
