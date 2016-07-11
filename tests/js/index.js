@@ -95,10 +95,6 @@ $(document).ready(function() {
 
     $(".tabular.menu .item").tab();
 
-    $('.message .close').on('click', function() {
-        $(this).closest('.message').transition('fade');
-    });
-
     $("#r_dropdown").dropdown({
         onChange: function() {
 
@@ -161,8 +157,8 @@ $(document).ready(function() {
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
-                    $('#toponym_dist_table').removeClass('hidden');
-                    $('.ui.message').addClass('hidden');
+                    // $('#toponym_dist_table').removeClass('hidden');
+                    // $('.ui.message').addClass('hidden');
 
                     $('#r_dropdown').dropdown('hide');
                     $('#first_tab_dimmer').removeClass('active');
@@ -173,6 +169,9 @@ $(document).ready(function() {
             });
         }
     });
+
+    $("#r_dropdown").dropdown('set value', 'nearby');
+    $("#r_dropdown").dropdown('set selected', 'nearby');
 
     $('.item#u_tab').tab({
         onFirstLoad: function() {

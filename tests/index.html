@@ -30,7 +30,7 @@
     <body>
         <div id="table_container">
             <div class="ui top attached tabular menu">
-                <a class="item" data-tab="resolved" id="r_tab">
+                <a class="active item" data-tab="resolved" id="r_tab">
                     <div class="ui floating dropdown"  data-tab="resolved" id="r_dropdown">
                         <input type="hidden" name="toponym_table">
                         <div class="text" data-value="nearby">Resolved Toponyms</div>
@@ -70,17 +70,7 @@
                     <div class="ui inverted dimmer" id="first_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
                     </div>
-                    <div class="ui icon info message">
-                        <i class="close icon"></i>
-                        <i class="checkmark icon"></i>
-                        <div class="content">
-                            <div class="header">
-                                Welcome!
-                            </div>
-                            <p>To begin, please click an option in the dropdown below.</p>
-                        </div>
-                    </div>
-                    <table class="ui hidden celled table" id="toponym_dist_table">
+                    <table class="ui celled table" id="toponym_dist_table">
                         <thead>
                             <tr>
                                 <th class="one wide">
