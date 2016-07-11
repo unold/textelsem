@@ -173,13 +173,6 @@ $(document).ready(function() {
     $("#r_dropdown").dropdown('set value', 'nearby');
     $("#r_dropdown").dropdown('set selected', 'nearby');
 
-    $('.item#u_tab').tab({
-        onFirstLoad: function() {
-            $("#p_dropdown").dropdown('set value', 'nearby');
-            $("#p_dropdown").dropdown('set selected', 'nearby');
-        }
-    });
-
     $("#p_dropdown").dropdown({
         onChange: function() {
 
@@ -312,12 +305,9 @@ $(document).ready(function() {
         }
     });
 
-    $('.item#n_tab').tab({
-        onFirstLoad: function() {
-            $("#n_dropdown").dropdown('set value', 'nearby');
-            $("#n_dropdown").dropdown('set text', 'Nearby');
-        }
-    });
+    $("#p_dropdown").dropdown('set value', 'nearby');
+    $("#p_dropdown").dropdown('set selected', 'nearby');
+
     $("#n_dropdown").dropdown({
         onChange: function() {
 
@@ -410,6 +400,9 @@ $(document).ready(function() {
             });
         }
     });
+
+    $("#n_dropdown").dropdown('set value', 'nearby');
+    $("#n_dropdown").dropdown('set text', 'Nearby');
 
     function addProperties(top, var1, num)
     {
