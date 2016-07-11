@@ -281,7 +281,6 @@ $(document).ready(function() {
 
                      }
 
-                     console.log(complete);
 
                      for(var key in complete)
                      {
@@ -325,6 +324,8 @@ $(document).ready(function() {
                 },
                 success: function (data) {
 
+                    console.log(query_func3(value));
+
                     var row = data.results.bindings;
 
                     var regex_filter = /(toponym)\D\d+/;
@@ -365,7 +366,7 @@ $(document).ready(function() {
                                 }
                             };
 
-                            findspot_coordinates.push([row[i].f2_name.value, transformed_coords, regex_filter.exec(row[i].t1.value)[0], normal_coords1, row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], row[i].f3_name.value, transformed_coords2, normal_coords2, row[i].f3_country.value, regex_filter.exec(row[i].t2.value)[0], turf.midpoint(coordinate1, coordinate2)]);
+                            findspot_coordinates.push([row[i].f2_name.value, transformed_coords, regex_filter.exec(row[i].t1.value)[0], normal_coords1, row[i].f2_country.value, regex_filter.exec(row[i].t2.value)[0], row[i].f3_name.value, transformed_coords2, normal_coords2, row[i].f3_country.value, regex_filter.exec(row[i].t3.value)[0], turf.midpoint(coordinate1, coordinate2)]);
 
                             $('#new_table2>#table_details').append("<tr><td><div id='nrow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                             + "<td><a href ="+row[i].t1.value + ">" + regex_filter.exec(row[i].t1.value)[0] +"</a></td>"
@@ -576,6 +577,9 @@ $(document).ready(function() {
         var features_list = [];
         var circle_list = [];
         var index;
+
+        console.log(complete_list, n_coords);
+
 
         var styles = {
             'Point': new ol.style.Style({
