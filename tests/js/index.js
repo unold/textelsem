@@ -290,11 +290,19 @@ $(document).ready(function() {
     $("#r_dropdown").dropdown('set value', 'nearby');
     $("#r_dropdown").dropdown('set selected', 'nearby');
 
+    $('.item#u_tab').tab({
+        onFirstLoad: function() {
+            $("#p_dropdown").dropdown('set value', 'nearby');
+            $("#p_dropdown").dropdown('set selected', 'nearby');
+        }
+    });
+
     //Query for all unresolved findspots that are connected to resolved findspots by certain properties
     $("#p_dropdown").dropdown({
         onChange: function() {
 
             $('#second_tab_dimmer').addClass('active');
+            $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
@@ -396,7 +404,6 @@ $(document).ready(function() {
                              var myVar = "dist_meaningfulness_"+names[key];
                              complete[x][myVar] = similarity(new_dist, full);
                          }
-
                      }
 
 
@@ -423,8 +430,8 @@ $(document).ready(function() {
     });
 
     //Set nearby as default value on page load
-    $("#p_dropdown").dropdown('set value', 'nearby');
-    $("#p_dropdown").dropdown('set selected', 'nearby');
+    // $("#p_dropdown").dropdown('set value', 'nearby');
+    // $("#p_dropdown").dropdown('set selected', 'nearby');
 
     //Query for all unresolved findspots that are connected to resolved findspots with the nearby property and one additional property.
     $("#n_dropdown").dropdown({
@@ -733,6 +740,8 @@ $(document).ready(function() {
                 var obj = complete_list[index][1];
 
                 var count = 0;
+
+                console.log("unresolved table row");
 
                 $('#probability'+ index).html("");
 
