@@ -429,10 +429,6 @@ $(document).ready(function() {
         }
     });
 
-    //Set nearby as default value on page load
-    // $("#p_dropdown").dropdown('set value', 'nearby');
-    // $("#p_dropdown").dropdown('set selected', 'nearby');
-
     //Query for all unresolved findspots that are connected to resolved findspots with the nearby property and one additional property.
     $("#n_dropdown").dropdown({
         onChange: function() {
@@ -987,11 +983,13 @@ $(document).ready(function() {
                     {
                         $('.right.floated.status').html("Status: <i class='remove circle outline icon'></i>");
                         $('.right.floated.status').attr('data-content', 'Unresolved');
+                        $('.right.floated.status').attr('data-position', 'right center');
                         $('.right.floated.status').popup();
                     }
                     else if(feature.get('status') == "Resolved") {
                         $('.right.floated.status').html("Status: <i class='check circle outline green icon'></i>");
                         $('.right.floated.status').attr('data-content', 'Resolved');
+                        $('.right.floated.status').attr('data-position', 'right center');
                         $('.right.floated.status').popup();
                     }
 
