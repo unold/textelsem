@@ -133,10 +133,12 @@ $(document).ready(function() {
                 findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
                 findspot_name1 = findspot_name1.replace(/\//, " ");
 
-                $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
-                + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
-                + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
+                // $('#unresolved_table>#table_details').append("<tr class='disabled'><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                // +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
+                // + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
+                // + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
+
+                $('#unresolved_table>#table_details').append
 
                 unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
             }
@@ -211,6 +213,8 @@ $(document).ready(function() {
     });
 
     $(".tabular.menu .item").tab();
+
+
 
     //Query for all resolved findspots listed as nearby
     $("#r_dropdown").dropdown({
@@ -290,143 +294,134 @@ $(document).ready(function() {
     $("#r_dropdown").dropdown('set value', 'nearby');
     $("#r_dropdown").dropdown('set selected', 'nearby');
 
-    $('.item#u_tab').tab({
-        onFirstLoad: function() {
-            $("#p_dropdown").dropdown('set value', 'nearby');
-            $("#p_dropdown").dropdown('set selected', 'nearby');
-        }
-    });
+    $("#p_dropdown").dropdown();
 
-    //Query for all unresolved findspots that are connected to resolved findspots by certain properties
-    $("#p_dropdown").dropdown({
-        onChange: function() {
+    $('#go').click(function() {
+        $('#second_tab_dimmer').addClass('active');
+        $('#unresolved_table>#table_details').find('tr').removeClass('disabled');
+        // $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
+        $.ajax({
+            url: repo,
+            dataType: 'jsonp',
+            data: {
+                queryLn: 'SPARQL',
+                query: query_func3($("#p_dropdown").dropdown('get value').split(",")),
+                Accept: 'application/json'
+            },
+            success: function (data) {
 
-            $('#second_tab_dimmer').addClass('active');
-            $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
-            $.ajax({
-                url: repo,
-                dataType: 'jsonp',
-                data: {
-                    queryLn: 'SPARQL',
-                    query: query_func3($("#p_dropdown").dropdown('get value').split(",")),
-                    Accept: 'application/json'
-                },
-                success: function (data) {
+                var names = $("#p_dropdown").dropdown('get value').split(",");
+                var row = data.results.bindings;
+                var headings = data.head.vars;
+                var regex_filter = /(toponym)\D\d+/;
+                headings = headings.filter(function(a) {
+                    return a.match(/f\d$/);
+                });
 
-                    var names = $("#p_dropdown").dropdown('get value').split(",");
-                    var row = data.results.bindings;
-                    var headings = data.head.vars;
-                    var regex_filter = /(toponym)\D\d+/;
-                    headings = headings.filter(function(a) {
-                        return a.match(/f\d$/);
-                    });
+                var complete = [];
 
-                    var complete = [];
+                var list = {
+                    "f2": function()
+                    {
+                        return [row[x].f2_lon.value, row[x].f2_lat.value, row[x].f2_name.value, row[x].f2_country.value, row[x].t2.value];
+                    },
+                    "f3": function()
+                    {
+                        return [row[x].f3_lon.value, row[x].f3_lat.value, row[x].f3_name.value, row[x].f3_country.value, row[x].t3.value];
+                    },
+                    "f4": function()
+                    {
+                        return [row[x].f4_lon.value, row[x].f4_lat.value, row[x].f4_name.value, row[x].f4_country.value, row[x].t4.value];
+                    },
+                    "f5": function()
+                    {
+                        return [row[x].f5_lon.value, row[x].f5_lat.value, row[x].f5_name.value, row[x].f5_country.value, row[x].t5.value];
+                    },
+                    "f6": function()
+                    {
+                        return [row[x].f6_lon.value, row[x].f6_lat.value, row[x].f6_name.value, row[x].f6_country.value, row[x].t6.value];
+                    }
+                };
 
-                    var list = {
-                        "f2": function()
-                        {
-                            return [row[x].f2_lon.value, row[x].f2_lat.value, row[x].f2_name.value, row[x].f2_country.value, row[x].t2.value];
-                        },
-                        "f3": function()
-                        {
-                            return [row[x].f3_lon.value, row[x].f3_lat.value, row[x].f3_name.value, row[x].f3_country.value, row[x].t3.value];
-                        },
-                        "f4": function()
-                        {
-                            return [row[x].f4_lon.value, row[x].f4_lat.value, row[x].f4_name.value, row[x].f4_country.value, row[x].t4.value];
-                        },
-                        "f5": function()
-                        {
-                            return [row[x].f5_lon.value, row[x].f5_lat.value, row[x].f5_name.value, row[x].f5_country.value, row[x].t5.value];
-                        },
-                        "f6": function()
-                        {
-                            return [row[x].f6_lon.value, row[x].f6_lat.value, row[x].f6_name.value, row[x].f6_country.value, row[x].t6.value];
+                var temp_array = [];
+                for(var y in unresolved_coords)
+                {
+                    var unresolved_findspot = {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": unresolved_coords[y][2]
                         }
                     };
 
-                    var temp_array = [];
-                    for(var y in unresolved_coords)
+                    for(var x in row)
                     {
-                        var unresolved_findspot = {
-                            "type": "Feature",
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": unresolved_coords[y][2]
-                            }
-                        };
-
-                        for(var x in row)
+                        for(var i in headings)
                         {
-                            for(var i in headings)
-                            {
-                                var variable = headings[i];
-                                var prep = "";
-                                var coordinate_2 = {
-                                    "type": "Feature",
-                                    "geometry": {
-                                        "type": "Point",
-                                        "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
-                                    }
-                                };
-                                if(names[i] != "nearby")
-                                    prep = " of ";
-                                var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
-                                temp_array.push({"angle": angle, "uTop_name": regex_filter.exec(row[x].t1.value)[0],"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i] + prep, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
-                            }
-
+                            var variable = headings[i];
+                            var prep = "";
+                            var coordinate_2 = {
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])]
+                                }
+                            };
+                            if(names[i] != "nearby")
+                                prep = " of ";
+                            var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
+                            temp_array.push({"angle": angle, "uTop_name": regex_filter.exec(row[x].t1.value)[0],"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i] + prep, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
                         }
-                        complete.push([{"uFindspot_location": unresolved_coords[y][1], "uFindspot_name": unresolved_coords[y][3]}, temp_array]);
-                        temp_array = [];
-                     }
 
-                     for(var x in complete)
+                    }
+                    complete.push([{"uFindspot_location": unresolved_coords[y][1], "uFindspot_name": unresolved_coords[y][3]}, temp_array]);
+                    temp_array = [];
+                 }
+
+                 for(var x in complete)
+                 {
+                     var obj = complete[x][1];
+
+                     for(var key in names)
                      {
-                         var obj = complete[x][1];
+                         var new_dist = [];
+                         var new_list = obj.filter(function(a) {
+                            if(a["property"].includes(names[key]))
+                            return a;
+                         });
 
-                         for(var key in names)
+                         for(var i in new_list)
                          {
-                             var new_dist = [];
-                             var new_list = obj.filter(function(a) {
-                                if(a["property"].includes(names[key]))
-                                return a;
-                             });
-
-                             for(var i in new_list)
-                             {
-                                new_dist.push(new_list[i]["dist"]);
-                             }
-                             new_dist = new_dist.sort(function (a, b) {
-                                return a-b;
-                             });
-
-                             var myVar = "dist_meaningfulness_"+names[key];
-                             complete[x][myVar] = similarity(new_dist, full);
+                            new_dist.push(new_list[i]["dist"]);
                          }
+                         new_dist = new_dist.sort(function (a, b) {
+                            return a-b;
+                         });
+
+                         var myVar = "dist_meaningfulness_"+names[key];
+                         complete[x][myVar] = similarity(new_dist, full);
                      }
+                 }
 
 
-                     for(var key in complete)
+                 for(var key in complete)
+                 {
+                     var obj = complete[key][1];
+                     for(var i = 0; i < obj.length; i++)
                      {
-                         var obj = complete[key][1];
-                         for(var i = 0; i < obj.length; i++)
+                         for(var x in names)
                          {
-                             for(var x in names)
-                             {
-                                 if(obj[i]["property"].includes(names[x]))
-                                    obj[i].prob = complete[key]["dist_meaningfulness_"+names[x]] * probability(resolved_distances,obj[i]["dist"]);
-                            }
+                             if(obj[i]["property"].includes(names[x]))
+                                obj[i].prob = complete[key]["dist_meaningfulness_"+names[x]] * probability(resolved_distances,obj[i]["dist"]);
                         }
+                    }
+                 }
+                 $('#p_dropdown').dropdown('hide');
+                 $('#second_tab_dimmer').removeClass('active');
 
-                     }
-                     $('#p_dropdown').dropdown('hide');
-                     $('#second_tab_dimmer').removeClass('active');
-
-                    draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
-                }
-            });
-        }
+                draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
+            }
+        });
     });
 
     //Query for all unresolved findspots that are connected to resolved findspots with the nearby property and one additional property.

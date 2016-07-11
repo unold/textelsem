@@ -95,8 +95,8 @@
                     <div class="ui inverted dimmer" id="second_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
                     </div>
-                    <table class="ui loading celled table" id="unresolved_table">
 
+                    <table class="ui celled table" id="unresolved_table">
                         <thead>
                             <tr>
                                 <th class="one wide">
@@ -107,7 +107,7 @@
                                 </th>
                                 <th>Unresolved Findspot</th>
                                 <th class="nine wide">
-                                    <div class="ui multiple search selection fluid dropdown" id="p_dropdown">
+                                    <div class="ui multiple search selection dropdown" id="p_dropdown">
                                         <input type="hidden" name="prob">
                                         <div class="default text">Select Property</div>
                                         <i class="dropdown icon"></i>
@@ -119,6 +119,7 @@
                                             <div class="item" data-value="west" id="westp">isWestOf</div>
                                         </div>
                                     </div>
+                                    <button class='ui basic right attached button' id="go">Go</button>
                                 </th>
                             </tr>
                         </thead>
