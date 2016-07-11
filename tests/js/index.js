@@ -707,12 +707,17 @@ $(document).ready(function() {
 
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
 
-                if(r_coords[index][8] > 70)
-                {
-                    map.getView().setZoom(9);
-                }
-                else {
-                    map.getView().setZoom(11);
+                // if(r_coords[index][8] > 70)
+                // {
+                //     map.getView().setZoom(8);
+                //
+                // }
+                // else {
+                //     map.getView().setZoom(10);
+                // }
+
+                if(vectorLayer.getSource().getFeatures() > 2) {
+                    map.getView().setZoom(4);
                 }
             },
 
@@ -848,7 +853,7 @@ $(document).ready(function() {
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + " is an unresolved findspot.");
                 map.getView().setCenter(u_coords[index][1]);
-                map.getView().setZoom(10);
+                map.getView().setZoom(8);
             },
 
             onUnchecked: function() {
@@ -918,11 +923,11 @@ $(document).ready(function() {
                 if(n_coords[index].length < 7)
                 {
                     map.getView().setCenter(n_coords[index][1]);
-                    map.getView().setZoom(10);
+                    map.getView().setZoom(6);
                 }
                 else {
                     map.getView().setCenter(ol.proj.transform(n_coords[index][11]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-                    map.getView().setZoom(8);
+                    map.getView().setZoom(6);
                 }
 
             },
