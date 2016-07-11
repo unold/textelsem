@@ -1,7 +1,5 @@
 $(document).ready(function() {
 
-    var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
-
     var resolved_distances = [];
     var resolved_coords = [];
     var unresolved_coords = [];
@@ -9,11 +7,7 @@ $(document).ready(function() {
     var complete = [];
     var full = [];
 
-    if (typeof(Number.prototype.toRad) === "undefined") {
-        Number.prototype.toRad = function() {
-            return this * Math.PI / 180;
-        }
-    }
+    var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
 
     var query_all = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
     + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
@@ -27,6 +21,60 @@ $(document).ready(function() {
     + "  ?f2 higeomes:lng ?t2_lon ."
     + " }";
 
+    var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+    + "SELECT ?f1 ?f1_lat ?f1_lon ?name\n"
+    + "WHERE {"
+    + "?f1 higeomes:id ?f2 ."
+    + "FILTER NOT EXISTS"
+    + "{"
+    +   "?f1 higeomes:hasToponym ?t1 ."
+    + "}"
+    + "?f1 higeomes:name ?name ."
+    + "?f1 higeomes:lng ?f1_lon ."
+    + "?f1 higeomes:lat ?f1_lat ."
+    + "}";
+
+    // Query for all unresolved findspots
+    $.ajax({
+        url: repo,
+        dataType: 'jsonp',
+        data: {
+            queryLn: 'SPARQL',
+            query: query,
+            Accept: 'application/json'
+        },
+        success: function(data) {
+            var row = data.results.bindings;
+
+            var regex_filter = /(toponym)\D\d+/;
+            var regex_filter2 = /(Findspot)\/\d+/;
+            var units = "kilometers";
+
+            for(var i in row)
+            {
+                var findspot_name;
+                var findspot_name1;
+                var findspot_loc;
+
+                var normal_coords = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
+                findspot_loc = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
+                findspot_name = row[i].f1.value;
+
+                findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
+                findspot_name1 = findspot_name1.replace(/\//, " ");
+
+                $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
+                + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
+                + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
+
+                unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
+            }
+        }
+    });
+
+    //Query for all findspots
     $.ajax({
         url: repo,
         dataType: 'jsonp',
@@ -95,6 +143,7 @@ $(document).ready(function() {
 
     $(".tabular.menu .item").tab();
 
+    //Query for all resolved findspots listed as nearby
     $("#r_dropdown").dropdown({
         onChange: function() {
 
@@ -157,9 +206,6 @@ $(document).ready(function() {
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
-                    // $('#toponym_dist_table').removeClass('hidden');
-                    // $('.ui.message').addClass('hidden');
-
                     $('#r_dropdown').dropdown('hide');
                     $('#first_tab_dimmer').removeClass('active');
 
@@ -170,9 +216,11 @@ $(document).ready(function() {
         }
     });
 
+    //Set nearby table to load on page load
     $("#r_dropdown").dropdown('set value', 'nearby');
     $("#r_dropdown").dropdown('set selected', 'nearby');
 
+    //Query for all unresolved findspots that are connected to resolved findspots by certain properties
     $("#p_dropdown").dropdown({
         onChange: function() {
 
@@ -304,9 +352,11 @@ $(document).ready(function() {
         }
     });
 
+    //Set nearby as default value on page load
     $("#p_dropdown").dropdown('set value', 'nearby');
     $("#p_dropdown").dropdown('set selected', 'nearby');
 
+    //Query for all unresolved findspots that are connected to resolved findspots with the nearby property and one additional property.
     $("#n_dropdown").dropdown({
         onChange: function() {
 
@@ -331,7 +381,6 @@ $(document).ready(function() {
                     var regex_filter = /(toponym)\D\d+/;
                     var regex_filter2 = /(Findspot)\/\d+/;
                     var units = "kilometers";
-                    // var complete = [];
 
                     $('#new_table>#table_details').html("");
 
@@ -376,7 +425,6 @@ $(document).ready(function() {
 
                         else {
                             // Calculate Distance
-
                             $("#new_table2").addClass("hidden");
                             $("#new_table").removeClass("hidden");
 
@@ -402,19 +450,11 @@ $(document).ready(function() {
         }
     });
 
+    //Set nearby as default on page load
     $("#n_dropdown").dropdown('set value', 'nearby');
     $("#n_dropdown").dropdown('set text', 'Nearby');
 
-    function addProperties(top, var1, num)
-    {
-        return "  ?"+top+" higeomes:hasFindspot ?"+ var1 +" .\n"
-                + "  ?"+ var1 +" higeomes:lat ?"+ var1 +"_lat .\n"
-                + "  ?"+ var1 +" higeomes:lng ?"+ var1 +"_lon .\n"
-                + "  ?"+ var1 +" higeomes:name ?"+ var1 +"_name .\n"
-                + "  ?"+ var1 +" higeomes:country ?country"+num+" .\n"
-                + "  ?country"+ num +" rdfs:label ?"+ var1 +"_country .\n";
-    }
-
+//Query functions ==============================================================
     function query_func3(conditions)
     {
         if(conditions.includes(','))
@@ -463,6 +503,16 @@ $(document).ready(function() {
 
     }
 
+    function addProperties(top, var1, num)
+    {
+        return "  ?"+top+" higeomes:hasFindspot ?"+ var1 +" .\n"
+                + "  ?"+ var1 +" higeomes:lat ?"+ var1 +"_lat .\n"
+                + "  ?"+ var1 +" higeomes:lng ?"+ var1 +"_lon .\n"
+                + "  ?"+ var1 +" higeomes:name ?"+ var1 +"_name .\n"
+                + "  ?"+ var1 +" higeomes:country ?country"+num+" .\n"
+                + "  ?country"+ num +" rdfs:label ?"+ var1 +"_country .\n";
+    }
+
     function query_func(condition)
     {
         var options = {
@@ -503,60 +553,9 @@ $(document).ready(function() {
             + " }";
 
     }
+//==============================================================================
 
-    // Query for all unresolved findspots
-    query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?f1 ?f1_lat ?f1_lon ?name\n"
-    + "WHERE {"
-    + "?f1 higeomes:id ?f2 ."
-    + "FILTER NOT EXISTS"
-    + "{"
-    +   "?f1 higeomes:hasToponym ?t1 ."
-    + "}"
-    + "?f1 higeomes:name ?name ."
-    + "?f1 higeomes:lng ?f1_lon ."
-    + "?f1 higeomes:lat ?f1_lat ."
-    + "}";
-
-    $.ajax({
-        url: repo,
-        dataType: 'jsonp',
-        data: {
-            queryLn: 'SPARQL',
-            query: query,
-            Accept: 'application/json'
-        },
-        success: function(data) {
-            var row = data.results.bindings;
-
-            var regex_filter = /(toponym)\D\d+/;
-            var regex_filter2 = /(Findspot)\/\d+/;
-            var units = "kilometers";
-
-            for(var i in row)
-            {
-                var findspot_name;
-                var findspot_name1;
-                var findspot_loc;
-
-                var normal_coords = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
-                findspot_loc = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
-                findspot_name = row[i].f1.value;
-
-                findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
-                findspot_name1 = findspot_name1.replace(/\//, " ");
-
-                $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
-                + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
-                + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
-
-                unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
-            }
-        }
-    });
-
+//Create map ===================================================================
     var osm = new ol.layer.Tile({
         source: new ol.source.OSM()
     });
@@ -570,6 +569,61 @@ $(document).ready(function() {
         layers: [osm]
     });
 
+    var styles = {
+        'Point': new ol.style.Style({
+            image: new ol.style.Icon(({
+                anchor: [0.5, 0.5],
+                anchorOrigin: 'bottom-right',
+                opacity: 1,
+                src: './img/svgs/circle-15.svg',
+                scale: 1
+            })
+        )}),
+        'LineString': new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'rgba(180, 0, 0, .3)',
+                width: 4
+            })
+        }),
+        'Circle': new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'rgba(161, 237, 181, 0.9)',
+                width: 3
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(161, 237, 181, 0.42)'
+            })
+        })
+    }
+
+    var vectorLayer = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        style: function(feature) {
+            return styles[feature.get('type')]
+        }
+    });
+
+    var lineLayer = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        style: function(feature) {
+            return styles[feature.get('type')]
+        }
+    });
+
+
+    var circleLayer = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        style: function(feature) {
+            return styles[feature.get('type')]
+        }
+    });
+
+    map.addLayer(circleLayer);
+    map.addLayer(lineLayer);
+    map.addLayer(vectorLayer);
+
+//==============================================================================
+
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
 
@@ -577,62 +631,6 @@ $(document).ready(function() {
         var features_list = [];
         var circle_list = [];
         var index;
-
-        console.log(complete_list, n_coords);
-
-
-        var styles = {
-            'Point': new ol.style.Style({
-                image: new ol.style.Icon(({
-                    anchor: [0.5, 0.5],
-                    anchorOrigin: 'bottom-right',
-                    opacity: 1,
-                    src: './img/svgs/circle-15.svg',
-                    scale: 1
-                })
-            )}),
-            'LineString': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(180, 0, 0, .3)',
-                    width: 4
-                })
-            }),
-            'Circle': new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(161, 237, 181, 0.9)',
-                    width: 3
-                }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(161, 237, 181, 0.42)'
-                })
-            })
-        }
-
-        var vectorLayer = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: function(feature) {
-                return styles[feature.get('type')]
-            }
-        });
-
-        var lineLayer = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: function(feature) {
-                return styles[feature.get('type')]
-            }
-        });
-
-
-        var circleLayer = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: function(feature) {
-                return styles[feature.get('type')]
-            }
-        });
-
-        map.addLayer(circleLayer);
-        map.addLayer(lineLayer);
-        map.addLayer(vectorLayer);
 
         $('#selectAll_Nearby').checkbox({
             onChecked: function() {
@@ -1083,16 +1081,19 @@ $(document).ready(function() {
             });
     }
 
+    //Convert value to degrees
     function toDegrees (angle)
     {
         return angle * (180 / Math.PI);
     }
 
+    //Convert value to radians
     function toRadians (angle)
     {
         return angle * (Math.PI / 180);
     }
 
+    //Calculate angle between two coordinates.
     function angleFromCoordinate(lat1, long1, lat2, long2)
     {
         var phi1 = toRadians(lat1);
@@ -1123,6 +1124,11 @@ $(document).ready(function() {
             return (2-1.0/reference.length)*(reference.length-index)/reference.length;
     }
 
+
+//"Meaningfulness" functions ===================================================
+
+    //Calculate distance meaningfulness by comparing property array
+    //to array of all findspots
     function similarity(arr1, arr2)
     {
         arr2 = arr2["dist"];
@@ -1136,6 +1142,8 @@ $(document).ready(function() {
         return 1-(new_arr.length/arr2.length);
     }
 
+    //Calculate angle meaningfulness by comparing property array to array
+    //of all findspots in each direction
     function angle_similarity(arr1, arr2)
     {
         var names_list = {
@@ -1186,4 +1194,5 @@ $(document).ready(function() {
         }
         return names_list[name]().length/arr2.length;
     }
+//==============================================================================
 });
