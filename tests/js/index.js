@@ -632,46 +632,6 @@ $(document).ready(function() {
         var circle_list = [];
         var index;
 
-        $('#selectAll_Nearby').checkbox({
-            onChecked: function() {
-                $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('check');
-            },
-            onUnchecked: function() {
-                $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
-            }
-        });
-
-        $("#clear").checkbox({
-            onChecked: function() {
-
-                var features = vectorLayer.getSource().getFeatures();
-
-                $(".ui.small.modal").modal('show');
-
-                $(".ui.small.modal").modal({
-                    onApprove: function() {
-                        for(var i in features)
-                        {
-                            vectorLayer.getSource().removeFeature(features[i]);
-                        }
-                        $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
-
-                        $("#clear").checkbox('set unchecked');
-                    }
-                })
-            }
-        });
-
-        $('#sat_toggle').checkbox({
-            onChecked: function() {
-                osm.setSource(new ol.source.MapQuest({layer: 'sat'}));
-
-            },
-            onUnchecked: function() {
-                osm.setSource(new ol.source.OSM())
-            }
-        });
-
         $(".ui.checkbox#row").checkbox({
             onChecked: function() {
 
@@ -889,7 +849,6 @@ $(document).ready(function() {
 
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index));
                 circleLayer.getSource().removeFeature(circleLayer.getSource().getFeatureById("circle"+index));
-                // vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(':regex(id,\d+)'))
             }
         });
 
@@ -944,19 +903,16 @@ $(document).ready(function() {
 
                 }
 
-
-                if($('#selectAll_Nearby').checkbox('is unchecked'))
+                if(n_coords[index].length < 7)
                 {
-                    if(n_coords[index].length < 7)
-                    {
-                        map.getView().setCenter(n_coords[index][1]);
-                        map.getView().setZoom(10);
-                    }
-                    else {
-                        map.getView().setCenter(ol.proj.transform(n_coords[index][11]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-                        map.getView().setZoom(8);
-                    }
+                    map.getView().setCenter(n_coords[index][1]);
+                    map.getView().setZoom(10);
                 }
+                else {
+                    map.getView().setCenter(ol.proj.transform(n_coords[index][11]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
+                    map.getView().setZoom(8);
+                }
+
             },
 
             onUnchecked: function() {
