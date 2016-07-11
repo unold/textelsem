@@ -218,7 +218,8 @@ $(document).ready(function() {
 
             $('#first_tab_dimmer').addClass('active');
             var value = $("#r_dropdown").dropdown('get value');
-            var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
+            $('#toponym_dist_table>#table_details').find(".ui.checkbox#row").checkbox('uncheck');
+
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
@@ -275,9 +276,6 @@ $(document).ready(function() {
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
-                    console.log($('#toponym_dist_table>#table_details').find(".ui.checkbox#row"));
-
-                    $('#toponym_dist_table>#table_details').find(".ui.checkbox#row").checkbox('uncheck');
 
                     $('#r_dropdown').dropdown('hide');
                     $('#first_tab_dimmer').removeClass('active');
@@ -719,7 +717,6 @@ $(document).ready(function() {
 
                 index = $(this).val();
                 $('#popup').html("");
-
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'0'));
                 vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(index+'1'));
                 lineLayer.getSource().removeFeature(lineLayer.getSource().getFeatureById(index));
