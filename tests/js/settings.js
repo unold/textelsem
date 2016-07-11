@@ -32,12 +32,9 @@ $(document).ready(function() {
     $('#sat_toggle').checkbox({
         onChecked: function() {
             osm.setSource(new ol.source.MapQuest({layer: 'sat'}));
-
         },
         onUnchecked: function() {
             osm.setSource(new ol.source.OSM())
         }
     });
-
-
 });

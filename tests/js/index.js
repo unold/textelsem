@@ -35,6 +35,75 @@ $(document).ready(function() {
     + "?f1 higeomes:lat ?f1_lat ."
     + "}";
 
+//Create map ===================================================================
+        var osm = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        var map = new ol.Map({
+            target: 'map',
+            view: new ol.View({
+                center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
+                zoom: 7
+            }),
+            layers: [osm]
+        });
+
+        var styles = {
+            'Point': new ol.style.Style({
+                image: new ol.style.Icon(({
+                    anchor: [0.5, 0.5],
+                    anchorOrigin: 'bottom-right',
+                    opacity: 1,
+                    src: './img/svgs/circle-15.svg',
+                    scale: 1
+                })
+            )}),
+            'LineString': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(180, 0, 0, .3)',
+                    width: 4
+                })
+            }),
+            'Circle': new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(161, 237, 181, 0.9)',
+                    width: 3
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(161, 237, 181, 0.42)'
+                })
+            })
+        }
+
+        var vectorLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: function(feature) {
+                return styles[feature.get('type')]
+            }
+        });
+
+        var lineLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: function(feature) {
+                return styles[feature.get('type')]
+            }
+        });
+
+
+        var circleLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: function(feature) {
+                return styles[feature.get('type')]
+            }
+        });
+
+        map.addLayer(circleLayer);
+        map.addLayer(lineLayer);
+        map.addLayer(vectorLayer);
+
+//==============================================================================
+
     // Query for all unresolved findspots
     $.ajax({
         url: repo,
@@ -146,7 +215,8 @@ $(document).ready(function() {
     //Query for all resolved findspots listed as nearby
     $("#r_dropdown").dropdown({
         onChange: function() {
-
+            vectorLayer.getSource().clear();
+            lineLayer.getSource().clear();
             $('#first_tab_dimmer').addClass('active');
             var value = $("#r_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
@@ -360,8 +430,8 @@ $(document).ready(function() {
     $("#n_dropdown").dropdown({
         onChange: function() {
 
+            vectorLayer.getSource().clear();
             $('#third_tab_dimmer').addClass('active');
-
             var value = $("#n_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
             $.ajax({
@@ -555,74 +625,7 @@ $(document).ready(function() {
     }
 //==============================================================================
 
-//Create map ===================================================================
-    var osm = new ol.layer.Tile({
-        source: new ol.source.OSM()
-    });
 
-    var map = new ol.Map({
-        target: 'map',
-        view: new ol.View({
-            center: ol.proj.transform([40.3615, 35.7128],"EPSG:4326", "EPSG:3857"),
-            zoom: 7
-        }),
-        layers: [osm]
-    });
-
-    var styles = {
-        'Point': new ol.style.Style({
-            image: new ol.style.Icon(({
-                anchor: [0.5, 0.5],
-                anchorOrigin: 'bottom-right',
-                opacity: 1,
-                src: './img/svgs/circle-15.svg',
-                scale: 1
-            })
-        )}),
-        'LineString': new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'rgba(180, 0, 0, .3)',
-                width: 4
-            })
-        }),
-        'Circle': new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'rgba(161, 237, 181, 0.9)',
-                width: 3
-            }),
-            fill: new ol.style.Fill({
-                color: 'rgba(161, 237, 181, 0.42)'
-            })
-        })
-    }
-
-    var vectorLayer = new ol.layer.Vector({
-        source: new ol.source.Vector(),
-        style: function(feature) {
-            return styles[feature.get('type')]
-        }
-    });
-
-    var lineLayer = new ol.layer.Vector({
-        source: new ol.source.Vector(),
-        style: function(feature) {
-            return styles[feature.get('type')]
-        }
-    });
-
-
-    var circleLayer = new ol.layer.Vector({
-        source: new ol.source.Vector(),
-        style: function(feature) {
-            return styles[feature.get('type')]
-        }
-    });
-
-    map.addLayer(circleLayer);
-    map.addLayer(lineLayer);
-    map.addLayer(vectorLayer);
-
-//==============================================================================
 
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
@@ -1031,9 +1034,6 @@ $(document).ready(function() {
                     $('#front>.description').append(feature.get('desc'));
 
                 }
-                // else {
-                //     $('#popup').html("");
-                // }
             });
     }
 
