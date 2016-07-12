@@ -3,6 +3,7 @@
     var values = ["all","nearby",  "north", "south", "east", "west"];
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
     var d_meaningfulness = [];
+    var a_meaningfulness = [];
 
     function query_func(condition)
     {
@@ -172,7 +173,7 @@
                 if(values[i] != "all")
                 {
                     d_meaningfulness.push(similarity(value_lookup[values[i]](), dist, all_arr));
-                    // angle_similarity(value_lookup[values[i]](), angles, all_arr);
+                    a_meaningfulness.push(angle_similarity(value_lookup[values[i]](), angles, all_arr));
                 }
             }
         }
@@ -238,7 +239,7 @@
             }
         }
 
-        console.log("Angle Meaningfulness: " + name, names_list[name]().length/arr2.length)
+        return {'name': name, 'value': 1-(names_list[name]().length/arr2.length)};
     }
 
     function toDegrees (angle)

@@ -390,14 +390,16 @@ $(document).ready(function() {
                                  {
                                      if(d_meaningfulness[item]['name'] == names[x])
                                      {
+                                         obj[i].a_meaningfulness = a_meaningfulness[item]['value'];
                                          obj[i].prob = d_meaningfulness[item]['value'] * probability(resolved_distances,obj[i]["dist"]);
                                      }
                                  }
-
                              }
-                        }
-                    }
+                         }
+                     }
                  }
+
+                 console.log(complete);
                  $('#p_dropdown').dropdown('hide');
                  $('#second_tab_dimmer').removeClass('active');
 
@@ -423,7 +425,6 @@ $(document).ready(function() {
                 success: function (data) {
 
                     // console.log(query_func3(value));
-
                     var row = data.results.bindings;
 
                     var regex_filter = /(toponym)\D\d+/;
@@ -610,11 +611,8 @@ $(document).ready(function() {
     }
 //==============================================================================
 
-
-
     function draw_map(r_coords, u_coords, n_coords, complete_list)
     {
-
         var line_list = [];
         var features_list = [];
         var circle_list = [];
@@ -667,7 +665,6 @@ $(document).ready(function() {
                     "east": "east of ",
                     "west": "west of "
                 };
-
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].setId(first_id);
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(sec_id);
@@ -1043,5 +1040,4 @@ $(document).ready(function() {
         else
             return (2-1.0/reference.length)*(reference.length-index)/reference.length;
     }
-
 });
