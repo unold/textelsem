@@ -6,6 +6,14 @@ h2 {
     top: 300px;
 }
 
+.ui.list .list>.item, .ui.list>.item, ol.ui.list li, ul.ui.list li {
+    list-style-type: circle;
+}
+
+.ui.bulleted.list .list>.item:before, .ui.bulleted.list>.item:before, ul.ui.list li:before {
+    content: none;
+}
+
 #table_container {
     height: 100%;
     overflow: auto;

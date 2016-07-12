@@ -63,13 +63,26 @@
                 </a>
                 <!-- <a class="item" href="./test.html" id="graphs">Graphs</a> -->
                 <a class="item" data-tab="settings" id="s_tab"><i class='settings icon'></i></a>
-
             </div>
 
             <div class="ui bottom attached active tab segment" data-tab="resolved" id="r_table">
                 <div id="inner">
                     <div class="ui inverted dimmer" id="first_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
+                    </div>
+                    <div class="ui icon info message">
+                        <i class="close icon"></i>
+                        <i class="announcement icon"></i>
+                        <div class="content">
+                            <div class="header">
+                                Welcome!
+                            </div>
+                            <ul class="ui list">
+                                <li>This table shows a list of all resolved findspots connected by the property shown in the tab above.</li>
+                                <li>To change this property, simply click this tab and a dropdown menu will appear.</li>
+                                <li>To see more information about each findspot, click the marker for that findspot on the map.</li>
+                            </ul>
+                        </div>
                     </div>
                     <table class="ui celled table" id="toponym_dist_table">
                         <thead>
@@ -92,12 +105,30 @@
                 </div>
             </div>
             <div class="ui bottom attached tab segment" data-tab="unresolved" id="u_table">
-                <div class="ui info message">
-                    <i class="close icon"></i>
-                    <div class="header">
-                        Hello!
+                <div class="ui icon info message">
+                    <i class="announcement icon"></i>
+                    <!-- <i class="close icon"></i> -->
+                    <div class="content">
+                        <div class="header">
+                            Welcome!
+                        </div>
+                            <p></p>
+                            <p>This table shows a list of all unresolved findspots listed in the database. In the left column (aside from the toggle) are the names of these findspots, and in the rightmost column is a collasible list of all of the unresolved toponyms and their probability of being the the toponym that corresponds to the unresolved findspot. </p>
                     </div>
-                    <p>To begin, please select a property in the dropdown menu below and hit "Go".</p>
+                </div>
+                <div class="ui icon info message">
+                    <i class="close icon"></i>
+                    <i class="info circle icon"></i>
+                    <div class="content">
+                        <div class="header">
+                            How-to
+                        </div>
+                        <ul class="ui list">
+                            <li>By default, this table is disabled. To enable it, select a property - or multiple - from the dropdown menu in the table header, then click "Go." This will show all unresolved toponyms connected to resolved toponyms by the selected properties.</li>
+                            <li>To see all of the probable points, click the toggle in the left most column. This will bring up the unresolved findspot as well as a __ radius, showin in green.</li>
+                            <li>To display a probable point on the map, click on an item in the list in the right most column. (i.e. "Probability for X to be Y:"). To remove this point, simply click the <i class='remove icon'></i> located to the left of the item.</li>
+                        </ul>
+                    </div>
                 </div>
                 <div id="inner">
                     <div class="ui inverted dimmer" id="second_tab_dimmer">
@@ -141,6 +172,20 @@
                 <div id="inner">
                     <div class="ui inverted dimmer" id="third_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
+                    </div>
+                    <div class="ui icon info message">
+                        <i class="close icon"></i>
+                        <i class="announcement icon"></i>
+                        <div class="content">
+                            <div class="header">
+                                Welcome!
+                            </div>
+                            <ul class="ui list">
+                                <li>This table shows a list of all unresolved toponyms connected by the property, or properties, shown in the tab above.</li>
+                                <li>To change this property, simply click this tab and a dropdown menu will appear.</li>
+                                <li>To see more information about each findspot, click the marker for that findspot on the map.</li>
+                            </ul>
+                        </div>
                     </div>
                     <table class="ui celled table" id="new_table">
                         <thead>
