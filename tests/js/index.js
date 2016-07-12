@@ -133,10 +133,10 @@ $(document).ready(function() {
                 findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
                 findspot_name1 = findspot_name1.replace(/\//, " ");
 
-                // $('#unresolved_table>#table_details').append("<tr class='disabled'><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                // +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
-                // + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
-                // + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
+                $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
+                +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
+                + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
+                + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
 
                 $('#unresolved_table>#table_details').append
 
@@ -298,7 +298,7 @@ $(document).ready(function() {
 
     $('#go').click(function() {
         $('#second_tab_dimmer').addClass('active');
-        $('#unresolved_table>#table_details').find('tr').removeClass('disabled');
+
         // $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
         $.ajax({
             url: repo,
@@ -372,37 +372,10 @@ $(document).ready(function() {
                             var angle = parseFloat(angleFromCoordinate(unresolved_coords[y][2][1], unresolved_coords[y][2][0], parseFloat(list[variable]()[1]), parseFloat(list[variable]()[0])));
                             temp_array.push({"angle": angle, "uTop_name": regex_filter.exec(row[x].t1.value)[0],"findspot_name": list[variable]()[2], "country": list[variable]()[3], "mid": turf.midpoint(unresolved_findspot, coordinate_2), "property": names[i] + prep, "coordinates": [parseFloat(list[variable]()[0]), parseFloat(list[variable]()[1])] , "dist": turf.distance(unresolved_findspot, coordinate_2, "kilometers"), "top-name": regex_filter.exec(list[variable]()[4])[0]});
                         }
-
                     }
                     complete.push([{"uFindspot_location": unresolved_coords[y][1], "uFindspot_name": unresolved_coords[y][3]}, temp_array]);
                     temp_array = [];
                  }
-
-                 for(var x in complete)
-                 {
-                     var obj = complete[x][1];
-
-                     for(var key in names)
-                     {
-                         var new_dist = [];
-                         var new_list = obj.filter(function(a) {
-                            if(a["property"].includes(names[key]))
-                            return a;
-                         });
-
-                         for(var i in new_list)
-                         {
-                            new_dist.push(new_list[i]["dist"]);
-                         }
-                         new_dist = new_dist.sort(function (a, b) {
-                            return a-b;
-                         });
-
-                         var myVar = "dist_meaningfulness_"+names[key];
-                         complete[x][myVar] = similarity(new_dist, full);
-                     }
-                 }
-
 
                  for(var key in complete)
                  {
@@ -412,7 +385,16 @@ $(document).ready(function() {
                          for(var x in names)
                          {
                              if(obj[i]["property"].includes(names[x]))
-                                obj[i].prob = complete[key]["dist_meaningfulness_"+names[x]] * probability(resolved_distances,obj[i]["dist"]);
+                             {
+                                 for(var item in d_meaningfulness)
+                                 {
+                                     if(d_meaningfulness[item]['name'] == names[x])
+                                     {
+                                         obj[i].prob = d_meaningfulness[item]['value'] * probability(resolved_distances,obj[i]["dist"]);
+                                     }
+                                 }
+
+                             }
                         }
                     }
                  }
@@ -440,7 +422,7 @@ $(document).ready(function() {
                 },
                 success: function (data) {
 
-                    console.log(query_func3(value));
+                    // console.log(query_func3(value));
 
                     var row = data.results.bindings;
 
@@ -508,7 +490,6 @@ $(document).ready(function() {
 
                     if($("#new_table").hasClass('hidden'))
                     {
-                        console.log('new table 2')
                         $('#new_table2>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
                     }
                     else {
@@ -737,7 +718,6 @@ $(document).ready(function() {
 
                 var count = 0;
 
-                console.log("unresolved table row");
 
                 $('#probability'+ index).html("");
 
@@ -1048,33 +1028,6 @@ $(document).ready(function() {
             });
     }
 
-    //Convert value to degrees
-    function toDegrees (angle)
-    {
-        return angle * (180 / Math.PI);
-    }
-
-    //Convert value to radians
-    function toRadians (angle)
-    {
-        return angle * (Math.PI / 180);
-    }
-
-    //Calculate angle between two coordinates.
-    function angleFromCoordinate(lat1, long1, lat2, long2)
-    {
-        var phi1 = toRadians(lat1);
-        var phi2 = toRadians(lat2);
-        var lambda1 = toRadians(long1);
-        var lambda2 = toRadians(long2);
-
-        var y = Math.sin(lambda2-lambda1) * Math.cos(phi2);
-        var x = Math.cos(phi1)*Math.sin(phi2) - Math.sin(phi1)*Math.cos(phi2)*Math.cos(lambda2-lambda1);
-        var brng = parseFloat(toDegrees(Math.atan2(y, x)));
-
-        return ((brng + 360) % 360).toFixed(2);
-    }
-
     // Calculate probability of an unresolved findspot
     function probability(reference,value)
     {
@@ -1091,75 +1044,4 @@ $(document).ready(function() {
             return (2-1.0/reference.length)*(reference.length-index)/reference.length;
     }
 
-
-//"Meaningfulness" functions ===================================================
-
-    //Calculate distance meaningfulness by comparing property array
-    //to array of all findspots
-    function similarity(arr1, arr2)
-    {
-        arr2 = arr2["dist"];
-        var new_arr = arr2.filter(function(a) {
-            if(a < arr1[arr1.length-1] && a > arr1[0])
-            {
-                return a;
-            }
-        });
-
-        return 1-(new_arr.length/arr2.length);
-    }
-
-    //Calculate angle meaningfulness by comparing property array to array
-    //of all findspots in each direction
-    function angle_similarity(arr1, arr2)
-    {
-        var names_list = {
-            "nearby": function() {
-                var new_arr = arr2;
-
-                return new_arr;
-            },
-            "north": function() {
-                var new_arr = arr2.filter(function(a) {
-                    if(a < 270 && a > 90)
-                    {
-                        return a;
-                    }
-                });
-
-                return new_arr;
-            },
-            "south": function() {
-                var new_arr = arr2.filter(function(a) {
-                    if(a > 270 || a < 90)
-                    {
-                        return a;
-                    }
-                });
-                return new_arr;
-            },
-            "east": function() {
-                var new_arr = arr2.filter(function(a) {
-                    if(a > 180 && a < 360)
-                    {
-                        return a;
-                    }
-                });
-
-                return new_arr;
-            },
-            "west": function() {
-                var new_arr = arr2.filter(function(a) {
-                    if(a < 180 && a > 0)
-                    {
-                        return a;
-                    }
-                });
-
-                return new_arr;
-            }
-        }
-        return names_list[name]().length/arr2.length;
-    }
-//==============================================================================
 });
