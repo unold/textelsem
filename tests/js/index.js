@@ -145,6 +145,10 @@ $(document).ready(function() {
         }
     });
 
+    $('.message .close').on('click', function() {
+        $(this).closest('.message').transition('fade');
+    });
+
     //Query for all findspots
     $.ajax({
         url: repo,
@@ -213,8 +217,6 @@ $(document).ready(function() {
     });
 
     $(".tabular.menu .item").tab();
-
-
 
     //Query for all resolved findspots listed as nearby
     $("#r_dropdown").dropdown({
