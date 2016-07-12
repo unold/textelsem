@@ -784,7 +784,7 @@ $(document).ready(function() {
                             class: complete_list[id][1][index]["top-name"],
                             prob: (prob.toFixed(2)*100) + "%",
                             status: "Resolved",
-                            desc: complete_list[id][1][index]["findspot_name"] + ' is ' + distance.toFixed(2) + ' away from ' + u_coords[id][3] + ", which is listed as " + complete_list[id][1][index]["property"] + " the unresolved toponym " + complete_list[id][1][index]["uTop_name"],
+                            desc: complete_list[id][1][index]["findspot_name"] + ' is ' + distance.toFixed(2) + ' km away from ' + u_coords[id][3] + ", which is listed as " + complete_list[id][1][index]["property"] + " the unresolved toponym " + complete_list[id][1][index]["uTop_name"],
                             country: complete_list[id][1][index]["country"]
                         })
                     ]);
