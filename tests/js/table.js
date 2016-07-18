@@ -76,7 +76,7 @@ $(document).ready(function() {
 
             for(var i in row)
             {
-                $("#" + row[i].pop_label.value.replace(/\s+|\W+/g, '') + ">#" + row[i].kind_label.value.replace(/\s+|\W+/g, '')).append("<i class='mini circle icon' data-content='"+ row[i].t1.value +"' data-variation='mini'></i>");
+                $("#" + row[i].pop_label.value.replace(/\s+|\W+/g, '') + ">#" + row[i].kind_label.value.replace(/\s+|\W+/g, '')).append("<i class='mini circle icon'></i>");
 
                 for(var x in categories)
                 {
@@ -94,7 +94,13 @@ $(document).ready(function() {
                 total[row[i].kind_label.value]++;
             }
 
-            $('.mini.circle.icon').popup();
+            // $('.mini.circle.icon').popup();
+
+
+            $('#information').popup({
+                popup: '#pop',
+                position: 'bottom left'
+            });
 
             $("#table_details>tr").click(function() {
 
