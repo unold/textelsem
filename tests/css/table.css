@@ -1,3 +1,10 @@
-#header_details {
-    /*position: absolute;*/
+.meta {
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: -15px;
+}
+
+.ui.modal {
+    overflow: auto;
+    width: 600px;
+    height: 600px;
 }
