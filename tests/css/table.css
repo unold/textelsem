@@ -9,10 +9,10 @@
     height: 600px;
 }
 
-.info {
+/*.info {
     background-color: #f8ffff;
     color: #276f86;
-}
+}*/
 
 .positive {
     box-shadow: 0 0 0 #a3c293 inset;
@@ -21,13 +21,18 @@
 }
 
 .ui.header:first-child#head {
-    margin-top: 3px;
-    margin-bottom: 3px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 5px;
 }
 
 h2.ui.header#head {
-    width: 70%;
+    width: 85%;
     display: inline-block;
+}
+
+#information {
+    margin-left: 10px;
 }
 
 .warning {

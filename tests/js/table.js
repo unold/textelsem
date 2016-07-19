@@ -125,6 +125,10 @@ $(document).ready(function() {
                 $('.message').addClass('visible');
             })
 
+            $('.ui.dropdown').dropdown();
+
+            $('table').tablesort();
+
             $("#table_details>tr").click(function() {
 
                 $(".modal>.content>.header").html($(this).text().toString()[0].toUpperCase() + $(this).text().toString().slice(1));

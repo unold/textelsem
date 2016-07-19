@@ -216,7 +216,9 @@ $(document).ready(function() {
         }
     });
 
-    $(".tabular.menu .item").tab();
+    $(".tabular.menu .item").tab({
+        history: true
+    });
 
     //Query for all resolved findspots listed as nearby
     $("#r_dropdown").dropdown({
@@ -301,7 +303,6 @@ $(document).ready(function() {
     $('#go').click(function() {
         $('#second_tab_dimmer').addClass('active');
 
-        // $('#unresolved_table>#table_details').find(".ui.checkbox#urow").checkbox('uncheck');
         $.ajax({
             url: repo,
             dataType: 'jsonp',
