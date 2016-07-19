@@ -127,7 +127,7 @@ $(document).ready(function() {
 
             $("#table_details>tr").click(function() {
 
-                $(".content>.header").html($(this).text().toString()[0].toUpperCase() + $(this).text().toString().slice(1));
+                $(".modal>.content>.header").html($(this).text().toString()[0].toUpperCase() + $(this).text().toString().slice(1));
                 $(".content>.meta").html(grid[$(this).text()]["category"] + "<div class='ui divider'></div>");
                 $(".content>.description").html("<div class='ui text'>Click to show related toponyms.</div><br><div class='ui fluid styled accordion'></div>");
                 for(var i in kind)
