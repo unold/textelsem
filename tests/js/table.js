@@ -135,7 +135,7 @@ $(document).ready(function() {
                     if($("#" + $(this).text().replace(/\s+|\W+/g, '') + ">#" + kind[i].replace(/\s+|\W+/g, '')).hasClass('positive'))
                         $('.ui.fluid.styled.accordion').append("<div class='positive title'><i class='dropdown icon'></i>" + kind[i] + " - HIGH SIGNIFICANCE!</div><div class='content'><div class='ui relaxed divided selection list' id='" + kind[i].replace(/\s+|\W+/g, '') + "_list'></div>Number of Occurences: " + grid[$(this).text()][i]["count"] + "<br>Number of Total Occurences: " + total[kind[i]] + "</div>");
                     else
-                        $('.ui.fluid.styled.accordion').append("<div class=' title'><i class='dropdown icon'></i>" + kind[i] + "</div><div class='content'><div class='ui relaxed divided selection list' id='" + kind[i].replace(/\s+|\W+/g, '') + "</div></div>");
+                        $('.ui.fluid.styled.accordion').append("<div class=' title'><i class='dropdown icon'></i>" + kind[i] + "</div><div class='content'><div class='ui relaxed divided selection list' id='" + kind[i].replace(/\s+|\W+/g, '') + "_list'></div>Number of Occurences: " + grid[$(this).text()][i]["count"] + "<br>Number of Total Occurences: " + total[kind[i]] + "</div>");
                 }
 
                 for(var i in grid[$(this).text()].slice(0, grid[$(this).text()].length))
