@@ -29,3 +29,8 @@ h2.ui.header#head {
     width: 70%;
     display: inline-block;
 }
+
+.warning {
+    background: #fff4e4!important;
+    color: #493107!important;
+}
