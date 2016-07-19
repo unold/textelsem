@@ -108,6 +108,7 @@ $(document).ready(function() {
     $.ajax({
         url: repo,
         dataType: 'jsonp',
+        cache: false,
         data: {
             queryLn: 'SPARQL',
             query: query,
@@ -153,6 +154,7 @@ $(document).ready(function() {
     $.ajax({
         url: repo,
         dataType: 'jsonp',
+        cache: false,
         data: {
             queryLn: 'SPARQL',
             query: query_all,
@@ -231,6 +233,7 @@ $(document).ready(function() {
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
+                cache: false,
                 data: {
                     queryLn: 'SPARQL',
                     query: query_func(value),
@@ -306,6 +309,7 @@ $(document).ready(function() {
         $.ajax({
             url: repo,
             dataType: 'jsonp',
+            cache: false,
             data: {
                 queryLn: 'SPARQL',
                 query: query_func3($("#p_dropdown").dropdown('get value').split(",")),
