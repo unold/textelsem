@@ -20,13 +20,12 @@
     color: #2c662d;
 }
 
-.ui.header:first-child {
+.ui.header:first-child#head {
     margin-top: 3px;
     margin-bottom: 3px;
 }
 
-h2.ui.header {
-    /*margin-top: 10px;*/
+h2.ui.header#head {
     width: 70%;
-    display: inline-block;;
+    display: inline-block;
 }

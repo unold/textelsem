@@ -115,7 +115,7 @@ $(document).ready(function() {
             }
 
 
-
+            // $('.ui.button').popup();
 
             $('.message .close').on('click', function() {
                 $(this).closest('.message').transition('fade');
