@@ -15,8 +15,22 @@
 
     </head>
     <body>
-        <h2 class="ui header"></h2>
-        <div class="ui info message">
+        <h2 class="ui header">
+            <!-- <i class="table icon"></i> -->
+            Inference Table for Kind and Population
+        </h2>
+        <div class="ui right floated basic icon buttons">
+            <button class="ui button">
+                <i class='fr flag' data-content='French'></i>
+            </button>
+            <button class="ui button">
+                <i class='us flag' data-content='English'></i>
+            </button>
+            <button class="ui button">
+                <i class='de flag' data-content='German'></i>
+            </button>
+        </div>
+        <div class="ui top attached info message">
             <i class="close icon"></i>
             <div class="content">
                 <div class="header">
@@ -30,7 +44,6 @@
                     <p>To show more information about each population type, click on one of the rows. There you will see a list of all the toponyms that have that population attribute, as well as each kind attribute. Click the x in the top right corner to close this message. To show this message again, click 'Info' in the top left cell of the table.</p>
             </div>
         </div>
-        <h2 class="ui header"></h2>
         <table class="ui small fixed selectable celled definition compact sortable table">
             <thead class="full-width" id='header_details'>
                 <tr>
