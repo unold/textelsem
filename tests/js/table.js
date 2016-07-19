@@ -109,10 +109,12 @@ $(document).ready(function() {
                     if(grid[row[i].pop_label.value][j]["significance"] > 0.4)
                     {
                         $("#" + row[i].pop_label.value.replace(/\s+|\W+/g, '') + ">#" + kind[j].replace(/\s+|\W+/g, '')).addClass('positive');
+                        $("#" + row[i].pop_label.value.replace(/\s+|\W+/g, '') + ">#" + kind[j].replace(/\s+|\W+/g, '')).attr('data-content', 'Significance: ' + grid[row[i].pop_label.value][j]["significance"]*100 + '%');
                     }
                 }
-
             }
+
+
 
 
             $('.message .close').on('click', function() {
@@ -130,7 +132,11 @@ $(document).ready(function() {
                 $(".content>.description").html("<div class='ui text'>Click to show related toponyms.</div><br><div class='ui fluid styled accordion'></div>");
                 for(var i in kind)
                 {
-                    $('.ui.fluid.styled.accordion').append("<div class='title'><i class='dropdown icon'></i>" + kind[i] + "</div><div class='content'><div class='ui relaxed divided selection list' id='" + kind[i].replace(/\s+|\W+/g, '') + "_list'></div></div>");
+                    if($("#" + $(this).text().replace(/\s+|\W+/g, '') + ">#" + kind[i].replace(/\s+|\W+/g, '')).hasClass('positive'))
+                        $('.ui.fluid.styled.accordion').append("<div class='positive title'><i class='dropdown icon'></i>" + kind[i] + " - HIGH SIGNIFICANCE!</div><div class='content'><div class='ui relaxed divided selection list' id='" + kind[i].replace(/\s+|\W+/g, '') + "_list'></div></div>");
+                    else
+                        $('.ui.fluid.styled.accordion').append("<div class=' title'><i class='dropdown icon'></i>" + kind[i] + "</div><div class='content'><div class='ui relaxed divided selection list' id='" + kind[i].replace(/\s+|\W+/g, '') + "_list'></div></div>");
+
                 }
 
                 for(var i in grid[$(this).text()].slice(0, grid[$(this).text()].length))
