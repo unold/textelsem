@@ -16,6 +16,20 @@
     </head>
     <body>
         <h2 class="ui header"></h2>
+        <div class="ui info message">
+            <i class="close icon"></i>
+            <div class="content">
+                <div class="header">
+                    Welcome!
+                </div>
+                    <p></p>
+                    <p>This table shows the relationship between the "kind" attribute of findspots to the "population" attribute of toponyms. With this information, we can see the intersection between these two properties and whether or not they correlate, as well as the significance of this correlation.</p>
+                    <p>In this case, "kind" (shown on the first row) refers to the type of material or medium in which the text was found at the archaeological site. An example of this is a clay tablet, or <i>Tontafeln</i>.
+                    On the other hand, "population" (shown in the first column of each row) refers to the people that inhabited the area, such as messengers or soldiers, for example.</p>
+                    <p>To show more information about each population type, click on one of the rows. There you will see a list of all the toponyms that have that population attribute, as well as each kind attribute. Click the x in the top right corner to close this message. To show this message again, click 'Info' in the top left cell of the table.</p>
+            </div>
+        </div>
+        <h2 class="ui header"></h2>
         <table class="ui small fixed selectable celled definition compact sortable table">
             <thead class="full-width" id='header_details'>
                 <tr>
@@ -27,23 +41,25 @@
             </tbody>
         </table>
 
-        <div class='ui flowing popup transition hidden' id="pop">
+        <!-- <div class='ui info flowing popup transition hidden' id="pop">
+            <h1 class='ui header center aligned'>Information</h1>
+            <div class='ui divider'></div>
             <div class='ui three column divided center aligned grid'>
-                <div class='info column'>
+                <div class='column'>
                     <h4 class='ui header'>Columns</h4>
                     <p>Each column header represents a certain kind of material attributed to each resolved findspot. For example, a findspot with the kind "Tontafeln" means that a clay tablet was found at this location.</p>
                 </div>
-                <div class='info column'>
+                <div class='column'>
                     <h4 class='ui header'>Rows</h4>
                     <p>Each row header represents a population type attributed to each resolved toponym.</p>
                     <p>There are <b>3</b> categories for these population types - Troupes, Corps de metier, and Habitants.</p>
                 </div>
-                <div class='info column'>
+                <div class='column'>
                     <h4 class='ui header'>Get Started</h4>
                     <p>Each dot represents a toponym/findspot pair that have the given population and kind properties. To see more about each population and its related toponyms, click on a row.</p>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="ui fluid small modal">
             <div class="content">

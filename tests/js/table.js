@@ -64,6 +64,8 @@ $(document).ready(function() {
                 total[kind[i]] = 0;
             }
 
+
+
             for(var i in population)
             {
 
@@ -74,9 +76,12 @@ $(document).ready(function() {
                 }
             }
 
+
             for(var i in row)
             {
                 $("#" + row[i].pop_label.value.replace(/\s+|\W+/g, '') + ">#" + row[i].kind_label.value.replace(/\s+|\W+/g, '')).append("<i class='mini circle icon'></i>");
+
+
 
                 for(var x in categories)
                 {
@@ -94,13 +99,29 @@ $(document).ready(function() {
                 total[row[i].kind_label.value]++;
             }
 
-            // $('.mini.circle.icon').popup();
+            grid = significance(row, grid, total);
+            console.log(grid);
+
+            for(var i in row)
+            {
+                for(var j in kind)
+                {
+                    if(grid[row[i].pop_label.value][j]["significance"] > 0.4)
+                    {
+                        $("#" + row[i].pop_label.value.replace(/\s+|\W+/g, '') + ">#" + kind[j].replace(/\s+|\W+/g, '')).addClass('positive');
+                    }
+                }
+
+            }
 
 
-            $('#information').popup({
-                popup: '#pop',
-                position: 'bottom left'
+            $('.message .close').on('click', function() {
+                $(this).closest('.message').transition('fade');
             });
+
+            $('#information').click(function() {
+                $('.message').addClass('visible');
+            })
 
             $("#table_details>tr").click(function() {
 
@@ -133,7 +154,7 @@ $(document).ready(function() {
 
     function significance(data, full_table, row_totals)
     {
-        var significance = []
+        var significance = [];
         for(var i in data)
         {
             var obj = full_table[data[i].pop_label.value];
