@@ -64,8 +64,6 @@ $(document).ready(function() {
                 total[kind[i]] = 0;
             }
 
-
-
             for(var i in population)
             {
 
@@ -76,12 +74,9 @@ $(document).ready(function() {
                 }
             }
 
-
             for(var i in row)
             {
                 $("#" + row[i].pop_label.value.replace(/\s+|\W+/g, '') + ">#" + row[i].kind_label.value.replace(/\s+|\W+/g, '')).append("<i class='mini circle icon'></i>");
-
-
 
                 for(var x in categories)
                 {
@@ -114,23 +109,19 @@ $(document).ready(function() {
                 }
             }
 
-
-            // $('.ui.button').popup();
-
             $('.message .close').on('click', function() {
                 $(this).closest('.message').transition('fade');
             });
 
             $('#information').click(function() {
                 $('.message').addClass('visible');
-            })
+            });
 
             $('.ui.dropdown').dropdown();
 
             $('table').tablesort();
 
             $("#table_details>tr").click(function() {
-
 
                 $(".modal>.content>.header").html($(this).text().toString()[0].toUpperCase() + $(this).text().toString().slice(1));
                 $(".content>.meta").html(grid[$(this).text()]["category"] + "<div class='ui divider'></div>");
@@ -158,7 +149,6 @@ $(document).ready(function() {
                 $(".ui.modal").modal('show');
                 $('.ui.accordion').accordion();
             });
-
         }
     });
 
@@ -182,6 +172,5 @@ $(document).ready(function() {
 
         return full_table;
     }
-
 
 });
