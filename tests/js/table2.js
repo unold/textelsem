@@ -40,7 +40,7 @@ $(document).ready(function() {
                 queryLn: 'SPARQL',
                 query: "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>\n"
                         +"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-                        +"SELECT ?t1 ?f1 ?kind_label ?pop_label ?category\n"
+                        +"SELECT DISTINCT ?t1 ?f1 ?kind_label ?pop_label ?category\n"
                         +"WHERE {\n"
                         +"?f1 higeomes:id ?id .\n"
                       	+"FILTER NOT EXISTS {\n"
@@ -63,7 +63,7 @@ $(document).ready(function() {
                 queryLn: 'SPARQL',
                 query: "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>\n"
                         +"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-                        +"SELECT ?t1 ?pop_label\n"
+                        +"SELECT DISTINCT ?t1 ?pop_label\n"
                         +"WHERE {\n"
                         +"    ?t1 rdf:type higeomes:Toponym.\n"
                         +"  	FILTER NOT EXISTS {\n"
@@ -86,6 +86,7 @@ $(document).ready(function() {
         var kind = [];
         var population = [];
         var full = [];
+        full_findspots = [];
 
 
         var population_list = [];
@@ -140,10 +141,21 @@ $(document).ready(function() {
 
         grid = significance(properties, grid, total);
 
+        for(var i in grid)
+        {
+            for(var j in grid[i])
+            {
+                if(!isNaN(j))
+                {
+                    full.push({"population": i, "kind": grid[i][j]["kind_name"], "significance": grid[i][j]["significance"]})
+                }
+            }
+        }
+
         for(var i in f_results)
         {
             $('#header_details>tr').append("<th>"+ findspot_regex.exec(f_results[i].f1.value).toString().replace('Findspot/', 'F') +"</th>");
-            // findspots.push(f_results[i].f1.value);
+            findspots.push(f_results[i]);
             kind.push(f_results[i].kind_label.value);
         }
 
@@ -152,51 +164,32 @@ $(document).ready(function() {
         for(var i in t_results)
         {
             $('#table_details').append("<tr id='"+ toponym_regex.exec(t_results[i].t1.value).toString().replace('toponym-','T') +"'><td>"+ toponym_regex.exec(t_results[i].t1.value).toString().replace('toponym-','T') +"</td></tr>");
-            // toponyms.push(i);
+            toponyms.push(t_results[i]);
             population.push(t_results[i].pop_label.value);
         }
 
-        for(var i in t_results)
-        {
-            for(var j in f_results)
-            {
-                full.push({'population': t_results[i].pop_label.value, 'kind': f_results[j].kind_label.value})
-            }
-        }
+        // console.log(full);
+        // console.log('Findspots', findspots);
+        // console.log('Toponyms', toponyms);
 
-        var distinct = [];
-        var init = full[0];
-        for(var i = 1; i < full.length; i++)
+        var test = [];
+        for(var i in toponyms)
         {
-            if(init["kind"] == full[i]["kind"] && init["population"] == full[i]["population"])
+            for(var j in findspots)
             {
-                continue;
-            }
-            else {
-                distinct.push(init);
-                init = full[i];
-            }
-        }
-
-        for(var i in distinct)
-        {
-            distinct[i].sig = 0;
-        }
-
-        for(var i in distinct)
-        {
-            for(var j in grid)
-            {
-                for(var k in grid[j])
+                test.push({"top_name": toponym_regex.exec(t_results[i].t1.value).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(f_results[j].f1.value).toString().replace('Findspot/', 'F'), "population": toponyms[i].pop_label.value, "kind": findspots[j].kind_label.value})
+                for(var k in full)
                 {
-                    if(grid[j][k]['kind_name'] == distinct[i]['kind'] && j == distinct[i]['population'])
+                    if(full[k]["kind"] == test[test.length - 1]["kind"] && full[k]["population"] == test[test.length - 1]["population"])
                     {
-                        distinct[i]['sig'] = grid[j][k]['significance'];
+                        test[test.length - 1].significance = full[k]["significance"];
+                        break;
                     }
                 }
             }
         }
-        console.log(distinct);
+
+        console.log(test);
 
     });
 
