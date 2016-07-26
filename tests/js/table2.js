@@ -182,35 +182,34 @@ $(document).ready(function() {
             $('#table_details').append("<tr id='"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"'><td>"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"</td></tr>");
         }
 
+        var test = [];
 
-        // var test = [];
-        //
-        // for(var i in big_list) //List of findspots
-        // {
-        //     for(var j in big_list2) //List of toponyms
-        //     {
-        //         test.push({"top_name": toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(big_list[i]["name"]).toString().replace('Findspot/', 'F'), "significance": 0})
-        //         for(var k in big_list[i]["kinds"]) //List of kinds for each findspot
-        //         {
-        //             for(var x in big_list2[j]["populations"]) //List of populations for each toponym
-        //             {
-        //                 for(var y in full) //List of combos
-        //                 {
-        //                     if(full[y]["kind"] == big_list[i]["kinds"][k] && full[y]["population"] == big_list2[j]["populations"][x])
-        //                     {
-        //                         test[test.length - 1]["significance"] += full[y]["significance"];
-        //                     }
-        //                 }
-        //             }
-        //
-        //         }
-        //         $("#"+toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T')).append("<td><div class='circle' id='"+toponym_regex.exec(big_list2[j]["name"])+"'></div></td>");
-        //         resize_circle($("."+"circle#"+toponym_regex.exec(big_list2[j]["name"])), ((test[test.length - 1]["significance"] / (big_list2[j]["populations"].length * big_list[i]["kinds"].length)) * 100));
-        //         // $("#"+toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T')).append("<td>"+ ((test[test.length - 1]["significance"] / (big_list2[j]["populations"].length * big_list[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
-        //     }
-        // }
-        //
-        // console.log(test);
+        for(var i in findspots)
+        {
+            for(var j in toponyms) //List of toponyms
+            {
+                test.push({"top_name": toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F'), "significance": 0})
+                for(var k in findspots[i]["kinds"]) //List of kinds for each findspot
+                {
+                    for(var x in toponyms[j]["populations"]) //List of populations for each toponym
+                    {
+                        for(var y in full) //List of combos
+                        {
+                            if(full[y]["kind"] == findspots[i]["kinds"][k] && full[y]["population"] == toponyms[j]["populations"][x])
+                            {
+                                test[test.length - 1]["significance"] += full[y]["significance"];
+                            }
+                        }
+                    }
+
+                }
+                // $("#"+toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T')).append("<td><div class='circle' id='"+toponym_regex.exec(big_list2[j]["name"])+"'></div></td>");
+                // resize_circle($("."+"circle#"+toponym_regex.exec(big_list2[j]["name"])), ((test[test.length - 1]["significance"] / (big_list2[j]["populations"].length * big_list[i]["kinds"].length)) * 100));
+                $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td>"+ ((test[test.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
+            }
+        }
+
+        console.log(test);
 
     });
 
