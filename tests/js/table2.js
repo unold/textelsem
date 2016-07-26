@@ -4,10 +4,6 @@ $(document).ready(function() {
     var findspot_regex = /Findspot\/\d+/;
     var toponym_regex = /toponym\W\d+/;
 
-    var findspots = [];
-    var toponyms = [];
-    var grid = [];
-
     function getProperties() {
         return $.ajax({
             url: repo,
@@ -79,16 +75,17 @@ $(document).ready(function() {
     }
 
     $.when(getProperties(), getFindspots(), getToponyms()).then(function(resp1, resp2, resp3) {
+
         var properties = resp1[0].results.bindings;
         var f_results = resp2[0].results.bindings;
         var t_results = resp3[0].results.bindings;
 
-        var kind = [];
-        var population = [];
         var full = [];
-        full_findspots = [];
         var findspot_names = [];
 
+        var findspots = [];
+        var toponyms = [];
+        var grid = [];
 
         var population_list = [];
         var kind_list = [];
@@ -114,8 +111,6 @@ $(document).ready(function() {
                 grid[population_list[i]].push({"kind_name": kind_list[j], "count": 0, "related_toponyms": []});
             }
         }
-
-        console.log(grid);
 
         for(var i in kind_list)
         {
@@ -167,92 +162,90 @@ $(document).ready(function() {
             return parseFloat(findspot_regex.exec(a["name"]).toString().replace('Findspot/', '')) - parseFloat(findspot_regex.exec(b["name"]).toString().replace('Findspot/', ''))
         });
 
-        var init = findspots[0];
-        var new_kinds = [];
-        var big_list = [];
-        for(var i = 1; i < findspots.length; i++)
-        {
-            if(findspots[i]["name"] == init["name"])
-            {
-                new_kinds.push(findspots[i]["kind"])
-            }
-            else {
-                new_kinds.push(init["kind"])
-                big_list.push({"name": init["name"], "kinds": new_kinds})
-                init = findspots[i];
-                new_kinds = [];
-            }
-        }
+        findspots = create_table(findspots, "kinds");
+        console.log(findspots);
 
-        for(var i in big_list)
+        for(var i in findspots)
         {
-            $('#header_details>tr').append("<th>"+ findspot_regex.exec(big_list[i]["name"]).toString().replace('Findspot/', 'F') +"</th>");
+            $('#header_details>tr').append("<th>"+ findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') +"</th>");
         }
-
-        console.log(big_list);
 
         toponyms.sort(function(a,b) {
             return parseFloat(toponym_regex.exec(a["name"]).toString().replace('toponym-', '')) - parseFloat(toponym_regex.exec(b["name"]).toString().replace('toponym-', ''))
         });
 
-        var init2 = toponyms[0];
-        var new_pops = [];
-        var big_list2 = [];
-        for(var i = 1; i < toponyms.length; i++)
-        {
-            if(toponyms[i]["name"] == init2["name"])
-            {
+        toponyms = create_table(toponyms, "populations")
+        console.log(toponyms);
 
-                new_pops.push(toponyms[i]["population"]);
-            }
-            else {
-                new_pops.push(init2["population"])
-                big_list2.push({"name": init2["name"], "populations": new_pops})
-                init2 = toponyms[i];
-                new_pops = [];
-            }
+        for(var i in toponyms)
+        {
+            $('#table_details').append("<tr id='"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"'><td>"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"</td></tr>");
         }
 
-        for(var i in big_list2)
-        {
-            $('#table_details').append("<tr id='"+ toponym_regex.exec(big_list2[i]["name"]).toString().replace('toponym-','T') +"'><td>"+ toponym_regex.exec(big_list2[i]["name"]).toString().replace('toponym-','T') +"</td></tr>");
-        }
 
-        console.log(big_list2);
-
-        var test = [];
-
-        for(var i in big_list) //List of findspots
-        {
-            for(var j in big_list2) //List of toponyms
-            {
-                test.push({"top_name": toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(big_list[i]["name"]).toString().replace('Findspot/', 'F'), "significance": 0})
-                for(var k in big_list[i]["kinds"]) //List of kinds for each findspot
-                {
-                    for(var x in big_list2[j]["populations"]) //List of populations for each toponym
-                    {
-                        for(var y in full) //List of combos
-                        {
-                            if(full[y]["kind"] == big_list[i]["kinds"][k] && full[y]["population"] == big_list2[j]["populations"][x])
-                            {
-                                test[test.length - 1]["significance"] += full[y]["significance"];
-                            }
-                        }
-                    }
-
-                }
-                $("#"+toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T')).append("<td>"+ ((test[test.length - 1]["significance"] / (big_list2[j]["populations"].length * big_list[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
-            }
-
-        }
-
-        console.log(test);
+        // var test = [];
+        //
+        // for(var i in big_list) //List of findspots
+        // {
+        //     for(var j in big_list2) //List of toponyms
+        //     {
+        //         test.push({"top_name": toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(big_list[i]["name"]).toString().replace('Findspot/', 'F'), "significance": 0})
+        //         for(var k in big_list[i]["kinds"]) //List of kinds for each findspot
+        //         {
+        //             for(var x in big_list2[j]["populations"]) //List of populations for each toponym
+        //             {
+        //                 for(var y in full) //List of combos
+        //                 {
+        //                     if(full[y]["kind"] == big_list[i]["kinds"][k] && full[y]["population"] == big_list2[j]["populations"][x])
+        //                     {
+        //                         test[test.length - 1]["significance"] += full[y]["significance"];
+        //                     }
+        //                 }
+        //             }
+        //
+        //         }
+        //         $("#"+toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T')).append("<td><div class='circle' id='"+toponym_regex.exec(big_list2[j]["name"])+"'></div></td>");
+        //         resize_circle($("."+"circle#"+toponym_regex.exec(big_list2[j]["name"])), ((test[test.length - 1]["significance"] / (big_list2[j]["populations"].length * big_list[i]["kinds"].length)) * 100));
+        //         // $("#"+toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T')).append("<td>"+ ((test[test.length - 1]["significance"] / (big_list2[j]["populations"].length * big_list[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
+        //     }
+        // }
+        //
+        // console.log(test);
 
     });
 
-    function resize_circle(sig)
+    function create_table(table, id)
     {
-        return
+        var init = table[0];
+        var list = [];
+        var big_list = [];
+
+
+        for(var i = 1; i < table.length; i++)
+        {
+            Object.keys(table[i]);
+            if(table[i][Object.keys(table[i])[0]] == init[Object.keys(table[i])[0]])
+            {
+                list.push(table[i][Object.keys(table[i])[1]])
+            }
+            else {
+                list.push(init[Object.keys(table[i])[1]])
+                big_list.push({"name": init[Object.keys(table[i])[0]]})
+                big_list[big_list.length - 1][id] = list;
+                init = table[i];
+                list = [];
+            }
+        }
+
+        return big_list;
+    }
+
+    function resize_circle(circle, sig)
+    {
+        var pixels = sig * 1.5;
+        circle.css({"width": pixels, "height": pixels});
+
+        return circle;
     }
 
     function significance(data, full_table, row_totals)
@@ -275,8 +268,5 @@ $(document).ready(function() {
 
         return full_table;
     }
-
-    $('.table').tablesort();
-
 
 });
