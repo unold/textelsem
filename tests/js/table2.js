@@ -80,7 +80,7 @@ $(document).ready(function() {
         var f_results = resp2[0].results.bindings;
         var t_results = resp3[0].results.bindings;
 
-        var full = {};
+        var significance_table = {};
         var findspot_names = [];
 
         var findspots = [];
@@ -143,8 +143,7 @@ $(document).ready(function() {
             {
                 if(!isNaN(j))
                 {
-                    full[i + "_" + grid[i][j]["kind_name"]] = grid[i][j]["significance"];
-                    // full.push({"population": i, "kind": grid[i][j]["kind_name"], "significance": grid[i][j]["significance"]})
+                    significance_table[i + "_" + grid[i][j]["kind_name"]] = grid[i][j]["significance"];
                 }
             }
         }
@@ -165,14 +164,14 @@ $(document).ready(function() {
         {
             for(var j in kind_list)
             {
-                if(full[population_list[i] + "_" + kind_list[j]] === undefined)
+                if(significance_table[population_list[i] + "_" + kind_list[j]] === undefined)
                 {
-                    full[population_list[i] + "_" + kind_list[j]] = 0;
+                    significance_table[population_list[i] + "_" + kind_list[j]] = 0;
                 }
             }
         }
 
-        console.log(full);
+        console.log(significance_table);
 
         findspots.sort(function(a,b) {
             return parseFloat(findspot_regex.exec(a["name"]).toString().replace('Findspot/', '')) - parseFloat(findspot_regex.exec(b["name"]).toString().replace('Findspot/', ''))
@@ -196,43 +195,32 @@ $(document).ready(function() {
             $('#table_details').append("<tr id='"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"'><td>"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"</td></tr>");
         }
 
-        var test = [];
-
+        var final = [];
 
         for(var i in findspots)
         {
             for(var j in toponyms) //List of toponyms
             {
-                test.push({"top_name": toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F'), "kinds": findspots[i]["kinds"],"populations": toponyms[j]["populations"],"significance": 0})
+                final.push({"top_name": toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F'), "kinds": findspots[i]["kinds"],"populations": toponyms[j]["populations"],"significance": 0})
                 for(var k in findspots[i]["kinds"]) //List of kinds for each findspot
                 {
                     for(var x in toponyms[j]["populations"]) //List of populations for each toponym
                     {
-                        test[test.length - 1]["significance"] += full[toponyms[j]["populations"][x] + "_" + findspots[i]["kinds"][k]];
+                        final[final.length - 1]["significance"] += significance_table[toponyms[j]["populations"][x] + "_" + findspots[i]["kinds"][k]];
                     }
                 }
                 // $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td class='circle'></td>");
-                // calc_circle("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), ((test[test.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2))
+                // calc_circle("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2))
 
-                $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td>"+ ((test[test.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
+                $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td id='"+ toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" +findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') + "'>"+ ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
+                if(((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) > 30)
+                {
+                    $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" +findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F')).addClass('positive');
+                }
             }
         }
 
-        // for(var i in test)
-        // {
-        //     test[i]["kinds"].map(function(obj) {
-        //         for(var j in test[i]["populations"])
-        //         {
-        //             var sig = full.filter(function(item) {
-        //                 return item["kind"] == obj && item["population"] == test[i]["populations"][j]
-        //             });
-        //             // console.log(sig);
-        //             test[i]["significance"] += sig["significance"];
-        //         }
-        //     });
-        // }
-
-        console.log(test);
+        console.log(final);
 
     });
 
@@ -283,13 +271,6 @@ $(document).ready(function() {
         }
 
         return big_list;
-    }
-
-    function resize_circle(circle, sig)
-    {
-        // if(sig < 10)
-
-        return circle;
     }
 
     function significance(data, full_table, row_totals)
