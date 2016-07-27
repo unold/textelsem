@@ -80,7 +80,7 @@ $(document).ready(function() {
         var f_results = resp2[0].results.bindings;
         var t_results = resp3[0].results.bindings;
 
-        var full = [];
+        var full = {};
         var findspot_names = [];
 
         var findspots = [];
@@ -143,27 +143,42 @@ $(document).ready(function() {
             {
                 if(!isNaN(j))
                 {
-                    full.push({"population": i, "kind": grid[i][j]["kind_name"], "significance": grid[i][j]["significance"]})
+                    full[i + "_" + grid[i][j]["kind_name"]] = grid[i][j]["significance"];
+                    // full.push({"population": i, "kind": grid[i][j]["kind_name"], "significance": grid[i][j]["significance"]})
                 }
             }
         }
 
         for(var i in f_results)
         {
-            findspots.push({"name": f_results[i].f1.value, "kind":f_results[i].kind_label.value})
+            findspots.push({"name": f_results[i].f1.value, "kind":f_results[i].kind_label.value});
+            kind_list.push(f_results[i].kind_label.value);
         }
 
         for(var i in t_results)
         {
             toponyms.push({"name": t_results[i].t1.value, "population":t_results[i].pop_label.value});
+            population_list.push(t_results[i].pop_label.value);
         }
+
+        for(var i in population_list)
+        {
+            for(var j in kind_list)
+            {
+                if(full[population_list[i] + "_" + kind_list[j]] === undefined)
+                {
+                    full[population_list[i] + "_" + kind_list[j]] = 0;
+                }
+            }
+        }
+
+        console.log(full);
 
         findspots.sort(function(a,b) {
             return parseFloat(findspot_regex.exec(a["name"]).toString().replace('Findspot/', '')) - parseFloat(findspot_regex.exec(b["name"]).toString().replace('Findspot/', ''))
         });
 
         findspots = create_table(findspots, "kinds");
-        console.log(findspots);
 
         for(var i in findspots)
         {
@@ -175,7 +190,6 @@ $(document).ready(function() {
         });
 
         toponyms = create_table(toponyms, "populations")
-        console.log(toponyms);
 
         for(var i in toponyms)
         {
@@ -184,34 +198,66 @@ $(document).ready(function() {
 
         var test = [];
 
+
         for(var i in findspots)
         {
             for(var j in toponyms) //List of toponyms
             {
-                test.push({"top_name": toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F'), "significance": 0})
+                test.push({"top_name": toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), "find_name": findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F'), "kinds": findspots[i]["kinds"],"populations": toponyms[j]["populations"],"significance": 0})
                 for(var k in findspots[i]["kinds"]) //List of kinds for each findspot
                 {
                     for(var x in toponyms[j]["populations"]) //List of populations for each toponym
                     {
-                        for(var y in full) //List of combos
-                        {
-                            if(full[y]["kind"] == findspots[i]["kinds"][k] && full[y]["population"] == toponyms[j]["populations"][x])
-                            {
-                                test[test.length - 1]["significance"] += full[y]["significance"];
-                            }
-                        }
+                        test[test.length - 1]["significance"] += full[toponyms[j]["populations"][x] + "_" + findspots[i]["kinds"][k]];
                     }
-
                 }
-                // $("#"+toponym_regex.exec(big_list2[j]["name"]).toString().replace('toponym-','T')).append("<td><div class='circle' id='"+toponym_regex.exec(big_list2[j]["name"])+"'></div></td>");
-                // resize_circle($("."+"circle#"+toponym_regex.exec(big_list2[j]["name"])), ((test[test.length - 1]["significance"] / (big_list2[j]["populations"].length * big_list[i]["kinds"].length)) * 100));
+                // $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td class='circle'></td>");
+                // calc_circle("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), ((test[test.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2))
+
                 $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td>"+ ((test[test.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
             }
         }
 
+        // for(var i in test)
+        // {
+        //     test[i]["kinds"].map(function(obj) {
+        //         for(var j in test[i]["populations"])
+        //         {
+        //             var sig = full.filter(function(item) {
+        //                 return item["kind"] == obj && item["population"] == test[i]["populations"][j]
+        //             });
+        //             // console.log(sig);
+        //             test[i]["significance"] += sig["significance"];
+        //         }
+        //     });
+        // }
+
         console.log(test);
 
     });
+
+
+    function calc_circle(id, sig) {
+        if(sig < 10)
+        {
+            $(id + ">.circle").addClass('w0');
+            $(id + ">.circle").addClass('a1');
+        }
+        else if(sig < 20 && sig > 10)
+        {
+            $(id + ">.circle").addClass('w1');
+            $(id + ">.circle").addClass('a2');
+        }
+        else if(sig < 30 && sig > 20)
+        {
+            $(id + ">.circle").addClass('w2');
+            $(id + ">.circle").addClass('a3');
+        }
+        else {
+            $(id + ">.circle").addClass('w3');
+            $(id + ">.circle").addClass('a4');
+        }
+    }
 
     function create_table(table, id)
     {
@@ -241,8 +287,7 @@ $(document).ready(function() {
 
     function resize_circle(circle, sig)
     {
-        var pixels = sig * 1.5;
-        circle.css({"width": pixels, "height": pixels});
+        // if(sig < 10)
 
         return circle;
     }

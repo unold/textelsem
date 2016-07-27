@@ -2,82 +2,21 @@
 <html lang="de">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		
 		<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
-		<style>
-			body {
-				background: black;
-			}
-			* {
-				color: white;
-				font-family: "Arimo";
-				padding: 0;
-				margin: 0;
-				font-size: 18px;
-				letter-spacing: 0.04em;
-			}
-/*Größen*/
-.w0:before {
-	content: ' \25CF';
-	font-size: 10px;
-}
-.w1:before {
-	content: ' \25CF';
-	font-size: 40px;
-}
-.w2:before {
-	content: ' \25CF';
-	font-size: 80px;
-}
-.w3:before {
-	content: ' \25CF';
-	font-size: 160px;
-	line-height: 100px;
-}
-.circle { height: 10px;} 
+		<link href="./result.css" rel="stylesheet" type="text/css">
 
-/*Farben*/
-.a1 {color: red;}
-.a5 {color: #09DE0C;}
-.a4 {color: #9BDE09;}
-.a2 {color: orange;}
-.a3 {color: yellow;}
-
-/*Tabelle*/
-table {max-width: 80%; margin: 100px auto;}
-td {text-align: center; vertical-align: middle; max-width: 50px; max-height: 50px;}
-td.text {text-align: left; vertical-align: middle; max-width: 200px;}
-td {height: 120px;}
-			.header td, .count {
-				font-size: 14px !important;
-				letter-spacing: 1px;
-			}
-		</style>
-        <title></title>
-        <script>
-			function init() {
-				document.getElementById("id").value = these[these.length-1];
-				var table = document.getElementById("table");
-				var person = [];
-				var these = [];
-				
-				for (t=0; t<these.length; ++t) {
-					var tr = document.createElement("tr");
-					tr.innerHTML = "<td class='text count'>"+(t+1)+"</td>";
-					tr.innerHTML += "<td class='text'>"+these[t]+"</td>";
-					for (p=0; p<person.length; ++p) {
-						tr.innerHTML += "<td><span class='circle a"+Math.round(2*Number(a[t][p])+3+" w"+w[t][p]+"'></span></td>";
-					}
-					table.appendChild(tr);
-				}
-			}
-		</script>
-    </head>
-    <body onload="init()">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+		<script src="./result.js"></script>
+	</head>
+	<body>
 		<table id="table" style="width:100%">
 			<tr>
 				<td><span class='circle a2 w1'></span></td>
 				<td><span class='circle a1 w2'></span></td>
-				<td><span class='circle a1 w3'></span></td>
+				<td><span class='circle a3 w3'></span></td>
+				<td><span class='circle a4 w2'></span></td>
+				<td><span class='circle a5 w0'></span></td>
 			</tr>
 		</table>
 	</body>

@@ -8,12 +8,3 @@ body {
     display: inline-block;
     /*overflow-x: scroll;*/
 }
-
-.circle {
-  width: 3px;
-  height: 3px;
-  -webkit-border-radius: 25px;
-  -moz-border-radius: 25px;
-  border-radius: 25px;
-  background: black;
-}
