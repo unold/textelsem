@@ -209,43 +209,55 @@ $(document).ready(function() {
                         final[final.length - 1]["significance"] += significance_table[toponyms[j]["populations"][x] + "_" + findspots[i]["kinds"][k]];
                     }
                 }
-                // $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td class='circle'></td>");
-                // calc_circle("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T'), ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2))
+                $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td id='"+ toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" + findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') +"' class='circle'></td>");
 
-                $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td id='"+ toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" +findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') + "'>"+ ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
-                if(((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) > 30)
-                {
-                    $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" +findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F')).addClass('positive');
-                }
+                calc_circle("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" + findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F'), ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2))
+
+
+                // $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td id='"+ toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" +findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') + "'>"+ ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
+                // if(((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) > 30)
+                // {
+                //     $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" +findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F')).addClass('positive');
+                // }
             }
+            // if(i > 100)
+            // {
+            //     break;
+            // }
         }
-
+        // $(".circle").popup();
         console.log(final);
 
     });
 
 
-    function calc_circle(id, sig) {
+    function calc_circle(id, sig)
+    {
         if(sig < 10)
         {
-            $(id + ">.circle").addClass('w0');
-            $(id + ">.circle").addClass('a1');
+            $(id).addClass('w0');
+            $(id).addClass('a1');
         }
-        else if(sig < 20 && sig > 10)
+        else if(sig > 10 && sig < 20)
         {
-            $(id + ">.circle").addClass('w1');
-            $(id + ">.circle").addClass('a2');
+            $(id).addClass('w1');
+            $(id).addClass('a2');
         }
-        else if(sig < 30 && sig > 20)
+        else if(sig > 20 && sig < 30)
         {
-            $(id + ">.circle").addClass('w2');
-            $(id + ">.circle").addClass('a3');
+            $(id).addClass('w2');
+            $(id).addClass('a3');
         }
         else {
-            $(id + ">.circle").addClass('w3');
-            $(id + ">.circle").addClass('a4');
+            $(id).addClass('w3');
+            $(id).addClass('a4');
         }
+
+        // $(id).attr('data-content', sig);
+        // $(id).attr('data-position', 'top center');
     }
+
+
 
     function create_table(table, id)
     {
