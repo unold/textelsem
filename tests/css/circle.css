@@ -26,12 +26,17 @@
 .a4 {color: #9BDE09;}
 .a5 {color: #09DE0C;}
 
-
+.ui.table thead th {
+    text-align: center;
+}
 
 .ui.table td {
     padding: .71428571em;
     text-align: center;
     vertical-align: middle;
+    max-width: 200px;
+    height: 120px;
+
 }
 /*Tabelle*/
 /*table {max-width: 80%; margin: 100px auto;}
