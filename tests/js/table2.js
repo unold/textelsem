@@ -219,6 +219,11 @@ $(document).ready(function() {
 
         }
 
+        $('body').on('click', '.circle', function(){
+            console.log("hi");
+            // $('.ui.fluid.small.modal').modal('show');
+        });
+
         // $('.circle').click(function() {
         //     console.log('hi');
         //     $('.ui.modal').modal('show');
