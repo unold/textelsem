@@ -11,7 +11,7 @@ body {
 
 .ui.header {
     display: inline-block;
-    width: 80%;
+    width: 85%;
 }
 
 .positive {
@@ -40,9 +40,23 @@ body {
     padding-left: 10px;
 }
 
-.ui.segments, .ui.segment {
+.ui.segment {
     float: right;
     /*position: fixed;*/
+    display: inline-block;
+}
+
+.ui.segment {
+    position: fixed;
+    float: right;
+    left: 88%;
+    bottom: 84%;
+}
+
+.ui.segments {
+    position: fixed;
+    top: 15%;
+    left: 85%;
     display: inline-block;
 }
 
