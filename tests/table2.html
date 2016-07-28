@@ -70,12 +70,40 @@
             </div>
         </div> -->
         <h2 class='ui header'>
-            <i class='percent icon'></i>
             <div class='content'>
                 Full Probability Table
                 <div class='sub header'>Probabilities for all unresolved findspots and toponyms based on kind on population attributes.</div>
             </div>
         </h2>
+
+        <div class='ui right floated compact segment'>
+            <div class="ui toggle checkbox">
+                <input type="checkbox" name="legend">
+                <label>Show Legend</label>
+            </div>
+        </div>
+
+        <div class='ui hidden compact raised segments'>
+            <div class='ui segment'>
+                <h2 class='ui header'>Legend</h2>
+            </div>
+            <div class='ui segment'>
+                <div id='legend1' class='circle a1 w0'></div>
+                <div class='content'>Less than 10% probability</div>
+            </div>
+            <div class='ui segment'>
+                <div id='legend2' class='circle a2 w1'></div>
+                <div class='content'>Between 10% and 20% probability</div>
+            </div>
+            <div class='ui segment'>
+                <div id='legend3' class='circle a3 w2'></div>
+                <div class='content'>Between 20% and 30% probability</div>
+            </div>
+            <div class='ui segment'>
+                <div id='legend4' class='circle a4 w3'></div>
+                <div class='content'>Greater than 30% probability</div>
+            </div>
+        </div>
 
         <table class="ui small selectable definition compact table">
             <thead class="full-width" id='header_details'>

@@ -221,15 +221,20 @@ $(document).ready(function() {
 
         $('.ui.inverted.dimmer').removeClass('active');
 
-        $('body').on('click', '.circle', function() {
-            // console.log(this);
-            $(this).popup({
-                on: 'click'
-            });
-            // $('.ui.fluid.small.modal').modal('show');
-        });
+        // $('body').on('click', '.circle', function() {
+        //     // console.log(this);
+        //     $(this).popup({
+        //         on: 'click'
+        //     });
+        //     // $('.ui.fluid.small.modal').modal('show');
+        // });
 
         // $('.circle').popup();
+        $('.ui.toggle.checkbox').checkbox({
+            onChange: function() {
+                $('.ui.compact.segments').toggleClass('hidden');
+            }
+        });
 
 
         // $('.circle').click(function() {

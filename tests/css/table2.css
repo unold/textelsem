@@ -10,7 +10,8 @@ body {
 }
 
 .ui.header {
-    padding-left: 10px;
+    display: inline-block;
+    width: 80%;
 }
 
 .positive {
@@ -28,4 +29,25 @@ body {
     width: 4.57142857rem;
     height: 4.57142857rem;
     margin: 0 0 0 -2.28571429rem;
+}
+
+.ui.toggle.checkbox {
+    float: right;
+    display: inline-block;
+}
+
+.ui.header {
+    padding-left: 10px;
+}
+
+.ui.segments {
+    float: right;
+    display: inline-block;
+}
+
+#legend1, #legend2, #legend3, #legend4 {
+    display: inline-block;
+    align: center;
+    text-align: center;
+    line-height: 50px;
 }
