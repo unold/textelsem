@@ -219,6 +219,8 @@ $(document).ready(function() {
 
         }
 
+        $('.ui.inverted.dimmer').removeClass('active');
+
         $('body').on('click', '.circle', function(){
             console.log("hi");
             // $('.ui.fluid.small.modal').modal('show');
