@@ -221,16 +221,19 @@ $(document).ready(function() {
 
         $('.ui.inverted.dimmer').removeClass('active');
 
-        $('body').on('click', '.circle', function(){
-            console.log("hi");
+        $('body').on('click', '.circle', function() {
+            // console.log(this);
+            $(this).popup();
             // $('.ui.fluid.small.modal').modal('show');
         });
+
+        // $('.circle').popup();
+
 
         // $('.circle').click(function() {
         //     console.log('hi');
         //     $('.ui.modal').modal('show');
         // })
-        // $(".circle").popup();
         console.log(final);
 
     });
@@ -258,8 +261,8 @@ $(document).ready(function() {
             $(id).addClass('a4');
         }
 
-        // $(id).attr('data-content', sig);
-        // $(id).attr('data-position', 'top center');
+        $(id).attr('data-content', sig);
+        $(id).attr('data-position', 'top center');
     }
 
 

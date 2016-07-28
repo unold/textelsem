@@ -14,3 +14,14 @@ body {
     background: #fcfff5;
     color: #2c662d;
 }
+
+.ui.massive.inverted.text.loader {
+    min-width: 4.57142857rem;
+    padding-top: 5.35714286rem;
+}
+
+.ui.massive.inverted.loader:after, .ui.massive.inverted.loader:before {
+    width: 4.57142857rem;
+    height: 4.57142857rem;
+    margin: 0 0 0 -2.28571429rem;
+}
