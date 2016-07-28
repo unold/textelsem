@@ -223,7 +223,9 @@ $(document).ready(function() {
 
         $('body').on('click', '.circle', function() {
             // console.log(this);
-            $(this).popup();
+            $(this).popup({
+                on: 'click'
+            });
             // $('.ui.fluid.small.modal').modal('show');
         });
 

@@ -9,6 +9,10 @@ body {
     /*overflow-x: scroll;*/
 }
 
+.ui.header {
+    padding-left: 10px;
+}
+
 .positive {
     box-shadow: 0 0 0 #a3c293 inset;
     background: #fcfff5;
