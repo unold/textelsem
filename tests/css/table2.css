@@ -40,8 +40,9 @@ body {
     padding-left: 10px;
 }
 
-.ui.segments {
+.ui.segments, .ui.segment {
     float: right;
+    /*position: fixed;*/
     display: inline-block;
 }
 
