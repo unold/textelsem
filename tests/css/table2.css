@@ -46,16 +46,16 @@ body {
     display: inline-block;
 }
 
-.ui.segment {
+#legend {
     position: fixed;
     float: right;
     left: 88%;
-    bottom: 84%;
+    bottom: 90%;
 }
 
 .ui.segments {
     position: fixed;
-    top: 15%;
+    top: 10%;
     left: 85%;
     display: inline-block;
 }
