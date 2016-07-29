@@ -158,6 +158,7 @@ $(document).ready(function() {
         {
             toponyms.push({"name": t_results[i].t1.value, "population":t_results[i].pop_label.value});
             population_list.push(t_results[i].pop_label.value);
+
         }
 
         for(var i in population_list)
@@ -182,6 +183,9 @@ $(document).ready(function() {
         for(var i in findspots)
         {
             $('#header_details>tr').append("<th>"+ findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') +"</th>");
+
+            if(i > 25)
+                break;
         }
 
         toponyms.sort(function(a,b) {
@@ -193,6 +197,8 @@ $(document).ready(function() {
         for(var i in toponyms)
         {
             $('#table_details').append("<tr id='"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"'><td>"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"</td></tr>");
+            if(i > 25)
+                break;
         }
 
         var final = [];
@@ -216,6 +222,9 @@ $(document).ready(function() {
                 // $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td id='"+ toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" +findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') + "'>"+ ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
 
             }
+
+            if(i > 25)
+                break;
 
         }
 
