@@ -17,7 +17,6 @@ $(document).ready(function() {
             +"    ?pop rdfs:label ?pop_label .\n"
             +"}"
 
-    console.log(query);
     $.ajax({
         url: repo,
         dataType: 'jsonp',
@@ -27,6 +26,7 @@ $(document).ready(function() {
             Accept: 'application/json'
         },
         success: function(data) {
+
             var row = data.results.bindings;
 
             var population = [];
@@ -42,12 +42,9 @@ $(document).ready(function() {
                 categories.push(row[i].category.value);
             }
 
-
             $.unique(population);
             $.unique(kind);
             $.unique(categories);
-
-            console.log(categories);
 
             for(var i in population)
             {
@@ -66,7 +63,6 @@ $(document).ready(function() {
 
             for(var i in population)
             {
-
                 $('#table_details').append("<tr id='"+ population[i].replace(/\s+|\W+/g, '') +"'><td>"+ population[i] +"</td></tr>");
                 for(var j in kind)
                 {
@@ -95,7 +91,6 @@ $(document).ready(function() {
             }
 
             grid = significance(row, grid, total);
-            console.log(grid);
 
             for(var i in row)
             {
@@ -110,6 +105,8 @@ $(document).ready(function() {
             }
 
             $("th").popup();
+            $("#information").popup();
+            $('.ui.dropdown').dropdown();
 
             $('.message .close').on('click', function() {
                 $(this).closest('.message').transition('fade');
@@ -119,11 +116,7 @@ $(document).ready(function() {
                 $('.message').addClass('visible');
             });
 
-            $("#information").popup();
-
-            $('.ui.dropdown').dropdown();
-
-            $('table').tablesort();
+            // $('table').tablesort();
 
             $("#table_details>tr").click(function() {
 
@@ -140,7 +133,6 @@ $(document).ready(function() {
 
                 for(var i in grid[$(this).text()].slice(0, grid[$(this).text()].length))
                 {
-
                     if(grid[$(this).text()][i]["related_toponyms"].length == 0 )
                     {
                         $("#" + grid[$(this).text()][i]["kind_name"].replace(/\s+|\W+/g, '') + "_list").html("No related toponyms.");
@@ -173,8 +165,6 @@ $(document).ready(function() {
                 }
             }
         }
-
         return full_table;
     }
-
 });

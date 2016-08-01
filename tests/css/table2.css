@@ -6,12 +6,11 @@ body {
 .ui.table {
     width: 100%;
     display: inline-block;
-    /*overflow-x: scroll;*/
 }
 
 .ui.header {
     display: inline-block;
-    width: 85%;
+    padding-left: 10px;
 }
 
 .positive {
@@ -36,26 +35,15 @@ body {
     display: inline-block;
 }
 
-.ui.header {
-    padding-left: 10px;
-}
-
 .ui.segment {
     float: right;
     /*position: fixed;*/
     display: inline-block;
 }
 
-#legend {
-    position: fixed;
-    float: right;
-    left: 88%;
-    bottom: 90%;
-}
-
 .ui.segments {
     position: fixed;
-    top: 10%;
+    top: 30%;
     left: 85%;
     display: inline-block;
 }
