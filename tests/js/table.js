@@ -119,6 +119,8 @@ $(document).ready(function() {
                 $('.message').addClass('visible');
             });
 
+            $("#information").popup();
+
             $('.ui.dropdown').dropdown();
 
             $('table').tablesort();

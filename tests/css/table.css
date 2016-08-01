@@ -9,30 +9,31 @@
     height: 600px;
 }
 
-/*.info {
-    background-color: #f8ffff;
-    color: #276f86;
-}*/
-
 .positive {
     box-shadow: 0 0 0 #a3c293 inset;
     background: #fcfff5;
     color: #2c662d;
 }
 
+.ui.selection.dropdown {
+    float: right;
+    margin-top: 10px;
+    margin-right: 5px;
+}
+
 .ui.header:first-child#head {
     margin-top: 10px;
-    /*margin-bottom: 0px;*/
     margin-left: 5px;
+    margin-bottom: 0px;
 }
 
 h2.ui.header#head {
-    width: 85%;
     display: inline-block;
 }
 
 #information {
-    margin-left: 10px;
+    float: right;
+    margin-top: 20px;
 }
 
 .warning {
