@@ -184,8 +184,8 @@ $(document).ready(function() {
         {
             $('#header_details>tr').append("<th>"+ findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') +"</th>");
 
-            if(i > 25)
-                break;
+            // if(i > 25)
+            //     break;
         }
 
         toponyms.sort(function(a,b) {
@@ -197,8 +197,8 @@ $(document).ready(function() {
         for(var i in toponyms)
         {
             $('#table_details').append("<tr id='"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"'><td>"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"</td></tr>");
-            if(i > 25)
-                break;
+            // if(i > 25)
+            //     break;
         }
 
         var final = [];
@@ -223,19 +223,17 @@ $(document).ready(function() {
 
             }
 
-            if(i > 25)
-                break;
+            // if(i > 25)
+            //     break;
 
         }
 
         $('.ui.inverted.dimmer').removeClass('active');
 
         // $('body').on('click', '.circle', function() {
-        //     // console.log(this);
-        //     $(this).popup({
-        //         on: 'click'
-        //     });
-        //     // $('.ui.fluid.small.modal').modal('show');
+            // console.log('hey');
+            // $(this).popup('show');
+            // $('.ui.fluid.small.modal').modal('show');
         // });
 
         // $('.circle').popup();
@@ -250,6 +248,8 @@ $(document).ready(function() {
         //     console.log('hi');
         //     $('.ui.modal').modal('show');
         // })
+
+        // $('.circle').popup();
         console.log(final);
 
     });

@@ -9,33 +9,64 @@ $(document).ready(function() {
 
     var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
 
-    var query_all = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon\n"
-    + "WHERE { "
-    + "  ?t1 higeomes:hasFindspot ?f1 ."
-    + "  ?t2 higeomes:hasFindspot ?f2 ."
-    + "  ?f1 higeomes:lat ?t1_lat ."
-    + "  ?f1 higeomes:lng ?t1_lon ."
-    + "  ?f2 higeomes:lat ?t2_lat ."
-    + "  ?f2 higeomes:lng ?t2_lon ."
-    + " }";
+    $('.message .close').on('click', function() {
+        $(this).closest('.message').transition('fade');
+    });
 
-    var query = "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
-    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-    + "SELECT ?f1 ?f1_lat ?f1_lon ?name\n"
-    + "WHERE {"
-    + "?f1 higeomes:id ?f2 ."
-    + "FILTER NOT EXISTS"
-    + "{"
-    +   "?f1 higeomes:hasToponym ?t1 ."
-    + "}"
-    + "?f1 higeomes:name ?name ."
-    + "?f1 higeomes:lng ?f1_lon ."
-    + "?f1 higeomes:lat ?f1_lat ."
-    + "}";
+    $(".tabular.menu .item").tab({
+        history: true
+    });
 
-//Create map ===================================================================
+    function getUnresolved()
+    {
+        return $.ajax({
+            url: repo,
+            dataType: 'jsonp',
+            cache: false,
+            data: {
+                queryLn: 'SPARQL',
+                query: "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+                + "SELECT ?f1 ?f1_lat ?f1_lon ?name\n"
+                + "WHERE {"
+                + "?f1 higeomes:id ?f2 ."
+                + "FILTER NOT EXISTS"
+                + "{"
+                +   "?f1 higeomes:hasToponym ?t1 ."
+                + "}"
+                + "?f1 higeomes:name ?name ."
+                + "?f1 higeomes:lng ?f1_lon ."
+                + "?f1 higeomes:lat ?f1_lat ."
+                + "}",
+                Accept: 'application/json'
+            }
+        });
+    }
+
+    function getAll()
+    {
+        return $.ajax({
+            url: repo,
+            dataType: 'jsonp',
+            cache: false,
+            data: {
+                queryLn: 'SPARQL',
+                query: "PREFIX higeomes: <http://higeomes.i3mainz.hs-mainz.de/textelsem/ArchDB/>"
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+                + "SELECT ?t1 ?t2 ?t1_lat ?t1_lon ?t2_lat ?t2_lon\n"
+                + "WHERE { "
+                + "  ?t1 higeomes:hasFindspot ?f1 ."
+                + "  ?t2 higeomes:hasFindspot ?f2 ."
+                + "  ?f1 higeomes:lat ?t1_lat ."
+                + "  ?f1 higeomes:lng ?t1_lon ."
+                + "  ?f2 higeomes:lat ?t2_lat ."
+                + "  ?f2 higeomes:lng ?t2_lon ."
+                + " }",
+                Accept: 'application/json'
+            }
+        });
+    }
+
         var osm = new ol.layer.Tile({
             source: new ol.source.OSM()
         });
@@ -102,79 +133,50 @@ $(document).ready(function() {
         map.addLayer(lineLayer);
         map.addLayer(vectorLayer);
 
-//==============================================================================
+        $.when(getUnresolved(), getAll()).then(function(resp1, resp2)
+        {
+            var unresolved_data = resp1[0].results.bindings;
 
-    // Query for all unresolved findspots
-    $.ajax({
-        url: repo,
-        dataType: 'jsonp',
-        cache: false,
-        data: {
-            queryLn: 'SPARQL',
-            query: query,
-            Accept: 'application/json'
-        },
-        success: function(data) {
-            var row = data.results.bindings;
+            // console.log(resp1[0].results.bindings);
+            var all_data = resp2[0].results.bindings;
 
             var regex_filter = /(toponym)\D\d+/;
             var regex_filter2 = /(Findspot)\/\d+/;
             var units = "kilometers";
 
-            for(var i in row)
+            for(var i in unresolved_data)
             {
                 var findspot_name;
                 var findspot_name1;
                 var findspot_loc;
 
-                var normal_coords = [parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)];
-                findspot_loc = ol.proj.transform([parseFloat(row[i].f1_lon.value), parseFloat(row[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
-                findspot_name = row[i].f1.value;
+                var normal_coords = [parseFloat(unresolved_data[i].f1_lon.value), parseFloat(unresolved_data[i].f1_lat.value)];
+                findspot_loc = ol.proj.transform([parseFloat(unresolved_data[i].f1_lon.value), parseFloat(unresolved_data[i].f1_lat.value)], "EPSG:4326", "EPSG:3857");
+                findspot_name = unresolved_data[i].f1.value;
 
                 findspot_name1 = regex_filter2.exec(findspot_name)[0].toString();
                 findspot_name1 = findspot_name1.replace(/\//, " ");
 
                 $('#unresolved_table>#table_details').append("<tr><td><div id='urow' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
-                +"<td><a href ="+row[i].f1.value + ">" + row[i].name.value + "</a></td>"
+                +"<td><a href ="+unresolved_data[i].f1.value + ">" + unresolved_data[i].name.value + "</a></td>"
                 + "<td id='test"+ i + "'><div class='ui accordion' id='"+ i +"'><div class='title'><i class='dropdown icon'></i>Show All results</div>"
                 + "<div class='content'><div class='ui selection list'  id='probability" + i +"'></div></div></div></td></tr>");
 
-                $('#unresolved_table>#table_details').append
-
-                unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, row[i].name.value]);
+                unresolved_coords.push([findspot_name1, findspot_loc, normal_coords, unresolved_data[i].name.value]);
             }
-        }
-    });
 
-    $('.message .close').on('click', function() {
-        $(this).closest('.message').transition('fade');
-    });
-
-    //Query for all findspots
-    $.ajax({
-        url: repo,
-        dataType: 'jsonp',
-        cache: false,
-        data: {
-            queryLn: 'SPARQL',
-            query: query_all,
-            Accept: 'application/json'
-        },
-        success: function(data) {
-            var row = data.results.bindings;
             var angle;
             var angles = [];
             temp = [];
             var arr = [];
 
-
-            for(var i in row)
+            for(var i in all_data)
             {
                 var coordinate_1 = {
                     "type": "Feature",
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)]
+                        "coordinates": [parseFloat(all_data[i].t1_lon.value), parseFloat(all_data[i].t1_lat.value)]
                     }
                 };
 
@@ -182,11 +184,11 @@ $(document).ready(function() {
                     "type": "Feature",
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)]
+                        "coordinates": [parseFloat(all_data[i].t2_lon.value), parseFloat(all_data[i].t2_lat.value)]
                     }
                 };
 
-                angle = parseFloat(angleFromCoordinate(parseFloat(row[i].t1_lat.value), parseFloat(row[i].t1_lon.value), parseFloat(row[i].t2_lat.value), parseFloat(row[i].t2_lon.value)))
+                angle = parseFloat(angleFromCoordinate(parseFloat(all_data[i].t1_lat.value), parseFloat(all_data[i].t1_lon.value), parseFloat(all_data[i].t2_lat.value), parseFloat(all_data[i].t2_lon.value)))
                 arr.push({"dist": turf.distance(coordinate_1, coordinate_2, "kilometers"), "angle": angle});
 
             }
@@ -215,12 +217,9 @@ $(document).ready(function() {
 
             full.dist = sorted_distances;
             full.angles = sorted_angles;
-        }
+        // }
     });
 
-    $(".tabular.menu .item").tab({
-        history: true
-    });
 
     //Query for all resolved findspots listed as nearby
     $("#r_dropdown").dropdown({
@@ -1033,18 +1032,18 @@ $(document).ready(function() {
     }
 
     // Calculate probability of an unresolved findspot
-    function probability(reference,value)
+    function probability(reference, value)
     {
         var index = reference.length;
-        for (var i=0; i<reference.length; ++i) {
+        for (var i = 0; i < reference.length; ++i) {
             if (value < reference[i]) {
                 index = i;
                 break;
             }
         }
-        if (index <= reference.length/2)
-            return (2-1.0/reference.length)*index/reference.length;
+        if (index <= reference.length / 2)
+            return (2 - 1.0 / reference.length)  * index / reference.length;
         else
-            return (2-1.0/reference.length)*(reference.length-index)/reference.length;
+            return (2 - 1.0 / reference.length)  * (reference.length - index) / reference.length;
     }
 });
