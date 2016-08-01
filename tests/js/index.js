@@ -1,5 +1,9 @@
 $(document).ready(function() {
 
+    var toponym_regex = /(toponym)\D\d+/;
+    var findspot_regex = /(Findspot)\/\d+/;
+    var units = "kilometers";
+
     var resolved_distances = [];
     var resolved_coords = [];
     var unresolved_coords = [];
@@ -115,21 +119,6 @@ $(document).ready(function() {
 
     }
 
-    function probability(reference, value)
-    {
-        var index = reference.length;
-        for (var i = 0; i < reference.length; ++i) {
-            if (value < reference[i]) {
-                index = i;
-                break;
-            }
-        }
-        if (index <= reference.length / 2)
-            return (2 - 1.0 / reference.length)  * index / reference.length;
-        else
-            return (2 - 1.0 / reference.length)  * (reference.length - index) / reference.length;
-    }
-
     function getUnresolved()
     {
         return $.ajax({
@@ -179,22 +168,6 @@ $(document).ready(function() {
             }
         });
     }
-
-    // function getResolved() {
-    //
-    //     var value = $("#r_dropdown").dropdown('get value');
-    //
-    //     return $.ajax({
-    //         url: repo,
-    //         dataType: 'jsonp',
-    //         cache: false,
-    //         data: {
-    //             queryLn: 'SPARQL',
-    //             query: query_func(value),
-    //             Accept: 'application/json'
-    //         }
-    //     });
-    // }
 
     var osm = new ol.layer.Tile({
         source: new ol.source.OSM()
@@ -266,11 +239,6 @@ $(document).ready(function() {
     {
         var unresolved_data = resp1[0].results.bindings;
         var all_data = resp2[0].results.bindings;
-        // var resolved_data = resp3[0].results.bindings;
-
-        var toponym_regex = /(toponym)\D\d+/;
-        var findspot_regex = /(Findspot)\/\d+/;
-        var units = "kilometers";
 
         for(var i in unresolved_data)
         {
@@ -368,10 +336,6 @@ $(document).ready(function() {
 
                     var row = data.results.bindings;
 
-                    var toponym_regex = /(toponym)\D\d+/;
-                    var findspot_regex = /(Findspot)\/\d+/;
-                    var units = "kilometers";
-
                     $('#toponym_dist_table>#table_details').html("");
                     resolved_coords = [];
                     resolved_distances = [];
@@ -404,18 +368,16 @@ $(document).ready(function() {
                         resolved_distances.push(distance);
                         resolved_coords.push([row[i].f1_name.value, [parseFloat(row[i].t1_lon.value), parseFloat(row[i].t1_lat.value)], row[i].f1_country.value, toponym_regex.exec(row[i].t1.value)[0], row[i].f2_name.value, [parseFloat(row[i].t2_lon.value), parseFloat(row[i].t2_lat.value)], row[i].f2_country.value, toponym_regex.exec(row[i].t2.value)[0], distance, center]);
 
-                        // Add row to table
                         $('#toponym_dist_table>#table_details').append("<tr><td><div id='row' class='ui fitted toggle checkbox'><input type='checkbox' value='"+i+"'><label></label></div></td>"
                         + "<td><a href ="+row[i].t1.value + ">" + row[i].f1_name.value +"</a></td>"
                         + "<td><a href =" +row[i].t2.value + ">" + row[i].f2_name.value + "</td><td>" + euro_distance + " km</td>"
                         + "<td>"+ euro_angle +"&deg</td></tr>");
                     }
 
-
                     $('#r_dropdown').dropdown('hide');
                     $('#first_tab_dimmer').removeClass('active');
 
-                    draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
+                    show_coordinates(resolved_coords, unresolved_coords, findspot_coordinates, complete)
                 }
             });
         }
@@ -444,7 +406,6 @@ $(document).ready(function() {
                 var names = $("#p_dropdown").dropdown('get value').split(",");
                 var row = data.results.bindings;
                 var headings = data.head.vars;
-                var toponym_regex = /(toponym)\D\d+/;
                 headings = headings.filter(function(a) {
                     return a.match(/f\d$/);
                 });
@@ -530,11 +491,10 @@ $(document).ready(function() {
                      }
                  }
 
-                 console.log(complete);
                  $('#p_dropdown').dropdown('hide');
                  $('#second_tab_dimmer').removeClass('active');
 
-                draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete)
+                show_coordinates(resolved_coords, unresolved_coords, findspot_coordinates, complete)
             }
         });
     });
@@ -556,10 +516,6 @@ $(document).ready(function() {
                 success: function (data) {
 
                     var row = data.results.bindings;
-
-                    var toponym_regex = /(toponym)\D\d+/;
-                    var findspot_regexx2 = /(Findspot)\/\d+/;
-                    var units = "kilometers";
 
                     $('#new_table>#table_details').html("");
 
@@ -628,8 +584,7 @@ $(document).ready(function() {
 
                     $('#third_tab_dimmer').removeClass('active');
                     $('#n_dropdown').dropdown('hide');
-                    draw_map(resolved_coords, unresolved_coords, findspot_coordinates, complete);
-
+                    show_coordinates(resolved_coords, unresolved_coords, findspot_coordinates, complete);
                 }
             });
         }
@@ -639,7 +594,7 @@ $(document).ready(function() {
     $("#n_dropdown").dropdown('set value', 'nearby');
     $("#n_dropdown").dropdown('set text', 'Nearby');
 
-    function draw_map(r_coords, u_coords, n_coords, complete_list)
+    function show_coordinates(r_coords, u_coords, n_coords, complete_list)
     {
         var line_list = [];
         var features_list = [];
@@ -895,7 +850,6 @@ $(document).ready(function() {
                 );
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index+'1');
-
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
                 + " is a resolved findspot that is listed as " + values[$('#n_dropdown').dropdown('get value')][0] + " the unresolved toponym, \"" + n_coords[index][2].replace('-', ' ') + "\".");
 
@@ -913,10 +867,8 @@ $(document).ready(function() {
                     );
 
                     vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index+'2');
-
                     vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name')
                     + " is a resolved findspot that is listed as " + values[$('#n_dropdown').dropdown('get value')][1] + " the unresolved toponym, \"" + n_coords[index][2].replace('-', ' ') + "\".");
-
                 }
 
                 if(n_coords[index].length < 7)
@@ -928,7 +880,6 @@ $(document).ready(function() {
                     map.getView().setCenter(ol.proj.transform(n_coords[index][11]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
                     map.getView().setZoom(6);
                 }
-
             },
 
             onUnchecked: function() {
@@ -1027,7 +978,6 @@ $(document).ready(function() {
                         $('.left.floated.radius').html('Shown Radius: 40km');
 
                     $('#front>.description').append(feature.get('desc'));
-
                 }
             });
     }

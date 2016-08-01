@@ -22,8 +22,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>
 
-        <!-- <script src="./js/map.js"></script> -->
-        <script src='./js/test.js'></script>
+        <script src='./js/helper_functions.js'></script>
         <script src="./js/index.js"></script>
 
     </head>
@@ -45,7 +44,6 @@
                         </div>
                     </div>
                 </a>
-                <!-- <a class="active item" data-tab="resolved" id="r_tab">Resolved Toponyms</a> -->
                 <a class="item" data-tab="unresolved" id="u_tab">Unresolved Findspots</a>
                 <a class="item" data-tab="new" id="n_tab">
                     <div class="ui floating dropdown"  data-tab="new" id="n_dropdown">
@@ -126,7 +124,7 @@
                         </div>
                         <ul class="ui list">
                             <li>By default, this table is disabled. To enable it, select a property - or multiple - from the dropdown menu in the table header, then click "Go." This will show all unresolved toponyms connected to resolved toponyms by the selected properties.</li>
-                            <li>To see all of the probable points, click the toggle in the left most column. This will bring up the unresolved findspot as well as a __ radius, showin in green.</li>
+                            <li>To see all of the probable points, click the toggle in the left most column. This will bring up the unresolved findspot as well as a 40km radius, showin in green.</li>
                             <li>To display a probable point on the map, click on an item in the list in the right most column. (i.e. "Probability for X to be Y:"). To remove this point, simply click the <i class='remove icon'></i> located to the left of the item.</li>
                         </ul>
                     </div>
@@ -276,24 +274,12 @@
                                 <div class="ui cancel button">No</div>
                             </div>
                         </div>
-
-                        <!-- <div class="ui modal">
-                            <div class="header">Information</div>
-                            <div class="content">
-                                <p>Here's an instruction manual.</p>
-                            </div>
-                            <div class="actions">
-                                <div class="ui fluid button">Done</div>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
 
-                <!-- <button style='display: block' class='fluid ui basic button'>Save Changes</button> -->
             </div>
             <div class="ui bottom attached active tab segment" data-tab="graphs" id="graph_tab">
                 <div id="inner">
-                    <!-- <canvas id="myChart"></canvas> -->
                 </div>
             </div>
         </div>

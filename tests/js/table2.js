@@ -172,8 +172,6 @@ $(document).ready(function() {
             }
         }
 
-        console.log(significance_table);
-
         findspots.sort(function(a,b) {
             return parseFloat(findspot_regex.exec(a["name"]).toString().replace('Findspot/', '')) - parseFloat(findspot_regex.exec(b["name"]).toString().replace('Findspot/', ''))
         });
@@ -183,9 +181,6 @@ $(document).ready(function() {
         for(var i in findspots)
         {
             $('#header_details>tr').append("<th>"+ findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') +"</th>");
-
-            // if(i > 25)
-            //     break;
         }
 
         toponyms.sort(function(a,b) {
@@ -197,8 +192,6 @@ $(document).ready(function() {
         for(var i in toponyms)
         {
             $('#table_details').append("<tr id='"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"'><td>"+ toponym_regex.exec(toponyms[i]["name"]).toString().replace('toponym-','T') +"</td></tr>");
-            // if(i > 25)
-            //     break;
         }
 
         var final = [];
@@ -216,44 +209,19 @@ $(document).ready(function() {
                     }
                 }
                 $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td id='"+ toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" + findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') +"' class='circle'></td>");
-
                 calc_circle("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" + findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F'), ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2))
-
-                // $("#"+toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T')).append("<td id='"+ toponym_regex.exec(toponyms[j]["name"]).toString().replace('toponym-','T') + "_" +findspot_regex.exec(findspots[i]["name"]).toString().replace('Findspot/', 'F') + "'>"+ ((final[final.length - 1]["significance"] / (toponyms[j]["populations"].length * findspots[i]["kinds"].length)) * 100).toFixed(2) +"%</td>")
-
             }
-
-            // if(i > 25)
-            //     break;
 
         }
 
         $('.ui.inverted.dimmer').removeClass('active');
 
-        // $('body').on('click', '.circle', function() {
-            // console.log('hey');
-            // $(this).popup('show');
-            // $('.ui.fluid.small.modal').modal('show');
-        // });
-
-        // $('.circle').popup();
         $('.ui.toggle.checkbox').checkbox({
             onChange: function() {
                 $('.ui.compact.segments').toggleClass('hidden');
             }
         });
-
-
-        // $('.circle').click(function() {
-        //     console.log('hi');
-        //     $('.ui.modal').modal('show');
-        // })
-
-        // $('.circle').popup();
-        console.log(final);
-
     });
-
 
     function calc_circle(id, sig)
     {
@@ -276,19 +244,13 @@ $(document).ready(function() {
             $(id).addClass('w3');
             $(id).addClass('a4');
         }
-
-        $(id).attr('data-content', sig);
-        $(id).attr('data-position', 'top center');
     }
-
-
 
     function create_table(table, id)
     {
         var init = table[0];
         var list = [];
         var big_list = [];
-
 
         for(var i = 1; i < table.length; i++)
         {
@@ -305,7 +267,6 @@ $(document).ready(function() {
                 list = [];
             }
         }
-
         return big_list;
     }
 
@@ -326,8 +287,6 @@ $(document).ready(function() {
                 }
             }
         }
-
         return full_table;
     }
-
 });
