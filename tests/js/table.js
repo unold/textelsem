@@ -60,7 +60,7 @@ $(document).ready(function() {
 
             for(var i in kind)
             {
-                $('#header_details>tr').append("<th>"+ kind[i] +"</th>");
+                $('#header_details>tr').append("<th data-content='"+kind[i]+"'>"+ kind[i] +"</th>");
                 total[kind[i]] = 0;
             }
 
@@ -108,6 +108,8 @@ $(document).ready(function() {
                     }
                 }
             }
+
+            $("th").popup();
 
             $('.message .close').on('click', function() {
                 $(this).closest('.message').transition('fade');
