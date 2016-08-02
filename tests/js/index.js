@@ -509,6 +509,17 @@ $(document).ready(function() {
             $('#third_tab_dimmer').addClass('active');
             var value = $("#n_dropdown").dropdown('get value');
             var repo = "http://higeomes.i3mainz.hs-mainz.de/openrdf-sesame/repositories/textelsem";
+
+            if($("#new_table").hasClass('hidden'))
+            {
+                console.log('new table 2 working');
+                $('#new_table2>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
+            }
+            else {
+                console.log($('#new_table>#table_details').find(".ui.checkbox#nrow:checked"));
+                $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
+            }
+
             $.ajax({
                 url: repo,
                 dataType: 'jsonp',
@@ -576,14 +587,6 @@ $(document).ready(function() {
                             + "<td><a href =" +row[i].f2.value + ">" + row[i].f2_name.value + "</a></td></tr>");
 
                         }
-                    }
-
-                    if($("#new_table").hasClass('hidden'))
-                    {
-                        $('#new_table2>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
-                    }
-                    else {
-                        $('#new_table>#table_details').find(".ui.checkbox#nrow").checkbox('uncheck');
                     }
 
                     $('#third_tab_dimmer').removeClass('active');
@@ -946,12 +949,11 @@ $(document).ready(function() {
 
                     if(feature.U.hasOwnProperty('distance'))
                     {
-                        $('.dist').html("<div class='ui center statistic' data-content='Average Distance of resolved nearby findspots: 27.34 km'  data-position='left center'>"
+                        $('.dist').html("<div class='ui center statistic'>"
                         + "<div class='value'>"+feature.get('distance').toFixed(2)+"</div>"
                         + "<div class='label'>Kilometers Away</div>"
                         + "</div><div class='ui divider'><div>");
 
-                        $('.ui.center.statistic').popup();
                     }
 
                     if(feature.U.hasOwnProperty('prob'))
