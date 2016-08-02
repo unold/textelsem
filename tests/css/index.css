@@ -22,7 +22,7 @@ h2 {
 }
 
 #p_dropdown {
-    width: 85%;
+    display: inline-block;
 }
 
 #inner {

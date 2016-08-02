@@ -499,6 +499,10 @@ $(document).ready(function() {
         });
     });
 
+    $('#t_dropdown').dropdown({
+        action: 'hide'
+    });
+
     //Query for all unresolved findspots that are connected to resolved findspots with the nearby property and one additional property.
     $("#n_dropdown").dropdown({
         onChange: function() {
