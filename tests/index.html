@@ -28,6 +28,7 @@
     </head>
 
     <body>
+        <input type="hidden" id="refresh" value="no">
         <div id="table_container">
             <div class="ui top attached tabular menu">
                 <a class="active item" data-tab="resolved" id="r_tab">
@@ -59,7 +60,7 @@
                         </div>
                     </div>
                 </a>
-                <div class="item" id="tables">
+                <div class="item" id="table_tab">
                     <div class="ui floating dropdown" id="t_dropdown">
                         <div class="text">Tables</div>
                         <i class="dropdown icon"></i>
@@ -77,7 +78,7 @@
                     <div class="ui inverted dimmer" id="first_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
                     </div>
-                    <div class="ui icon info message">
+                    <div class="ui icon info message" id="first_message">
                         <i class="close icon"></i>
                         <i class="announcement icon"></i>
                         <div class="content">
@@ -95,10 +96,7 @@
                         <thead>
                             <tr>
                                 <th class="one wide">
-                                    <div class="ui fitted toggle checkbox" id='selectAll_Resolved'>
-                                        <input type='checkbox'>
-                                        <label></label>
-                                    </div>
+                                    <i class='info circle huge icon' id='show_message'></i>
                                 </th>
                                 <th>Toponym 1</th>
                                 <th>Toponym 2</th>
@@ -285,10 +283,6 @@
                     </div>
                 </div>
 
-            </div>
-            <div class="ui bottom attached active tab segment" data-tab="graphs" id="graph_tab">
-                <div id="inner">
-                </div>
             </div>
         </div>
 

@@ -31,6 +31,14 @@ $(document).ready(function() {
                 + "  ?country"+ num +" rdfs:label ?"+ var1 +"_country .\n";
     }
 
+    $(document).ready(function(e) {
+        var $input = $('#refresh');
+        $input.val() == 'yes' ? location.replace('index.html') : $input.val('yes');
+    });
+
+
+    $(".tabular.menu .item").load(this.href);
+
     function query_func(condition)
     {
         var options = {
@@ -235,6 +243,11 @@ $(document).ready(function() {
     map.addLayer(lineLayer);
     map.addLayer(vectorLayer);
 
+    $('#show_message').click(function() {
+        if(!$('#first_message').hasClass('visible'))
+            $('#first_message').addClass('visible');
+    });
+
     $.when(getUnresolved(), getAll()).then(function(resp1, resp2)
     {
         var unresolved_data = resp1[0].results.bindings;
@@ -314,6 +327,11 @@ $(document).ready(function() {
         full.dist = sorted_distances;
         full.angles = sorted_angles;
     });
+
+    window.onpopstate = function() {
+        var resolved = '/resolved'
+        $('#resolved').load(resolved);
+    }
 
     //Query for all resolved findspots listed as nearby
     $("#r_dropdown").dropdown({
@@ -663,21 +681,10 @@ $(document).ready(function() {
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name')
                 + " is listed as " +  values[$("#r_dropdown").dropdown('get value')] + vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + ".");
 
-
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].set('desc', vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 2].get('name')
                 + " is listed as " +  values[$("#r_dropdown").dropdown('get value')] + "this toponym, "+ vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].get('name') + ".");
 
-
                 map.getView().setCenter(ol.proj.transform(r_coords[index][9]['geometry']['coordinates'],"EPSG:4326", "EPSG:3857"));
-
-                // if(r_coords[index][8] > 70)
-                // {
-                //     map.getView().setZoom(8);
-                //
-                // }
-                // else {
-                //     map.getView().setZoom(10);
-                // }
 
                 if(vectorLayer.getSource().getFeatures() > 2) {
                     map.getView().setZoom(4);
@@ -806,7 +813,6 @@ $(document).ready(function() {
                     $('#popup').html("");
 
                     vectorLayer.getSource().removeFeature(vectorLayer.getSource().getFeatureById(new_id));
-
                 });
 
                 vectorLayer.getSource().getFeatures()[vectorLayer.getSource().getFeatures().length - 1].setId(index);
