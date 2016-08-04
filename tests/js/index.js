@@ -248,6 +248,20 @@ $(document).ready(function() {
             $('#first_message').addClass('visible');
     });
 
+    $('#show_message2').click(function() {
+        if(!$('#second_message1').hasClass('visible') || !$('#second_message2').hasClass('visible'))
+        {
+            $('#second_message1').addClass('visible');
+            $('#second_message2').addClass('visible');
+        }
+
+    });
+
+    $('#show_message3').click(function() {
+        if(!$('#third_message').hasClass('visible'))
+            $('#third_message').addClass('visible');
+    });
+
     $.when(getUnresolved(), getAll()).then(function(resp1, resp2)
     {
         var unresolved_data = resp1[0].results.bindings;

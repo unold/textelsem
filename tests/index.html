@@ -78,9 +78,8 @@
                     <div class="ui inverted dimmer" id="first_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
                     </div>
-                    <div class="ui icon info message" id="first_message">
+                    <div class="ui info message" id="first_message">
                         <i class="close icon"></i>
-                        <i class="announcement icon"></i>
                         <div class="content">
                             <div class="header">
                                 Welcome!
@@ -110,8 +109,7 @@
                 </div>
             </div>
             <div class="ui bottom attached tab segment" data-tab="unresolved" id="u_table">
-                <div class="ui icon info message">
-                    <i class="announcement icon"></i>
+                <div class="ui info message" id="second_message1">
                     <i class="close icon"></i>
                     <div class="content">
                         <div class="header">
@@ -121,9 +119,8 @@
                             <p>This table shows a list of all unresolved findspots listed in the database. In the left column (aside from the toggle) are the names of these findspots, and in the rightmost column is a collasible list of all of the unresolved toponyms and their probability of being the the toponym that corresponds to the unresolved findspot. </p>
                     </div>
                 </div>
-                <div class="ui icon info message">
+                <div class="ui info message" id="second_message2">
                     <i class="close icon"></i>
-                    <i class="info circle icon"></i>
                     <div class="content">
                         <div class="header">
                             How-to
@@ -144,10 +141,7 @@
                         <thead>
                             <tr>
                                 <th class="one wide">
-                                    <div class="ui fitted toggle checkbox" id='selectAll_Unresolved'>
-                                        <input type='checkbox' >
-                                        <label></label>
-                                    </div>
+                                    <i class='info circle huge icon' id='show_message2'></i>
                                 </th>
                                 <th>Unresolved Findspot</th>
                                 <th class="nine wide">
@@ -178,9 +172,8 @@
                     <div class="ui inverted dimmer" id="third_tab_dimmer">
                         <div class="ui large text loader">Just a moment...</div>
                     </div>
-                    <div class="ui icon info message">
+                    <div class="ui info message" id="third_message">
                         <i class="close icon"></i>
-                        <i class="announcement icon"></i>
                         <div class="content">
                             <div class="header">
                                 Welcome!
@@ -196,10 +189,7 @@
                         <thead>
                             <tr>
                                 <th class="one wide">
-                                    <div class="ui fitted toggle checkbox" id='selectAll_Nearby'>
-                                        <input type='checkbox' >
-                                        <label></label>
-                                    </div>
+                                    <i class='info circle huge icon' id='show_message3'></i>
                                 </th>
                                 <th>Unresolved Toponym</th>
                                 <th>Resolved Toponym</th>
