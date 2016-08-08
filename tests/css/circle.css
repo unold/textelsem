@@ -1,4 +1,4 @@
-
+/*Original: Matthias Dufner*/
 /*Größen*/
 .w0:before {
     content: ' \25CF';
@@ -41,14 +41,4 @@
     vertical-align: middle;
     min-width: 120px;
     height: 120px;
-    /*display: block;*/
 }
-/*Tabelle*/
-/*table {max-width: 80%; margin: 100px auto;}
-td {text-align: center; vertical-align: middle; max-width: 50px; max-height: 50px;}
-td.text {text-align: left; vertical-align: middle; max-width: 200px;}
-td {height: 120px;}
-.header td, .count {
-    font-size: 14px !important;
-    letter-spacing: 1px;
-}*/
